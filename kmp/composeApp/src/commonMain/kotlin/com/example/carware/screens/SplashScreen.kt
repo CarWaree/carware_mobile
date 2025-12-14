@@ -1,10 +1,12 @@
 package com.example.carware.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
@@ -25,7 +27,7 @@ fun SplashScreen(
     LaunchedEffect(Unit) {
 
         // optional delay for UX
-        delay(600)
+        delay(1000)
 
         val destination = when {
             !loginManager.isOnboardingComplete() -> OnboardingScreen
@@ -37,7 +39,17 @@ fun SplashScreen(
         onNavigate(destination)
     }
 
+
     Column(m.fillMaxSize()
-            
-        .background(Color.Blue)) { }
+        .background(Color.Yellow),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+            //            work here
+
+
+
+
+
+    }
 }
