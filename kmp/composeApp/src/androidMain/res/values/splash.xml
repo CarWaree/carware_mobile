@@ -11,7 +11,7 @@
     <!-- Splash Screen Theme -->
     <style name="Theme.MySplashScreen" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">#B30000</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/logo</item>
+<!--        <item name="windowSplashScreenAnimatedIcon">@drawable/logo</item>-->
         <item name="windowSplashScreenIconBackgroundColor">@android:color/transparent</item>
         <item name="postSplashScreenTheme">@style/Theme.CarWare</item>
     </style>
