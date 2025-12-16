@@ -2,7 +2,6 @@ package com.example.carware
 
 import IOSUserSession
 import androidx.compose.ui.window.ComposeUIViewController
-import com.example.carware.util.LoginManager
 
 val iosSession = IOSUserSession()
 

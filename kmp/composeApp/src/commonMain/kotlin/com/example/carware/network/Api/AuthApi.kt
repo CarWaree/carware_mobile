@@ -16,7 +16,7 @@ import io.ktor.client.request.setBody
 import io.ktor.http.*
 import io.ktor.http.contentType
 
-val baseUrl="https://vc53kbf0-7136.uks1.devtunnels.ms"
+val baseUrl="https://krzlnqtm-7136.uks1.devtunnels.ms"
 suspend fun signupUser(request: SignUpRequest): AuthResponse {
     val client = createHttpClient()
     return client.post("$baseUrl/api/Auth/register") {

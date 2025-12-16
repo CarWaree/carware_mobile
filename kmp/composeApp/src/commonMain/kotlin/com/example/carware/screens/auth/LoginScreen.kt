@@ -57,8 +57,7 @@ import com.example.carware.network.apiRequests.auth.LoginRequest
 import com.example.carware.network.Api.loginUser
 import com.example.carware.screens.appButtonBack
 import com.example.carware.screens.appGradBack
-import com.example.carware.util.LoginManager
-import com.example.carware.util.SharedToken
+import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -70,7 +69,7 @@ import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun LoginScreen(navController: NavController,loginManager: LoginManager) {
+fun LoginScreen(navController: NavController,preferencesManager: PreferencesManager) {
 
 
     val popSemi = FontFamily(
@@ -301,49 +300,35 @@ fun LoginScreen(navController: NavController,loginManager: LoginManager) {
                         onClick = {
                             isErrorEmail = email.isBlank()
                             isErrorPass = pass.isBlank()
-                            if (!isErrorEmail && !isErrorPass){try {
-                                // 3️⃣ Create signup request
+
+                            if (!isErrorEmail && !isErrorPass) {
                                 val request = LoginRequest(
                                     password = pass,
                                     emailOrUsername = email,
-
                                 )
 
-                                // 4️⃣ Launch coroutine to call API
                                 CoroutineScope(Dispatchers.Default).launch {
                                     try {
-                                        val response =
-                                            loginUser(request) // common function
+                                        val response = loginUser(request)
 
                                         withContext(Dispatchers.Main) {
-                                            // ✅ Handle success
-                                            // You can navigate to next screen or show a Toast/Snackbar
-                                            SharedToken.token = response.data?.token
-                                                ?: throw IllegalStateException("Token missing in response")
+                                            // ✅ Save token directly
+                                            preferencesManager.performLogin(
+                                                token = response.data?.token,
+                                            )
 
-                                            withContext(Dispatchers.IO) {
-                                                loginManager.performLogin(token)
-                                            }
-
-                                            navController.navigate(AddCarScreen){
+                                            navController.navigate(AddCarScreen) {
                                                 popUpTo(LoginScreen) { inclusive = true }
                                             }
                                         }
 
-
-
                                     } catch (e: Exception) {
                                         withContext(Dispatchers.Main) {
-                                            // ❌ Handle error
                                             println("Login failed: ${e.message}")
+                                            // Show error to user
                                         }
                                     }
                                 }
-
-                            } catch (e: Exception) {
-                                // This should rarely happen unless request creation fails
-                                println("Request creation failed: ${e.message}")
-                            }
                             }
                         },
                         modifier = m

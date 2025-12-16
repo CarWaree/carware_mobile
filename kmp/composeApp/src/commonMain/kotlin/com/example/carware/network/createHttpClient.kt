@@ -1,6 +1,5 @@
 package com.example.carware.network
 
-import com.example.carware.util.SharedToken
 import getHttpClientEngine
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
@@ -31,23 +30,22 @@ fun createHttpClient(): HttpClient {
         }
 
 
-        install(Auth) {
-            bearer {
-                // This lambda is called *before* every request to get the token
-                loadTokens {
-                    // IMPORTANT: Replace these placeholders with your actual token retrieval logic
-                    val accessToken =SharedToken.token // Retrieve the stored token
-
-                    if (accessToken != null) {
-                        BearerTokens(accessToken, " ")
-                    } else {
-                        null
-                    }
-                }
-
+//        install(Auth) {
+//            bearer {
+//                // This lambda is called *before* every request to get the token
+//                loadTokens {
+//                    // IMPORTANT: Replace these placeholders with your actual token retrieval logic
+//                    val accessToken =SharedToken.token // Retrieve the stored token
+//
+//                    if (accessToken != null) {
+//                        BearerTokens(accessToken, " ")
+//                    } else {
+//                        null
+//                    }
+//                }
+//
 
         }
     }
-}
-}
+
 

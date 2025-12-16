@@ -34,7 +34,6 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.core.splashscreen)
-            implementation("com.airbnb.android:lottie-compose:6.4.0")
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -49,6 +48,7 @@ kotlin {
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
             implementation(libs.bundles.ktor)
             implementation("com.russhwolf:multiplatform-settings-no-arg:1.1.1")
+
         }
 
         nativeMain.dependencies {

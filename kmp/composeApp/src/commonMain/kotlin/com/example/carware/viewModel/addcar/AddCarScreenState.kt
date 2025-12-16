@@ -1,4 +1,4 @@
-package com.example.carware.viewModel
+package com.example.carware.viewModel.addcar
 
 data class AddCarScreenState(
     val selectedBrand: String? = null,

@@ -43,12 +43,12 @@ import com.example.carware.navigation.LoginScreen
 import com.example.carware.network.apiRequests.auth.ResetPasswordRequest
 import com.example.carware.screens.appButtonBack
 import com.example.carware.screens.appGradBack
-import com.example.carware.util.SharedToken
+import com.example.carware.util.storage.PreferencesManager
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun NewPasswordScreen(navController: NavController) {
+fun NewPasswordScreen(navController: NavController,preferencesManager:PreferencesManager) {
     val popSemi = FontFamily(
         Font(Res.font.poppins_semibold) // name of your font file without extension
     )
@@ -88,7 +88,6 @@ fun NewPasswordScreen(navController: NavController) {
 
 
     )
-    val token = SharedToken.token   // read
 
     Column(
         modifier = m
@@ -238,6 +237,7 @@ fun NewPasswordScreen(navController: NavController) {
                             val passwordEmpty = pass.isBlank()
                             val confPassEmpty = confPass.isBlank()
                             val passMismatch = pass != confPass
+                            val token = preferencesManager.getToken()
 
                             passError = passwordEmpty
                             confPassError = confPassEmpty || passMismatch
