@@ -17,7 +17,7 @@ import com.example.carware.navigation.AddCarScreen
 import com.example.carware.navigation.HomeScreen
 import com.example.carware.navigation.OnboardingScreen
 import com.example.carware.navigation.SignUpScreen
-import com.example.carware.util.LoginManager
+import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.DrawableResource
@@ -25,18 +25,18 @@ import org.jetbrains.compose.resources.DrawableResource
 
 @Composable
 fun SplashScreen(
-    loginManager: LoginManager,
+    preferencesManager: PreferencesManager,
     onNavigate: (route: @Serializable Any) -> Unit
 ) {
     LaunchedEffect(Unit) {
 
         // optional delay for UX
-        delay(3000)
+        delay(2000)
 
         val destination = when {
-            !loginManager.isOnboardingComplete() -> OnboardingScreen
-            !loginManager.shouldAutoLogin() -> SignUpScreen
-            !loginManager.hasAddedCar() -> AddCarScreen
+            !preferencesManager.isOnboardingComplete() -> OnboardingScreen
+            !preferencesManager.isLoggedIn() -> SignUpScreen
+            !preferencesManager.hasAddedCar() -> AddCarScreen
             else -> HomeScreen
         }
 

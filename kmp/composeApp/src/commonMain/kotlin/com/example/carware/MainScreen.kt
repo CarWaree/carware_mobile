@@ -22,11 +22,13 @@ import com.example.carware.navigation.ResetPasswordScreen
 import com.example.carware.navigation.ScheduleScreen
 import com.example.carware.navigation.SettingsScreen
 import com.example.carware.navigation.SignUpScreen
+import com.example.carware.navigation.SplashScreen
 import com.example.carware.navigation.VerificationCodeScreen
 import com.example.carware.repository.VehicleRepository
 import com.example.carware.screens.AddCarScreen
 import com.example.carware.screens.BottomNavBar
 import com.example.carware.screens.OnBoardingScreen
+import com.example.carware.screens.SplashScreen
 import com.example.carware.screens.auth.LoginScreen
 import com.example.carware.screens.auth.NewPasswordScreen
 import com.example.carware.screens.auth.ResetPasswordScreen
@@ -64,7 +66,7 @@ val vehicleRepository= VehicleRepository()
 
     NavHost(
         navController = navController,
-        startDestination = startDestination,
+        startDestination = SplashScreen,
     )
     {
         composable<HomeScreen> {
@@ -131,6 +133,15 @@ val vehicleRepository= VehicleRepository()
             AddCarScreen(navController,
                 viewModel = AddCarViewModel( vehicleRepository,preferencesManager)
             )
+        }
+        composable<SplashScreen> {
+            SplashScreen(
+                preferencesManager
+            ) { destination ->
+                navController.navigate(destination) {
+                    popUpTo(SplashScreen) { inclusive = true }
+                }
+            }
         }
 
 
