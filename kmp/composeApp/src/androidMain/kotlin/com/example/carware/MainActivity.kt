@@ -13,8 +13,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
-import com.example.carware.session.AndroidUserSession
-import com.example.carware.util.LoginManager
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,13 +21,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
 
-        val userSession = AndroidUserSession(this)
-
-        val loginManager = LoginManager(userSession)
-
-
         setContent {
-            MainScreen(loginManager = loginManager)
-        }
+            MainScreen(preferencesManager = CarwareApplication.preferences)        }
     }
 }

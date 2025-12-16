@@ -50,17 +50,14 @@ import carware.composeapp.generated.resources.line_1
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.m
-import com.example.carware.navigation.HomeScreen
+import com.example.carware.navigation.AddCarScreen
 import com.example.carware.navigation.LoginScreen
 import com.example.carware.navigation.SignUpScreen
-import com.example.carware.network.apiRequests.SignUpRequest
-import com.example.carware.network.createHttpClient
-import com.example.carware.network.signupUser
+import com.example.carware.network.apiRequests.auth.SignUpRequest
+import com.example.carware.network.Api.signupUser
 import com.example.carware.screens.appButtonBack
 import com.example.carware.screens.appGradBack
-import com.example.carware.util.LoginManager
-import io.ktor.client.HttpClient
-import io.ktor.client.plugins.logging.LoggingFormat
+import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -70,7 +67,7 @@ import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
+fun SignUpScreen(navController: NavController,preferencesManager: PreferencesManager ) {
 
     val popSemi = FontFamily(
         Font(Res.font.poppins_semibold) // name of your font file without extension
@@ -84,7 +81,6 @@ fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
     var email by remember { mutableStateOf("") }
     var pass by remember { mutableStateOf("") }
     var num by remember { mutableStateOf("") }
-    var token by remember { mutableStateOf("") }
 
     var isPassVisible by remember { mutableStateOf(false) }
 
@@ -97,7 +93,6 @@ fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
     var agreed by remember { mutableStateOf(false) }
 
     val scrollState = rememberScrollState()
-
     val textFieldColors = TextFieldDefaults.colors(
 
         unfocusedTextColor = Color.DarkGray,
@@ -128,6 +123,7 @@ fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
 
     )
 
+//    val token = preferencesManager.getToken()
 
 
     Column(modifier = m.verticalScroll(scrollState)) {
@@ -513,15 +509,17 @@ fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
                                                     signupUser(request)
 
                                                 withContext(Dispatchers.Main) {
-                                                    // ✅ Handle success
-                                                    val token = response.data?.token
-                                                        ?: throw IllegalStateException("Token missing in response")
+
+                                                    preferencesManager.performLogin(response.data?.token)
 
                                                     withContext(Dispatchers.IO) {
-                                                        loginManager.performLogin(token)
+                                                        preferencesManager.performLogin(
+                                                            token = response.data?.token,
+                                                              // if you have it
+                                                        )
                                                     }
 
-                                                    navController.navigate(HomeScreen){
+                                                    navController.navigate(AddCarScreen){
                                                         popUpTo(SignUpScreen) { inclusive = true }
                                                     }
                                                 }
@@ -530,7 +528,7 @@ fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
 
                                             } catch (e: Exception) {
                                                 withContext(Dispatchers.Main) {
-                                                    // ❌ Handle error
+                                                    //  Handle error
                                                     println("Signup failed: ${e.message}")
                                                 }
                                             }

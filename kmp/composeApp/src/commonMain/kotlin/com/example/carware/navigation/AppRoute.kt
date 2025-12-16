@@ -32,6 +32,9 @@ object HistoryScreen
 @Serializable
 object ScheduleScreen
 
+@Serializable
+object AddCarScreen
+
 
 //// Optional: Sealed class wrapper without serialization
 //sealed class AppRoute {

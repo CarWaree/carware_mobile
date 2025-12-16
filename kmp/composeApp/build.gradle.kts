@@ -19,6 +19,7 @@ kotlin {
     
     listOf(
         iosArm64(),
+        iosX64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
@@ -48,10 +49,12 @@ kotlin {
             implementation(libs.bundles.ktor)
             implementation("com.russhwolf:multiplatform-settings-no-arg:1.1.1")
 
+
+
         }
 
         nativeMain.dependencies {
-            libs.ktor.client.darwin
+            implementation(libs.ktor.client.darwin)
         }//ios
 
         commonTest.dependencies {

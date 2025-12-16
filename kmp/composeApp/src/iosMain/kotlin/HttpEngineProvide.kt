@@ -1,5 +1,4 @@
 import io.ktor.client.engine.HttpClientEngine
+import io.ktor.client.engine.darwin.Darwin
 
-actual fun getHttpClientEngine(): HttpClientEngine {
-    throw NotImplementedError("iOS engine not available on Windows. Implement on macOS.")
-}
+actual fun getHttpClientEngine(): HttpClientEngine = Darwin.create()

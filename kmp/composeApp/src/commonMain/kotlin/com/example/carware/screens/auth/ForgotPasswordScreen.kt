@@ -38,14 +38,10 @@ import carware.composeapp.generated.resources.line_1
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.m
-import com.example.carware.navigation.HomeScreen
 import com.example.carware.navigation.LoginScreen
-import com.example.carware.navigation.SignUpScreen
 import com.example.carware.navigation.VerificationCodeScreen
-import com.example.carware.network.apiRequests.ForgotPasswordRequest
-import com.example.carware.network.apiRequests.LoginRequest
-import com.example.carware.network.forgotPasswordUser
-import com.example.carware.network.loginUser
+import com.example.carware.network.apiRequests.auth.ForgotPasswordRequest
+import com.example.carware.network.Api.forgotPasswordUser
 import com.example.carware.screens.appButtonBack
 import com.example.carware.screens.appGradBack
 import kotlinx.coroutines.CoroutineScope
