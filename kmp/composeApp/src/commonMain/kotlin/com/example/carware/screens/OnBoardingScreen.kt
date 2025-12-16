@@ -44,8 +44,8 @@ import com.example.carware.m
 import com.example.carware.navigation.HomeScreen
 import com.example.carware.navigation.OnboardingScreen
 import com.example.carware.navigation.SignUpScreen
-import com.example.carware.util.LoginManager
 import com.example.carware.util.onBoarding.OnboardingConfig.pages
+import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
@@ -54,7 +54,7 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun OnBoardingScreen(
     navController: NavController,
-    loginManager: LoginManager
+    preferencesManager: PreferencesManager
 ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
@@ -130,7 +130,7 @@ fun OnBoardingScreen(
             ) {
                 Card(
                     onClick = {
-                        loginManager.setOnboardingComplete()
+                        preferencesManager.setOnboardingComplete()
                         navController.navigate(SignUpScreen) {
                             popUpTo(OnboardingScreen) { inclusive = true }
                         }
@@ -160,7 +160,7 @@ fun OnBoardingScreen(
                 Spacer(modifier = m.padding(vertical = 10.dp))
                 Card(
                     onClick = {
-                        loginManager.setOnboardingComplete()
+                        preferencesManager.setOnboardingComplete()
                         navController.navigate(HomeScreen) {
                             popUpTo(OnboardingScreen) { inclusive = true }
                         }
@@ -200,7 +200,7 @@ fun OnBoardingScreen(
                         modifier = m
                             .clickable {
                                 if (isFirstPage) {
-                                        loginManager.setOnboardingComplete()
+                                        preferencesManager.setOnboardingComplete()
                                         navController.navigate(SignUpScreen) {
                                             popUpTo(OnboardingScreen) { inclusive = true }
                                         }
@@ -246,7 +246,7 @@ fun OnBoardingScreen(
                             color = Color.White,
                             modifier = Modifier.clickable {
                                 if (isFirstPage) {
-                                    loginManager.setOnboardingComplete()
+                                    preferencesManager.setOnboardingComplete()
                                     navController.navigate(SignUpScreen) {
                                         popUpTo(OnboardingScreen) { inclusive = true }
                                     }
@@ -269,7 +269,7 @@ fun OnBoardingScreen(
                         color = Color.White,
                         modifier = Modifier.clickable {
                             if (isLastPage) {
-                                loginManager.setOnboardingComplete()
+                                preferencesManager.setOnboardingComplete()
                                 navController.navigate(SignUpScreen) {
                                     popUpTo(OnboardingScreen) { inclusive = true }
 

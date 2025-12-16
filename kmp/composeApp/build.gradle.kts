@@ -49,6 +49,8 @@ kotlin {
             implementation(libs.bundles.ktor)
             implementation("com.russhwolf:multiplatform-settings-no-arg:1.1.1")
 
+
+
         }
 
         nativeMain.dependencies {

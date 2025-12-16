@@ -1,4 +1,4 @@
-package com.example.carware.viewModel
+package com.example.carware.viewModel.addcar
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -6,30 +6,26 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.example.carware.navigation.AddCarScreen
 import com.example.carware.navigation.HomeScreen
-import com.example.carware.network.Api.addVehicles
-import com.example.carware.network.Api.getBrands
-import com.example.carware.network.Api.getModels
 import com.example.carware.network.apiRequests.vehicle.VehicleRequest
 import com.example.carware.network.apiResponse.vehicle.Brand
 import com.example.carware.network.apiResponse.vehicle.Model
 import com.example.carware.repository.VehicleRepository
-import com.example.carware.util.LoginManager
-import io.ktor.client.statement.bodyAsText
+import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.math.log
 
-class AddCarViewModel(val repository: VehicleRepository, loginManager: LoginManager) : ViewModel() {
+class AddCarViewModel(val repository: VehicleRepository, preferencesManager: PreferencesManager) : ViewModel() {
     var brands by mutableStateOf<List<Brand>>(emptyList())
     var models: List<Model> = emptyList()
     val availableYears: List<Int> = (1990..2100).toList()
     val colors = listOf("Red", "Blue", "Black", "White", "Silver")  // predefined colors
-    val loginManager = loginManager
+    val preferencesManager = preferencesManager
     private val _state = MutableStateFlow(AddCarScreenState())
     val state: StateFlow<AddCarScreenState> = _state
 
@@ -138,26 +134,30 @@ class AddCarViewModel(val repository: VehicleRepository, loginManager: LoginMana
                 color = color,
             )
 
-
-
             try {
-                val response = addVehicles(request)
+                // Get token
+                val token = preferencesManager.getToken()
+                    ?: throw Exception("User not logged in")
 
-                loginManager.setCarAdded(true)
-                // Success handler
-                println("Vehicle added successfully: ${response.message}"
-                )
-                withContext(Dispatchers.Main) {
-                    navController.navigate(HomeScreen)
+                // Call repository with token
+                val response = repository.addVehicleRepo(request, token)
 
-                }            } catch (e: Exception) {
+                // Mark car as added
+                preferencesManager.setCarAdded(true)
+
+                println("Vehicle added successfully: ${response.message}")
+
                 withContext(Dispatchers.Main) {
-                    // ❌ Handle error
-                    println("Login failed: ${e.message}")
+                    navController.navigate(HomeScreen) {
+                        popUpTo(AddCarScreen) { inclusive = true }
+                    }
                 }
+
             } catch (e: Exception) {
-                // This should rarely happen unless request creation fails
-                println("Request creation failed: ${e.message}")
+                withContext(Dispatchers.Main) {
+                    println("Failed to add vehicle: ${e.message}")
+                    // Show error to user (Snackbar/Toast)
+                }
             }
         }
     }

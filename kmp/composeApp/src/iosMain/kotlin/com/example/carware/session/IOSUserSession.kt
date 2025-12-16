@@ -1,4 +1,3 @@
-import com.example.carware.util.UserSession
 import platform.Foundation.NSUserDefaults
 
 class IOSUserSession : UserSession {

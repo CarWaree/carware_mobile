@@ -57,8 +57,7 @@ import com.example.carware.network.apiRequests.auth.SignUpRequest
 import com.example.carware.network.Api.signupUser
 import com.example.carware.screens.appButtonBack
 import com.example.carware.screens.appGradBack
-import com.example.carware.util.LoginManager
-import com.example.carware.util.SharedToken
+import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -68,7 +67,7 @@ import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
+fun SignUpScreen(navController: NavController,preferencesManager: PreferencesManager ) {
 
     val popSemi = FontFamily(
         Font(Res.font.poppins_semibold) // name of your font file without extension
@@ -94,7 +93,6 @@ fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
     var agreed by remember { mutableStateOf(false) }
 
     val scrollState = rememberScrollState()
-    val token = SharedToken.token
     val textFieldColors = TextFieldDefaults.colors(
 
         unfocusedTextColor = Color.DarkGray,
@@ -125,6 +123,7 @@ fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
 
     )
 
+//    val token = preferencesManager.getToken()
 
 
     Column(modifier = m.verticalScroll(scrollState)) {
@@ -510,11 +509,14 @@ fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
                                                     signupUser(request)
 
                                                 withContext(Dispatchers.Main) {
-                                                    // ✅ Handle success
-                                                    SharedToken.token = response.data?.token
+
+                                                    preferencesManager.performLogin(response.data?.token)
 
                                                     withContext(Dispatchers.IO) {
-                                                        loginManager.performLogin(token)
+                                                        preferencesManager.performLogin(
+                                                            token = response.data?.token,
+                                                              // if you have it
+                                                        )
                                                     }
 
                                                     navController.navigate(AddCarScreen){
@@ -526,7 +528,7 @@ fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
 
                                             } catch (e: Exception) {
                                                 withContext(Dispatchers.Main) {
-                                                    // ❌ Handle error
+                                                    //  Handle error
                                                     println("Signup failed: ${e.message}")
                                                 }
                                             }

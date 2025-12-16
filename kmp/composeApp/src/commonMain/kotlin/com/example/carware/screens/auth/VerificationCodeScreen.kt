@@ -47,7 +47,7 @@ import com.example.carware.network.apiRequests.auth.OTPRequest
 import com.example.carware.network.Api.otpVerificationUser
 import com.example.carware.screens.appButtonBack
 import com.example.carware.screens.appGradBack
-import com.example.carware.util.SharedToken
+import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -56,7 +56,7 @@ import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun VerificationCodeScreen(navController: NavController) {
+fun VerificationCodeScreen(navController: NavController,preferencesManager: PreferencesManager) {
 
 
     val popSemi = FontFamily(
@@ -246,15 +246,16 @@ fun VerificationCodeScreen(navController: NavController) {
                                                 otpVerificationUser(request)
 
                                             withContext(Dispatchers.Main) {
-                                                SharedToken.token = response.data.token // save
-
-                                                    navController.navigate(NewPasswordScreen)
+                                                // Use performLogin to save the token and potentially the user ID if available
+                                                preferencesManager.performLogin(
+                                                    token = response.data.token,
+                                                )
                                             }
 
 
                                         } catch (e: Exception) {
                                             withContext(Dispatchers.Main) {
-                                                // ❌ Handle error
+                                                //  Handle error
                                                 println("email  failed: ${e.message}")
                                             }
                                         }

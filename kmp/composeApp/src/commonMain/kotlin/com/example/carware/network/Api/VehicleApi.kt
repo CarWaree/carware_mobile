@@ -4,11 +4,12 @@ import com.example.carware.network.apiRequests.auth.SignUpRequest
 import com.example.carware.network.apiRequests.vehicle.VehicleRequest
 import com.example.carware.network.apiResponse.vehicle.Brand
 import com.example.carware.network.apiResponse.vehicle.BrandResponse
+import com.example.carware.network.apiResponse.vehicle.GetVehicleResponse
 import com.example.carware.network.apiResponse.vehicle.Model
 import com.example.carware.network.apiResponse.vehicle.ModelResponse
 import com.example.carware.network.apiResponse.vehicle.VehicleResponse
+import com.example.carware.network.apiResponse.vehicle.Vehicles
 import com.example.carware.network.createHttpClient
-import com.example.carware.util.SharedToken.token
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -22,11 +23,12 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
+import kotlinx.coroutines.delay
 
 suspend fun getBrands(): List<Brand> {
     val client = createHttpClient()
     return client.get("$baseUrl/api/Vehicle/brands") {
-        contentType(ContentType.Application.Json) // optional for GET
+        contentType(ContentType.Application.Json)
     }.body<BrandResponse>().data
 }
 
@@ -37,7 +39,10 @@ suspend fun getModels(brandId: Int?): List<Model> {
     }.body<ModelResponse>().data
 }
 
-suspend fun addVehicles(request: VehicleRequest): VehicleResponse {
+suspend fun addVehicles(
+    request: VehicleRequest,
+    token: String
+): VehicleResponse {
     val client = createHttpClient()
 
     val response: HttpResponse = client.post { // Store the full HttpResponse
@@ -60,21 +65,26 @@ suspend fun addVehicles(request: VehicleRequest): VehicleResponse {
         throw Exception("API Error (${response.status}): $errorBody")
     }
 }
-suspend fun addVehicle(request: VehicleRequest): VehicleResponse {
+
+suspend fun getVehicle(token: String): GetVehicleResponse {
     val client = createHttpClient()
-    return client.post("$baseUrl/api/Vehicle") {
+    val response: HttpResponse = client.get {
+        url("$baseUrl/api/Vehicle/my-vehicles")
+        header("Authorization", "Bearer $token")
         contentType(ContentType.Application.Json)
-        setBody(request)
+    }
 
-    }.body()
+    println("--- RESPONSE DEBUG: Status: ${response.status.value}")
 
+    if (response.status.isSuccess()) {
+        return response.body<GetVehicleResponse>()
+    } else {
+        val errorBody = try {
+            response.bodyAsText()
+        } catch (e: Exception) {
+            "Could not read error body."
+        }
+        println("--- ERROR DETAILS: $errorBody")
+        throw Exception("API Error (${response.status.value}): $errorBody")
+    }
 }
-
-
-suspend fun getVehicles(): VehicleResponse {
-    val client = createHttpClient()
-    return client.get("$baseUrl/api/Vehicle") {
-        contentType(ContentType.Application.Json)
-    }.body()
-}
-
