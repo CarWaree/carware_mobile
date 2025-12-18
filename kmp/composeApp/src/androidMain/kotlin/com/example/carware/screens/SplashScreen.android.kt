@@ -38,7 +38,7 @@ actual fun PlatformSplashAnimation(
             composition = composition,
             iterations = 1,
             isPlaying = true,
-            speed = 0.9f,
+            speed = 1f,
 
             )
 

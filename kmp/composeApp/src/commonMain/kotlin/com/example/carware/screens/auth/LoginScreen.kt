@@ -69,7 +69,7 @@ import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun LoginScreen(navController: NavController,preferencesManager: PreferencesManager) {
+fun LoginScreen(navController: NavController, preferencesManager: PreferencesManager) {
 
 
     val popSemi = FontFamily(
@@ -260,7 +260,7 @@ fun LoginScreen(navController: NavController,preferencesManager: PreferencesMana
                             IconButton(onClick = { isPassVisible = !isPassVisible })
                             {
                                 Icon(
-                                    painter = painterResource( icon), contentDescription = null,
+                                    painter = painterResource(icon), contentDescription = null,
                                     tint = Color(118, 118, 118, 255),
                                     modifier = m.size(24.dp)
                                 )
@@ -311,12 +311,13 @@ fun LoginScreen(navController: NavController,preferencesManager: PreferencesMana
                                     try {
                                         val response = loginUser(request)
 
-                                        withContext(Dispatchers.Main) {
-                                            // ✅ Save token directly
-                                            preferencesManager.performLogin(
-                                                token = response.data?.token,
-                                            )
+                                        val token = response.data?.token
+                                            ?: throw IllegalStateException("Token missing in response")
 
+                                        // ✅ Save token (this replaces LoginManager)
+                                        preferencesManager.saveToken(token)
+
+                                        withContext(Dispatchers.Main) {
                                             navController.navigate(AddCarScreen) {
                                                 popUpTo(LoginScreen) { inclusive = true }
                                             }
@@ -324,12 +325,14 @@ fun LoginScreen(navController: NavController,preferencesManager: PreferencesMana
 
                                     } catch (e: Exception) {
                                         withContext(Dispatchers.Main) {
+                                            // show error to user
                                             println("Login failed: ${e.message}")
-                                            // Show error to user
                                         }
                                     }
+
                                 }
                             }
+
                         },
                         modifier = m
 

@@ -53,13 +53,14 @@ import com.example.carware.screens.mainScreens.HomeScreen
 import com.example.carware.screens.mainScreens.ScheduleScreen
 import com.example.carware.screens.mainScreens.SettingsScreen
 import com.example.carware.util.navBar.bottomTabs
-import com.example.carware.util.LoginManager
-import com.example.carware.viewModel.AddCarViewModel
+import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.viewModel.HomeScreen.HomeScreenViewModel
+import com.example.carware.viewModel.addcar.AddCarViewModel
 
 val m = Modifier
 
 @Composable
-fun MainScreen(loginManager: LoginManager) {
+fun MainScreen(preferencesManager: PreferencesManager) {
     val navController = rememberNavController()
 
     val pagerState = rememberPagerState(initialPage = bottomTabs.first().index) {
@@ -68,14 +69,14 @@ fun MainScreen(loginManager: LoginManager) {
     // Coroutine Scope needed for the BottomNavBar to smoothly animate the Pager scroll
     val scope = rememberCoroutineScope()
 
-    val startDestination = when {
-        !loginManager.isOnboardingComplete() -> OnboardingScreen
-        !loginManager.shouldAutoLogin() -> SignUpScreen
-        !loginManager.hasAddedCar()->AddCarScreen
-        else -> HomeScreen  //  should be 'signup'
-    }
+//    val startDestination = when {
+//        !loginManager.isOnboardingComplete() -> OnboardingScreen
+//        !loginManager.shouldAutoLogin() -> SignUpScreen
+//        !loginManager.hasAddedCar()->AddCarScreen
+//        else -> HomeScreen  //  should be 'signup'
+//    }
 
-val vehicleRepository= VehicleRepository()
+    val vehicleRepository = VehicleRepository()
 
 
 
@@ -95,41 +96,48 @@ val vehicleRepository= VehicleRepository()
                     )
                 }
             ) { innerPadding ->
-                    HorizontalPager(
-                        state = pagerState,
-                        modifier = Modifier.fillMaxSize(),
-                        userScrollEnabled = true
-                    ) { page ->
-                        val currentTab = bottomTabs[page]
-                        when (currentTab.route) {
-                            HomeScreen::class -> HomeScreen(navController)
-                            ScheduleScreen::class -> ScheduleScreen(navController)
-                            HistoryScreen::class -> HistoryScreen(navController)
-                            SettingsScreen::class -> SettingsScreen(navController)
-                            else -> Box(Modifier.fillMaxSize())
-                        }
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier.fillMaxSize(),
+                    userScrollEnabled = true
+                ) { page ->
+                    val currentTab = bottomTabs[page]
+                    when (currentTab.route) {
+                        HomeScreen::class -> HomeScreen(
+                            navController, HomeScreenViewModel(
+                                VehicleRepository(), preferencesManager
+                            )
+                        )
+
+                        ScheduleScreen::class -> ScheduleScreen(navController)
+                        HistoryScreen::class -> HistoryScreen(navController)
+                        SettingsScreen::class -> SettingsScreen(navController)
+                        else -> Box(Modifier.fillMaxSize())
                     }
                 }
             }
+        }
 
         composable<OnboardingScreen> {
-            OnBoardingScreen(navController, loginManager)
+            OnBoardingScreen(navController, preferencesManager)
         }
         composable<SignUpScreen> {
-            SignUpScreen(navController, loginManager)
+            SignUpScreen(navController, preferencesManager
+            )
         }
         composable<LoginScreen> {
-            LoginScreen(navController, loginManager)
+            LoginScreen(navController, preferencesManager
+            )
         }
 
         composable<ResetPasswordScreen> {
             ResetPasswordScreen(navController)
         }
         composable<VerificationCodeScreen> {
-            VerificationCodeScreen(navController)
+            VerificationCodeScreen(navController,preferencesManager)
         }
         composable<NewPasswordScreen> {
-            NewPasswordScreen(navController)
+            NewPasswordScreen(navController,preferencesManager)
         }
         composable<SettingsScreen> {
             SettingsScreen(navController)
@@ -141,13 +149,14 @@ val vehicleRepository= VehicleRepository()
             HistoryScreen(navController)
         }
         composable<AddCarScreen> {
-            AddCarScreen(navController,
-                viewModel = AddCarViewModel( vehicleRepository,loginManager)
+            AddCarScreen(
+                navController,
+                viewModel = AddCarViewModel(vehicleRepository, preferencesManager)
             )
         }
         composable<SplashScreen> {
             SplashScreen(
-                loginManager = loginManager
+                preferencesManager
             ) { destination ->
                 navController.navigate(destination) {
                     popUpTo(SplashScreen) { inclusive = true }
