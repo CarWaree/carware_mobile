@@ -53,6 +53,7 @@ import com.example.carware.m
 import com.example.carware.navigation.AddCarScreen
 import com.example.carware.navigation.LoginScreen
 import com.example.carware.navigation.SignUpScreen
+import com.example.carware.network.Api.loginUser
 import com.example.carware.network.apiRequests.auth.SignUpRequest
 import com.example.carware.network.Api.signupUser
 import com.example.carware.screens.appButtonBack
@@ -67,7 +68,7 @@ import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun SignUpScreen(navController: NavController,preferencesManager: PreferencesManager ) {
+fun SignUpScreen(navController: NavController, preferencesManager: PreferencesManager) {
 
     val popSemi = FontFamily(
         Font(Res.font.poppins_semibold) // name of your font file without extension
@@ -501,38 +502,31 @@ fun SignUpScreen(navController: NavController,preferencesManager: PreferencesMan
                                             password = pass,
                                             confirmPassword = confPass
                                         )
-
-                                        // 4️⃣ Launch coroutine to call API
                                         CoroutineScope(Dispatchers.Default).launch {
                                             try {
-                                                val response =
-                                                    signupUser(request)
+                                                val response = signupUser(request)
+
+                                                val token = response.data?.token
+                                                    ?: throw IllegalStateException("Token missing in response")
+
+                                                // ✅ Save token (this replaces LoginManager)
+                                                preferencesManager.saveToken(token)
 
                                                 withContext(Dispatchers.Main) {
-
-                                                    preferencesManager.performLogin(response.data?.token)
-
-                                                    withContext(Dispatchers.IO) {
-                                                        preferencesManager.performLogin(
-                                                            token = response.data?.token,
-                                                              // if you have it
-                                                        )
-                                                    }
-
-                                                    navController.navigate(AddCarScreen){
+                                                    navController.navigate(AddCarScreen) {
                                                         popUpTo(SignUpScreen) { inclusive = true }
                                                     }
                                                 }
 
-
-
                                             } catch (e: Exception) {
                                                 withContext(Dispatchers.Main) {
-                                                    //  Handle error
-                                                    println("Signup failed: ${e.message}")
+                                                    // show error to user
+                                                    println("Login failed: ${e.message}")
                                                 }
                                             }
+
                                         }
+
 
                                     } catch (e: Exception) {
                                         // This should rarely happen unless request creation fails

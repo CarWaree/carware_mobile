@@ -31,7 +31,7 @@ fun SplashScreen(
     LaunchedEffect(Unit) {
 
         // optional delay for UX
-        delay(2000)
+        delay(1800)
 
         val destination = when {
             !preferencesManager.isOnboardingComplete() -> OnboardingScreen

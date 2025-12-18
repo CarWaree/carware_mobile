@@ -250,6 +250,7 @@ fun VerificationCodeScreen(navController: NavController,preferencesManager: Pref
                                                 preferencesManager.performLogin(
                                                     token = response.data.token,
                                                 )
+                                                navController.navigate(NewPasswordScreen)
                                             }
 
 
