@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -39,12 +40,15 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.arrow_1
+import carware.composeapp.generated.resources.arrow_left
+import carware.composeapp.generated.resources.audi
 import carware.composeapp.generated.resources.car
 import carware.composeapp.generated.resources.color
 import carware.composeapp.generated.resources.cuate
@@ -628,12 +632,51 @@ fun CurvedLineCanvas() {
         )
     }
 }
+@Composable
+fun SelectedCar(){
+    Row (modifier = Modifier.fillMaxWidth()
+        .background(Color(204, 204, 204, 255))
+        .height(60.dp)
+        .padding(horizontal = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
 
 
+    ){
+
+        Box(   modifier = Modifier.size(50.dp) // Set the size of the circle
+            .clip(CircleShape) // This makes it a circle
+            .border(1.dp, Color(30, 30, 30, 51), CircleShape)){
+        Image(
+            painter = painterResource(Res.drawable.audi),
+            contentDescription = "Car Logo",
+            modifier = Modifier
+                .size(40.dp) // Set the size of the circle
+                .align(Alignment.Center)
+
+        )}
+        Spacer(modifier = Modifier.width(16.dp))
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text("Audi ")
+            Spacer(modifier = Modifier.height(2.dp))
+            Text("A3" )
+
+        }
+        Spacer(modifier = Modifier.width(20.dp))
+        Icon(
+            painter = painterResource(Res.drawable.success),
+            contentDescription = null,
+            tint = Color.Yellow,
+            modifier = m
+                .size(30.dp)
+        )
+
+
+}
+}
 @Preview
 @Composable
-fun PrevLine() {
-    ToastMessage("Otp sent successfully Check your email ", true)
+fun SelectedCarpreviewe() {
+SelectedCar()
 }
 
 
