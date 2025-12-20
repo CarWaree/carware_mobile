@@ -49,6 +49,8 @@ kotlin {
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
             implementation(libs.bundles.ktor)
             implementation("com.russhwolf:multiplatform-settings-no-arg:1.1.1")
+            implementation("com.russhwolf:multiplatform-settings:1.1.1")
+
         }
 
         nativeMain.dependencies {
