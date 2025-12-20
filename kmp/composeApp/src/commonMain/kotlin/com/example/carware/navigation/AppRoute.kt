@@ -31,6 +31,9 @@ object HistoryScreen
 
 @Serializable
 object ScheduleScreen
+@Serializable
+object TestScreen
+
 
 
 //// Optional: Sealed class wrapper without serialization

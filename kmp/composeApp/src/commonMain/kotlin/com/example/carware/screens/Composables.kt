@@ -22,7 +22,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -211,3 +215,188 @@ fun BottomNavBar(
 }
 
 
+@Composable
+fun OBDCard(
+    modifier: Modifier = Modifier,
+    onMoreDetailsClick: () -> Unit = {}
+) {
+
+
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(200.dp),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .appButtonBack()
+                .padding(24.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Left side - Connection diagram
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    ConnectionDiagram()
+                }
+
+                // Right side - OBD text and more details
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.End,
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "OBD",
+                        fontSize = 48.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    // More details button
+                    TextButton(
+                        onClick = onMoreDetailsClick,
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text(
+                            text = "More details",
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(
+                            imageVector = Icons.Default.ArrowForward,
+                            contentDescription = "Arrow",
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ConnectionDiagram() {
+    Box(
+        modifier = Modifier.size(150.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        // Central WiFi hub
+        Box(
+            modifier = Modifier
+                .size(50.dp)
+                .clip(CircleShape)
+                .background(Color(0xFFFFA000)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.Wifi,
+                contentDescription = "WiFi",
+                tint = Color.White,
+                modifier = Modifier.size(30.dp)
+            )
+        }
+
+        // Surrounding icons in a circle
+        val icons = listOf(
+            Icons.Default.Settings to -45f,
+            Icons.Default.Bluetooth to 0f,
+            Icons.Default.Speed to 45f,
+            Icons.Default.Build to 90f,
+            Icons.Default.LocalGasStation to 135f,
+            Icons.Default.AcUnit to 180f
+        )
+
+        icons.forEach { (icon, angle) ->
+            SatelliteIcon(
+                icon = icon,
+                angle = angle,
+                radius = 60.dp
+            )
+        }
+
+        // Connection dots
+        listOf(20f, 70f, 120f, 170f, 220f, 270f, 320f).forEach { angle ->
+            ConnectionDot(angle = angle, radius = 35.dp)
+        }
+    }
+}
+
+@Composable
+fun SatelliteIcon(
+    icon: ImageVector,
+    angle: Float,
+    radius: androidx.compose.ui.unit.Dp
+) {
+    val radiusPx = with(androidx.compose.ui.platform.LocalDensity.current) { radius.toPx() }
+    val angleRad = Math.toRadians(angle.toDouble())
+    val x = (radiusPx * kotlin.math.cos(angleRad)).dp
+    val y = (radiusPx * kotlin.math.sin(angleRad)).dp
+
+    Box(
+        modifier = Modifier
+            .offset(x = x, y = y)
+            .size(36.dp)
+            .clip(CircleShape)
+            .background(Color.White.copy(alpha = 0.9f)),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = Color(0xFF8B0000),
+            modifier = Modifier.size(20.dp)
+        )
+    }
+}
+
+@Composable
+fun ConnectionDot(
+    angle: Float,
+    radius: androidx.compose.ui.unit.Dp
+) {
+    val radiusPx = with(androidx.compose.ui.platform.LocalDensity.current) { radius.toPx() }
+    val angleRad = Math.toRadians(angle.toDouble())
+    val x = (radiusPx * kotlin.math.cos(angleRad)).dp
+    val y = (radiusPx * kotlin.math.sin(angleRad)).dp
+
+    Box(
+        modifier = Modifier
+            .offset(x = x, y = y)
+            .size(8.dp)
+            .clip(CircleShape)
+            .background(Color.White.copy(alpha = 0.6f))
+    )
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFF5F5F5)
+@Composable
+fun OBDCardPreview() {
+    MaterialTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            OBDCard(
+                onMoreDetailsClick = {
+                    // Preview click action
+                }
+            )
+        }
+    }
+}

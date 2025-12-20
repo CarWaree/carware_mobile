@@ -43,6 +43,8 @@ import com.example.carware.network.apiRequests.ResetPasswordRequest
 import com.example.carware.screens.appButtonBack
 import com.example.carware.screens.appGradBack
 import com.example.carware.util.SharedToken
+import com.example.carware.util.lang.AppLanguage
+import com.example.carware.util.lang.LocalizedStrings
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 
@@ -88,6 +90,8 @@ fun NewPasswordScreen(navController: NavController) {
 
     )
     val token = SharedToken.token          // read
+    val lang = AppLanguage.AR
+    val strings = LocalizedStrings(lang)
 
     Column(
         modifier = m
@@ -139,7 +143,7 @@ fun NewPasswordScreen(navController: NavController) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        "Create New Password",
+                        strings.get("CREATE_NEW_PASSWORD"),
                         fontFamily = popSemi,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -147,7 +151,7 @@ fun NewPasswordScreen(navController: NavController) {
 
                     ) //main text
                     Text(
-                        "Create your Password",
+                        strings.get("CREATE_YOUR_PASSWORD"),
                         fontFamily = popSemi,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -166,7 +170,7 @@ fun NewPasswordScreen(navController: NavController) {
                         },
                         placeholder = {
                             Text(
-                                text = if (passError) "Password is Required" else "Password",
+                                text = if (passError) strings.get("PASSWORD_REQUIRED") else strings.get("PASSWORD"),
                                 fontFamily = popMid,
                                 fontSize = 12.sp,
                                 color = if (passError) Color(194, 0, 0, 255) else Color(
@@ -191,7 +195,7 @@ fun NewPasswordScreen(navController: NavController) {
                             .padding(start = 32.dp), horizontalArrangement = Arrangement.Start
                     ) {
                         Text(
-                            "minimum 8 characters,letters and numbers",
+                            strings.get("PASSWORD_REQUIREMENTS"),
                             fontFamily = popSemi,
                             fontSize = 8.sp,
                             fontWeight = FontWeight.Bold,
@@ -211,7 +215,7 @@ fun NewPasswordScreen(navController: NavController) {
                         },
                         placeholder = {
                             Text(
-                                text = if (confPassError) "Confirmation is Required" else " Confirm your Password",
+                                text = if (confPassError) strings.get("CONFIRMATION_REQUIRED") else strings.get("CONFIRM_YOUR_PASSWORD_TITLE"),
                                 fontFamily = popMid,
                                 fontSize = 12.sp,
                                 color = if (passError) Color(194, 0, 0, 255) else Color(
@@ -271,7 +275,7 @@ fun NewPasswordScreen(navController: NavController) {
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                "Continue",
+                                strings.get("CONTINUE"),
                                 fontFamily = popSemi,
                                 fontSize = 18.sp,
                                 color = Color(217, 217, 217, 255)
@@ -281,12 +285,12 @@ fun NewPasswordScreen(navController: NavController) {
                     Spacer(modifier = m.padding(top = 12.dp))
                     Row {
                         Text(
-                            "Back to ", fontFamily = popMid,
+                            strings.get("BACK_TO") + " ", fontFamily = popMid,
                             fontSize = 12.sp,
                             color = Color(30, 30, 30, 168)
                         )
                         Text(
-                            "Log in ", fontFamily = popMid,
+                            strings.get("LOGIN"), fontFamily = popMid,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(194, 0, 0, 255),

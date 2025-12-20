@@ -59,6 +59,8 @@ import com.example.carware.network.signupUser
 import com.example.carware.screens.appButtonBack
 import com.example.carware.screens.appGradBack
 import com.example.carware.util.LoginManager
+import com.example.carware.util.lang.AppLanguage
+import com.example.carware.util.lang.LocalizedStrings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -120,6 +122,8 @@ fun LoginScreen(navController: NavController,loginManager: LoginManager) {
 
 
     )
+    val lang = AppLanguage.AR
+    val strings = LocalizedStrings(lang)
 
 
     Column(
@@ -177,7 +181,7 @@ fun LoginScreen(navController: NavController,loginManager: LoginManager) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        "Welcome back!",
+                        strings.get("WELCOME_BACK"),
                         fontFamily = popSemi,
                         fontSize = 28.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -185,7 +189,7 @@ fun LoginScreen(navController: NavController,loginManager: LoginManager) {
 
                     ) // welcome text
                     Text(
-                        "Login and keep your car at its best",
+                        strings.get("KEEP_YOUR_CAR"),
                         fontFamily = popSemi,
                         fontSize = 13.sp,
                         color = Color(30, 30, 30, 168)
@@ -203,7 +207,7 @@ fun LoginScreen(navController: NavController,loginManager: LoginManager) {
                         },
                         placeholder = {
                             Text(
-                                text = if (isErrorEmail) "Email is required" else "Email",
+                                text = if (isErrorEmail) strings.get("EMAIL_REQUIRED") else strings.get("EMAIL"),
                                 fontFamily = popMid,
                                 fontSize = 12.sp,
                                 color = if (isErrorEmail) Color(194, 0, 0, 255)
@@ -236,7 +240,7 @@ fun LoginScreen(navController: NavController,loginManager: LoginManager) {
                         },
                         placeholder = {
                             Text(
-                                text = if (isErrorPass) "Password is Required" else "Password",
+                                text = if (isErrorPass) strings.get("PASSWORD_REQUIRED") else strings.get("PASSWORD"),
                                 fontFamily = popMid,
                                 fontSize = 12.sp,
                                 color = if (isErrorPass) Color(194, 0, 0, 255) else Color(
@@ -284,7 +288,7 @@ fun LoginScreen(navController: NavController,loginManager: LoginManager) {
                     ) {
 
                         Text(
-                            "Forgot password?",
+                            strings.get("FORGOT_PASSWORD"),
                             fontFamily = popMid,
                             fontSize = 15.sp,
                             color = Color(194, 0, 0, 255),
@@ -366,7 +370,7 @@ fun LoginScreen(navController: NavController,loginManager: LoginManager) {
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                "Log In",
+                                strings.get("LOGIN"),
                                 fontFamily = popSemi,
                                 fontSize = 18.sp,
                                 color = Color(217, 217, 217, 255)
@@ -402,7 +406,7 @@ fun LoginScreen(navController: NavController,loginManager: LoginManager) {
                                 modifier = m.size(16.dp)
                             )
                             Text(
-                                " Continue with Google", fontFamily = popSemi,
+                                strings.get("CONTINUE_GOOGLE"), fontFamily = popSemi,
                                 fontSize = 16.sp,
                                 color = Color(30, 30, 30, 163)
                             )
@@ -420,12 +424,12 @@ fun LoginScreen(navController: NavController,loginManager: LoginManager) {
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            "Don’t have an account? ", fontFamily = popMid,
+                            strings.get("ALREADY_HAVE_ACCOUNT"), fontFamily = popMid,
                             fontSize = 12.sp,
                             color = Color(30, 30, 30, 168)
                         )
                         Text(
-                            "Sign Up ", fontFamily = popMid,
+                            strings.get("CREATE_ACCOUNT"), fontFamily = popMid,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(194, 0, 0, 255),
@@ -435,14 +439,14 @@ fun LoginScreen(navController: NavController,loginManager: LoginManager) {
                     } // forget pass textbutton
                     Spacer(m.padding(vertical = 4.dp))
                     Text(
-                        "By logging in, you accept our ",
+                        strings.get("BY_LOGGING_IN"),
                         fontSize = 12.sp,
                         fontFamily = popMid,
                         color = Color(118, 118, 118, 255)
                     )
                     // terms and conditions
                     Text(
-                        "Terms & Conditions and Privacy Policy.",
+                        strings.get("TERMS_AND_CONDITIONS"),
                         fontSize = 12.sp,
                         fontFamily = popMid,
                         fontWeight = FontWeight.Bold,
@@ -461,5 +465,3 @@ fun LoginScreen(navController: NavController,loginManager: LoginManager) {
 
     }
 }
-
-

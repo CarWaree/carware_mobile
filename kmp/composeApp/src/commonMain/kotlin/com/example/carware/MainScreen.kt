@@ -34,9 +34,11 @@ import com.example.carware.navigation.ResetPasswordScreen
 import com.example.carware.navigation.ScheduleScreen
 import com.example.carware.navigation.SettingsScreen
 import com.example.carware.navigation.SignUpScreen
+import com.example.carware.navigation.TestScreen
 import com.example.carware.navigation.VerificationCodeScreen
 import com.example.carware.screens.BottomNavBar
 import com.example.carware.screens.OnBoardingScreen
+import com.example.carware.screens.TestScreen
 import com.example.carware.screens.appGradBack
 import com.example.carware.screens.auth.LoginScreen
 import com.example.carware.screens.auth.NewPasswordScreen
@@ -73,7 +75,7 @@ fun MainScreen(loginManager: LoginManager) {
 
     NavHost(
         navController = navController,
-        startDestination = startDestination,
+        startDestination = TestScreen,
     )
     {
         composable<HomeScreen> {
@@ -94,7 +96,7 @@ fun MainScreen(loginManager: LoginManager) {
                     ) { page ->
                         val currentTab = bottomTabs[page]
                         when (currentTab.route) {
-                            HomeScreen::class -> HomeScreen(navController)
+                            HomeScreen::class -> HomeScreen(navController,)
                             ScheduleScreen::class -> ScheduleScreen(navController)
                             HistoryScreen::class -> HistoryScreen(navController)
                             SettingsScreen::class -> SettingsScreen(navController)
@@ -132,7 +134,9 @@ fun MainScreen(loginManager: LoginManager) {
         composable<HistoryScreen> {
             HistoryScreen(navController)
         }
-
+        composable<TestScreen> {
+            TestScreen(navController)
+        }
 
     }
 }

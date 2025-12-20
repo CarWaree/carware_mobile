@@ -27,6 +27,8 @@ import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.navigation.SignUpScreen
+import com.example.carware.util.lang.AppLanguage
+import com.example.carware.util.lang.LocalizedStrings
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
@@ -43,6 +45,8 @@ fun OnboardingScreenhj(
     // State management: pagerState is the single source of truth.
     val pagerState = rememberPagerState(pageCount = { pages.size })
     val scope = rememberCoroutineScope()
+    val lang = AppLanguage.AR
+    val strings = LocalizedStrings(lang)
 
     // --- LAYOUT ---
     // 1. Parent Box to correctly layer the content and controls.
@@ -120,7 +124,7 @@ fun OnboardingScreenhj(
                     // On the last page, show only "Get Started"
                     Spacer(Modifier.weight(1f)) // Spacer for centering
                     Text(
-                        text = "Get Started",
+                        text = strings.get("GET_STARTED"),
                         color = Color.White,
                         modifier = Modifier
                             .clickable {
@@ -136,7 +140,7 @@ fun OnboardingScreenhj(
                 } else {
                     // On all other pages
                     Text(
-                        text = if (isFirstPage) "Skip" else "Back",
+                        text = if (isFirstPage) strings.get("SKIP") else strings.get("BACK"),
                         color = Color.White,
                         modifier = Modifier.clickable {
                             if (isFirstPage) {
@@ -155,7 +159,7 @@ fun OnboardingScreenhj(
                     )
 
                     Text(
-                        text = "Next",
+                        text = strings.get("NEXT"),
                         color = Color.White,
                         modifier = Modifier.clickable {
                             // Next goes to next page

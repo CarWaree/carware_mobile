@@ -59,6 +59,9 @@ import com.example.carware.network.signupUser
 import com.example.carware.screens.appButtonBack
 import com.example.carware.screens.appGradBack
 import com.example.carware.util.LoginManager
+import com.example.carware.util.lang.AppLanguage
+import com.example.carware.util.lang.LocalizedStrings
+import com.example.carware.util.lang.StringsAr
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.logging.LoggingFormat
 import kotlinx.coroutines.CoroutineScope
@@ -128,7 +131,8 @@ fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
 
     )
 
-
+    val lang = AppLanguage.AR
+    val strings = LocalizedStrings(lang)
 
     Column(modifier = m.verticalScroll(scrollState)) {
         Column(
@@ -191,7 +195,7 @@ fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            "Welcome!",
+                            text=strings.get("WELCOME_MESSAGE"),
                             fontFamily = popSemi,
                             fontSize = 30.sp,
                             fontWeight = FontWeight.SemiBold,
@@ -199,14 +203,14 @@ fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
 
                         )  //welcome
                         Text(
-                            "Drive with confidence.Enroll in smarter",
+                            text= strings.get("MARKETING_SLOGAN"),
                             fontFamily = popSemi,
                             fontSize = 12.sp,
                             color = Color(30, 30, 30, 168)
 
                         )  // 2ndline
                         Text(
-                            " CarWare today .",
+                            text= strings.get("JOIN_CARWARE"),
                             fontFamily = popSemi,
                             fontSize = 12.sp,
                             color = Color(30, 30, 30, 168)
@@ -228,7 +232,7 @@ fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
                                 onValueChange = { fName = it },
                                 placeholder = {
                                     Text(
-                                        "First Name",
+                                        text= strings.get("FIRST_NAME"),
                                         fontFamily = popMid,
                                         fontSize = 12.sp,
                                         color = Color(30, 30, 30, 168)
@@ -245,7 +249,7 @@ fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
                                 onValueChange = { lName = it },
                                 placeholder = {
                                     Text(
-                                        "Last Name",
+                                        text= strings.get("LAST_NAME"),
                                         fontFamily = popMid,
                                         fontSize = 12.sp,
                                         color = Color(30, 30, 30, 168)
@@ -268,7 +272,7 @@ fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
                             },
                             placeholder = {
                                 Text(
-                                    text = if (userNameError) "Username is Required" else "Username",
+                                    text = if (userNameError) strings.get("USERNAME_REQUIRED") else strings.get("USERNAME"),
                                     fontFamily = popMid,
                                     fontSize = 12.sp,
                                     color = if (userNameError) Color(194, 0, 0, 255) else Color(
@@ -296,7 +300,7 @@ fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
                             },
                             placeholder = {
                                 Text(
-                                    text = if (emailError) "Email is Required" else "Email",
+                                    text = if (emailError) strings.get("EMAIL_REQUIRED") else strings.get("EMAIL"),
                                     fontFamily = popMid,
                                     fontSize = 12.sp,
                                     color = if (emailError) Color(194, 0, 0, 255) else Color(
@@ -328,7 +332,7 @@ fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
                             },
                             placeholder = {
                                 Text(
-                                    text = if (numError) "phone number is Required" else "Phone number",
+                                    text = if (numError) strings.get("PHONE_REQUIRED") else strings.get("PHONE"),
                                     fontFamily = popMid,
                                     fontSize = 12.sp,
                                     color = if (numError) Color(194, 0, 0, 255) else Color(
@@ -360,7 +364,7 @@ fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
                             },
                             placeholder = {
                                 Text(
-                                    text = if (passError) "Password is Required" else "Password",
+                                    text = if (passError) strings.get("PASSWORD_REQUIRED")else strings.get("PASSWORD"),
                                     fontFamily = popMid,
                                     fontSize = 12.sp,
                                     color = if (passError) Color(194, 0, 0, 255) else Color(
@@ -396,7 +400,7 @@ fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
 
                         ) //password field
                         Text(
-                            "minimum 8 characters,letters and numbers       ",
+                            strings.get("PASSWORD_REQUIREMENTS"),
                             fontFamily = popMid,
                             fontSize = 10.sp,
                             color = Color(30, 30, 30, 168)
@@ -413,7 +417,7 @@ fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
                             },
                             placeholder = {
                                 Text(
-                                    text = if (confPassError) "Confirmation is Required" else " Confirm your Password",
+                                    text = if (confPassError) strings.get("CONFIRM_PASSWORD_REQUIRED") else strings.get("CONFIRM_PASSWORD"),
                                     fontFamily = popMid,
                                     fontSize = 12.sp,
                                     color = if (passError) Color(194, 0, 0, 255) else Color(
@@ -465,7 +469,7 @@ fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
                                 )
                             )
                             Text(
-                                "I agree to terms and conditions ",
+                                strings.get("AGREE_TERMS"),
                                 fontFamily = popMid,
                                 fontSize = 12.sp,
                                 color = Color(30, 30, 30, 168)
@@ -561,7 +565,7 @@ fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
                                 horizontalArrangement = Arrangement.Center
                             ) {
                                 Text(
-                                    "Sign Up",
+                                    strings.get("CREATE_ACCOUNT"),
                                     fontFamily = popSemi,
                                     fontSize = 18.sp,
                                     color = Color(217, 217, 217, 255)
@@ -597,7 +601,7 @@ fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
                                     modifier = m.size(16.dp)
                                 )
                                 Text(
-                                    " Continue with Google", fontFamily = popSemi,
+                                    strings.get("CONTINUE_GOOGLE") , fontFamily = popSemi,
                                     fontSize = 16.sp,
                                     color = Color(30, 30, 30, 163)
                                 )
@@ -609,12 +613,12 @@ fun SignUpScreen(navController: NavController,loginManager: LoginManager ) {
                         Spacer(modifier = m.padding(vertical = 8.dp))
                         Row() {
                             Text(
-                                "Already have an account?", fontFamily = popMid,
+                                strings.get("ALREADY_HAVE_ACCOUNT"), fontFamily = popMid,
                                 fontSize = 12.sp,
                                 color = Color(30, 30, 30, 168)
                             )
                             Text(
-                                " Log in", fontFamily = popMid,
+                                strings.get("SIGN_IN"), fontFamily = popMid,
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(194, 0, 0, 255),
