@@ -7,6 +7,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,7 +31,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,16 +41,19 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import carware.composeapp.generated.resources.Res
+import carware.composeapp.generated.resources.arrow_1
 import carware.composeapp.generated.resources.car
 import carware.composeapp.generated.resources.color
+import carware.composeapp.generated.resources.cuate
 import carware.composeapp.generated.resources.dots
+import carware.composeapp.generated.resources.failed
 import carware.composeapp.generated.resources.modelyear
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
+import carware.composeapp.generated.resources.success
 import com.example.carware.m
 import com.example.carware.util.navBar.TabItem
 import kotlinx.coroutines.CoroutineScope
@@ -82,6 +85,7 @@ fun Modifier.appButtonBack(): Modifier = this.then(
         )
     )
 )
+
 fun Modifier.disabledAppButtonBack(): Modifier = this.then(
     background(
         brush = Brush.horizontalGradient(
@@ -119,7 +123,6 @@ fun BottomNavBar(
     val popMid = FontFamily(Font(Res.font.poppins_medium))
 
 
-
     // OUTER HEIGHT ONLY FOR SPACING
     Box(
         modifier = modifier
@@ -132,7 +135,7 @@ fun BottomNavBar(
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
-                .size(350.dp,55.dp)
+                .size(350.dp, 55.dp)
                 .padding(horizontal = 10.dp)
                 .background(
                     color = Color(204, 204, 204, 255),
@@ -172,8 +175,8 @@ fun BottomNavBar(
                                 Color(0xFF5C0000)
                             )
                         )
-                        )
-                    // deep red like screenshot
+                    )
+                // deep red like screenshot
             )
 
             // ---- NAV ITEMS ----
@@ -209,7 +212,12 @@ fun BottomNavBar(
                             Icon(
                                 painter = painterResource(tab.icon),
                                 contentDescription = tab.title,
-                                tint = if (isSelected) Color(204, 204, 204, 255) else Color.Unspecified,
+                                tint = if (isSelected) Color(
+                                    204,
+                                    204,
+                                    204,
+                                    255
+                                ) else Color.Unspecified,
                                 modifier = Modifier.size(22.dp)
                             )
 
@@ -232,6 +240,9 @@ fun BottomNavBar(
         }
     }
 }
+
+
+// home Screen
 @Composable
 fun CarCard(
     brand: String,
@@ -244,13 +255,12 @@ fun CarCard(
     val popMid = FontFamily(Font(Res.font.poppins_medium))
 
     val cardMod = Modifier
-        .size(width = 315.dp, height = 265.dp)
+        .size(width = 305.dp, height = 255.dp)
 
 
     Card(
         colors = CardDefaults.cardColors(containerColor = Color(0x39000000)),
         modifier = cardMod
-            //                       .offset(x = 4.dp, y = 8.dp) // move the shadow
             .shadow(
                 elevation = 10.dp,
                 shape = RoundedCornerShape(15.dp),
@@ -268,7 +278,7 @@ fun CarCard(
     ) {
         Column(
             modifier = m.fillMaxSize()
-                .padding(top = 20.dp, bottom = 10.dp),
+                .padding(top = 15.dp, bottom = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
 
         ) {
@@ -308,7 +318,7 @@ fun CarCard(
                     color = Color(102, 102, 102, 255)
                 )
             } //car brand
-            Spacer(modifier = m.padding(vertical = 4.dp))
+            Spacer(modifier = m.padding(vertical = 2.dp))
             Row(
                 modifier = m
                     .fillMaxWidth(),
@@ -325,7 +335,7 @@ fun CarCard(
                         contentDescription = null,
                         tint = Color.Unspecified,
                         modifier = m
-                            .size(22.dp)
+                            .size(18.dp)
 
                     ) //car icon
                     Spacer(modifier = m.padding(horizontal = 2.dp))
@@ -336,7 +346,7 @@ fun CarCard(
                         color = Color(102, 102, 102, 255)
                     )
                 }
-                Spacer(modifier = m.padding(horizontal = 8.dp))
+                Spacer(modifier = m.padding(horizontal = 4.dp))
                 Row(
                     modifier = m
                 ) {
@@ -345,7 +355,7 @@ fun CarCard(
                         contentDescription = null,
                         tint = Color.Unspecified,
                         modifier = m
-                            .size(22.dp)
+                            .size(20.dp)
 
                     ) //model year icon
                     Spacer(modifier = m.padding(horizontal = 2.dp))
@@ -357,7 +367,7 @@ fun CarCard(
                     ) //model year
 
                 }
-                Spacer(modifier = m.padding(horizontal = 8.dp))
+                Spacer(modifier = m.padding(horizontal = 4.dp))
                 Row(
                     modifier = m
                 ) {
@@ -366,7 +376,7 @@ fun CarCard(
                         contentDescription = null,
                         tint = Color.Unspecified,
                         modifier = m
-                            .size(22.dp)
+                            .size(20.dp)
 
                     ) //color icon
                     Spacer(modifier = m.padding(horizontal = 2.dp))
@@ -384,6 +394,220 @@ fun CarCard(
     }  // car card
 }
 
+@Composable
+fun OBDCard(onClick:()-> Unit) {
+    val popSemi = FontFamily(Font(Res.font.poppins_semibold))
+
+    val popMid = FontFamily(Font(Res.font.poppins_medium))
+
+    Card(
+        m
+            .fillMaxWidth()
+            .height(170.dp),
+        shape = RoundedCornerShape(15.dp),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .appButtonBack()
+                .padding(12.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(Res.drawable.cuate),
+                        contentDescription = null,
+                        modifier = m
+                            .size(230.dp, 160.dp)
+
+                    )
+                }
+
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "OBD",
+                        fontFamily = popSemi,
+                        fontSize = 48.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(217, 217, 217, 255)
+                    )
+
+                    Spacer(m.height(2.dp))
+
+                    // More details button
+                    Row( m.clickable{onClick},
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "More details",
+                            fontFamily = popSemi,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color(217, 217, 217, 255)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(
+                            painter = painterResource(Res.drawable.arrow_1),
+                            null,
+                            tint = Color(229, 174, 65, 255)
+
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun UpcomingMaintenance() {
+    val popSemi = FontFamily(Font(Res.font.poppins_semibold))
+
+    val popMid = FontFamily(Font(Res.font.poppins_medium))
+
+    @Composable
+    fun TimerUpcomingMaintenance(time: String) {
+        val popSemi = FontFamily(Font(Res.font.poppins_semibold))
+
+        val popMid = FontFamily(Font(Res.font.poppins_medium))
+        Column(
+            m
+                .size(40.dp)
+                .border(
+                    shape = RoundedCornerShape(8.dp),
+                    width = 1.dp,
+                    color = Color(30, 30, 30, 110)
+                )
+                .clip(shape = RoundedCornerShape(8.dp))
+                .background(Color(217, 217, 217, 255)),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                time,
+                fontFamily = popSemi,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(118, 118, 118, 255)
+            )
+
+        }
+
+    }
+    Row(
+        m
+            .appButtonBack()
+            .padding(vertical = 20.dp, horizontal = 12.dp)
+            .fillMaxWidth()
+            .height(50.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
+
+    )
+
+    {
+        Text(
+            "Upcoming \n Maintenance ",
+            fontFamily = popSemi,
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(217, 217, 217, 255)
+        )
+
+        Spacer(m.padding(horizontal = 2.dp))
+        TimerUpcomingMaintenance("10")
+        Spacer(m.padding(horizontal = 4.dp))
+
+        Text(
+            ":",
+            fontFamily = popSemi,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(217, 217, 217, 255)
+        ) // two dots
+        Spacer(m.padding(horizontal = 4.dp))
+
+        TimerUpcomingMaintenance("25")
+        Spacer(m.padding(horizontal = 4.dp))
+
+        Text(
+            ":",
+            fontFamily = popSemi,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(217, 217, 217, 255)
+        ) // two dots
+        Spacer(m.padding(horizontal = 4.dp))
+
+        TimerUpcomingMaintenance("50")
+
+
+    }
+
+}
+
+@Composable
+fun ToastMessage(message: String, state: Boolean) {
+//true for success  false for failed
+    val popSemi = FontFamily(Font(Res.font.poppins_semibold))
+
+    Row(
+        m
+            .size(360.dp, 50.dp)
+            .clip(shape = RoundedCornerShape(8.dp))
+            .background(Color(217, 217, 217, 255))
+            .border(
+                shape = RoundedCornerShape(8.dp),
+                width = 1.dp,
+                brush = Brush.radialGradient(
+                    colors = listOf(
+                        Color.Transparent,
+                        if (state ) Color(0, 200, 116, 255)
+                        else Color(194, 0, 0, 255),
+                    )
+                )
+            )
+            .padding(horizontal = 8.dp),
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            painter = painterResource(
+                if (state) Res.drawable.success
+                else Res.drawable.failed
+            ),
+
+            null,
+            tint = if (state) Color(0, 200, 116, 255)
+            else Color(194, 0, 0, 255),
+
+            modifier = m.size(25.dp)
+        )
+        Spacer(m.width(8.dp))
+        Text(
+            message,
+            fontFamily = popSemi,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Medium,
+            color = Color(30, 30, 30, 161)
+        )
+
+
+    }
+    // need adding time
+
+}
 
 
 @Composable
@@ -408,7 +632,8 @@ fun CurvedLineCanvas() {
 
 @Preview
 @Composable
-fun PrevLine(){
-    CurvedLineCanvas()
+fun PrevLine() {
+    ToastMessage("Otp sent successfully Check your email ", true)
 }
+
 

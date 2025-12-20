@@ -108,7 +108,6 @@ fun MainScreen(preferencesManager: PreferencesManager) {
                                 VehicleRepository(), preferencesManager
                             )
                         )
-
                         ScheduleScreen::class -> ScheduleScreen(navController)
                         HistoryScreen::class -> HistoryScreen(navController)
                         SettingsScreen::class -> SettingsScreen(navController)

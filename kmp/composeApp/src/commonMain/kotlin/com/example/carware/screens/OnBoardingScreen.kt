@@ -329,8 +329,3 @@ fun PagerIndicator(size: Int, currentPage: Int) {
     }
 }
 
-//@Preview
-//@Composable
-//fun prev() {
-//    OnboardingScreen()
-//}

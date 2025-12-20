@@ -1,30 +1,19 @@
 package com.example.carware.screens.mainScreens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absoluteOffset
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -32,8 +21,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -41,42 +28,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
+import carware.composeapp.generated.resources.audi
+import carware.composeapp.generated.resources.notification
+import carware.composeapp.generated.resources.person
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.m
-import org.jetbrains.compose.resources.Font
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.jetbrains.compose.resources.ExperimentalResourceApi
-import carware.composeapp.generated.resources.upline
-import carware.composeapp.generated.resources.person
-import carware.composeapp.generated.resources.dots
-import carware.composeapp.generated.resources.audi
-import carware.composeapp.generated.resources.car
-import carware.composeapp.generated.resources.color
-import carware.composeapp.generated.resources.modelyear
-import carware.composeapp.generated.resources.cuate
-import carware.composeapp.generated.resources.arrow_1
-import com.example.carware.screens.appButtonBack
-import com.example.carware.screens.appGradBack
-import com.example.carware.screens.cardGradBack
-import carware.composeapp.generated.resources.notification
 import com.example.carware.screens.CarCard
+import com.example.carware.screens.OBDCard
+import com.example.carware.screens.UpcomingMaintenance
+import com.example.carware.screens.appGradBack
 import com.example.carware.viewModel.HomeScreen.Car
 import com.example.carware.viewModel.HomeScreen.HomeScreenState
 import com.example.carware.viewModel.HomeScreen.HomeScreenViewModel
-import io.ktor.http.ContentType
-import org.jetbrains.compose.resources.DrawableResource
+import org.jetbrains.compose.resources.Font
+import org.jetbrains.compose.resources.painterResource
 
 
 @Composable
-fun HomeScreen(navController: NavController,viewModel: HomeScreenViewModel) {
+fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
     val scrollState = rememberScrollState()
 
     val _state by viewModel.state.collectAsState()
-    val state=_state
+    val state = _state
 
     val username = when (state) {
         is HomeScreenState.Success -> state.car.userName
@@ -87,6 +63,7 @@ fun HomeScreen(navController: NavController,viewModel: HomeScreenViewModel) {
         m
             .fillMaxSize()
             .appGradBack()
+
     ) {
         Row(
             modifier = Modifier
@@ -104,7 +81,7 @@ fun HomeScreen(navController: NavController,viewModel: HomeScreenViewModel) {
                 ) //profile icon
                 Spacer(modifier = m.padding(horizontal = 4.dp))
                 Text(
-                    "Welcome Back \n username",
+                    "Welcome Back \n $username",
                     fontFamily = popSemi,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
@@ -127,7 +104,7 @@ fun HomeScreen(navController: NavController,viewModel: HomeScreenViewModel) {
         Column(
             m.fillMaxSize()
                 .clip(RoundedCornerShape(70.dp, 70.dp, 0.dp, 0.dp))
-                .verticalScroll(scrollState) // <-- This now works on the remaining space
+                .verticalScroll(scrollState)
                 .background(Color(217, 217, 217, 255)),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -138,10 +115,15 @@ fun HomeScreen(navController: NavController,viewModel: HomeScreenViewModel) {
                         Spacer(modifier = m.padding(vertical = 50.dp))
                         Text("Loading Car Data...") // Placeholder for LoadingView
                     }
+
                     is HomeScreenState.Error -> {
                         Spacer(modifier = m.padding(vertical = 50.dp))
-                        Text("Error: ${state.message}", color = Color.Red) // Placeholder for ErrorView
+                        Text(
+                            "Error: ${state.message}",
+                            color = Color.Red
+                        ) // Placeholder for ErrorView
                     }
+
                     is HomeScreenState.Success -> {
                         // 🚨 SUCCESS: Pass the Car object directly to the content Composable
                         SuccessCarContent(state.car)
@@ -149,15 +131,15 @@ fun HomeScreen(navController: NavController,viewModel: HomeScreenViewModel) {
                 }
 
             }
-            Spacer(modifier = m.padding(vertical = 24.dp))
-            Row(
-                    horizontalArrangement = Arrangement.Center
-                ) {
+            Spacer(modifier = m.padding(vertical = 16.dp))
+            UpcomingMaintenance()
+            Spacer(modifier = m.padding(vertical = 12.dp))
+            Row(m.padding(horizontal = 12.dp))
 
-                } //card indicator
-                Spacer(modifier = m.padding(vertical = 36.dp))
-            Row()
-            { }
+            { OBDCard(onClick = {/* more details logic*/ }) }
+
+            Spacer(modifier = m.padding(vertical = 64.dp))
+
 
         }
     }
@@ -166,7 +148,7 @@ fun HomeScreen(navController: NavController,viewModel: HomeScreenViewModel) {
 @Composable
 fun SuccessCarContent(car: Car) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Spacer(modifier = m.padding(vertical = 24.dp))
+        Spacer(modifier = m.padding(vertical = 16.dp))
         Box {
             CarCard(
                 brand = car.brandName,
