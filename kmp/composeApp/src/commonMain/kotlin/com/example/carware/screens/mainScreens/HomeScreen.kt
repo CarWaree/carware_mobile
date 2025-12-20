@@ -160,4 +160,3 @@ fun SuccessCarContent(car: Car) {
         }
     }
 }
-
