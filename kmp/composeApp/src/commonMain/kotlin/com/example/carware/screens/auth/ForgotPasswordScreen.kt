@@ -59,7 +59,6 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun ResetPasswordScreen(navController: NavController,
                         preferencesManager: PreferencesManager,
-                        onLangChange: (AppLanguage) -> Unit // Add this
 ) {
     val strings = LocalStrings.current
     val currentLang = AppLanguage.fromCode(preferencesManager.getLanguageCode())

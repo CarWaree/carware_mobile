@@ -97,7 +97,7 @@ fun MainScreen(preferencesManager: PreferencesManager) {
     ) {
         NavHost(
             navController = navController,
-            startDestination = SplashScreen,
+            startDestination =SplashScreen,
         )
         {
             composable<HomeScreen> {
@@ -133,7 +133,13 @@ fun MainScreen(preferencesManager: PreferencesManager) {
                             )
 
                             HistoryScreen::class -> HistoryScreen(navController)
-                            SettingsScreen::class -> SettingsScreen(navController)
+                            SettingsScreen::class -> SettingsScreen(navController,
+                                preferencesManager,
+                                onLangChange = { newLang ->
+                                    preferencesManager.saveLanguageCode(newLang.isoCode)
+                                    currentLanguage = newLang // This is the magic that flips the UI
+                                }
+                            )
                             else -> Box(Modifier.fillMaxSize())
                         }
                     }
@@ -154,13 +160,14 @@ fun MainScreen(preferencesManager: PreferencesManager) {
             }
             composable<LoginScreen> {
                 LoginScreen(
-                    navController, preferencesManager,
+                    navController,
+                    preferencesManager,
 
                     )
             }
 
             composable<ResetPasswordScreen> {
-                ResetPasswordScreen(navController)
+                ResetPasswordScreen(navController,preferencesManager)
             }
             composable<VerificationCodeScreen> {
                 VerificationCodeScreen(navController, preferencesManager)
@@ -169,7 +176,12 @@ fun MainScreen(preferencesManager: PreferencesManager) {
                 NewPasswordScreen(navController, preferencesManager)
             }
             composable<SettingsScreen> {
-                SettingsScreen(navController)
+                SettingsScreen(navController,
+                        preferencesManager,
+                    onLangChange = { newLang ->
+                        preferencesManager.saveLanguageCode(newLang.isoCode)
+                        currentLanguage = newLang // This is the magic that flips the UI
+                    })
             }
             composable<ScheduleScreen> {
                 ScheduleScreen(

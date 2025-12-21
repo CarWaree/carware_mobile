@@ -54,7 +54,6 @@ import org.jetbrains.compose.resources.painterResource
 fun NewPasswordScreen( 
     navController: NavController,
     preferencesManager: PreferencesManager, 
-    onLangChange: (AppLanguage) -> Unit // Add this
 ) {
 
     val strings = LocalStrings.current

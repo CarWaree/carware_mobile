@@ -55,6 +55,8 @@ fun ScheduleScreen(
     Column(
         m
             .fillMaxSize()
+            .verticalScroll(pageScrollState)
+
             .background(Color(217, 217, 217, 255)),
     )
     {
@@ -79,10 +81,7 @@ fun ScheduleScreen(
             ) // schedule service text
         Spacer(m.height(32.dp))
         Column(m
-            .fillMaxSize()
-            .verticalScroll(pageScrollState)
-
-        )
+            .fillMaxSize())
         {
             Text(
                 "Select Your Car",
@@ -180,6 +179,8 @@ fun ScheduleScreen(
             }     // select Center dropdown
             Spacer(m.height(6.dp))
             CalenderBox()
+            Spacer(m.height(150.dp))
+
 
         }
     }

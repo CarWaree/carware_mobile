@@ -71,7 +71,7 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun LoginScreen(
     navController: NavController,
-    preferencesManager: PreferencesManager, onLangChange: (AppLanguage) -> Unit // Add this
+    preferencesManager: PreferencesManager,
 ) {
 
     val strings = LocalStrings.current

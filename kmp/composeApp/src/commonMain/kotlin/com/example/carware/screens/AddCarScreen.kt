@@ -177,11 +177,8 @@ fun AddCarScreen(
     navController: NavController,
 
     viewModel: AddCarViewModel,
-    preferencesManager: PreferencesManager,
-    onLangChange: (AppLanguage) -> Unit // Add this
 ) {
     val strings = LocalStrings.current
-    val currentLang = AppLanguage.fromCode(preferencesManager.getLanguageCode())
     val state by viewModel.state.collectAsState()
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))

@@ -45,7 +45,7 @@ val StringsAr = mapOf(
     "CREATE_ACCOUNT" to "إنشاء حساب",
     "CONTINUE_GOOGLE" to "متابعة باستخدام Google",
     "ALREADY_HAVE_ACCOUNT" to "هل لديك حساب بالفعل؟",
-    "SIGN_IN" to "تسجيل الدخول",
+    "SIGN_IN" to "اشترك",
     "FORGOT_PASSWORD" to "هل نسيت كلمة المرور؟",
     "RESET_PASSWORD" to "إعادة تعيين كلمة المرور",
 
@@ -91,8 +91,8 @@ val StringsAr = mapOf(
     // add car
     "ADD_CAR" to "أضف سيارتك",
     "SET_UP_CAR_PROFILE" to "قم بإعداد ملف تعريف سيارتك للحصول على \nتذكيرات ونصائح خدمة مخصصة.",
-    "CAR_BRAND" to "ماركة",
-    "CAR_MODEL" to "نموذج",
+    "CAR_BRAND" to "الماركة",
+    "CAR_MODEL" to "الموديل",
     "CAR_YEAR" to "سنة",
     "CAR_COLOR" to "اللون",
 )

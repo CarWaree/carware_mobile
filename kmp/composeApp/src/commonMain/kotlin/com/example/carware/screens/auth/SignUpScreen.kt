@@ -55,9 +55,8 @@ import com.example.carware.m
 import com.example.carware.navigation.AddCarScreen
 import com.example.carware.navigation.LoginScreen
 import com.example.carware.navigation.SignUpScreen
-import com.example.carware.network.Api.loginUser
+import com.example.carware.network.api.signupUser
 import com.example.carware.network.apiRequests.auth.SignUpRequest
-import com.example.carware.network.Api.signupUser
 import com.example.carware.screens.appButtonBack
 import com.example.carware.screens.appGradBack
 import com.example.carware.util.lang.AppLanguage

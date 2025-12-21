@@ -853,7 +853,7 @@ fun CalenderBox() {
 
     Column(
         modifier = m
-            .size(375.dp,250.dp)
+            .size(375.dp,300.dp)
             .scale(0.9f)
             .clip(RoundedCornerShape(5.dp))
             .background(Color(207, 207, 207, 207))
@@ -1014,7 +1014,7 @@ fun CalenderBox() {
 
                         Box(
                             modifier = m
-                                .size(40.dp)
+                                .size(35.dp)
                                 .clip(RoundedCornerShape(8.dp))
                                 // Highlight the background if selected
                                 .background(if (isSelected) Color(0xFFC20000) else Color.Transparent)
