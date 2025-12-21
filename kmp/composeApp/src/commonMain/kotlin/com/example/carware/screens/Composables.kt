@@ -48,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -852,7 +853,8 @@ fun CalenderBox() {
 
     Column(
         modifier = m
-            .width(375.dp)
+            .size(375.dp,250.dp)
+            .scale(0.9f)
             .clip(RoundedCornerShape(5.dp))
             .background(Color(207, 207, 207, 207))
     ) {

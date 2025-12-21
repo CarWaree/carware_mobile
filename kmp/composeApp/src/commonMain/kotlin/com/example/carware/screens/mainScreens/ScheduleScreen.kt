@@ -78,99 +78,110 @@ fun ScheduleScreen(
 
             ) // schedule service text
         Spacer(m.height(32.dp))
-        Text(
-            "Select Your Car",
-            fontFamily = popSemi,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            style = TextStyle(
-                brush = Brush.linearGradient(
-                    listOf(
-                        Color(194, 0, 0, 255),
-                        Color(92, 0, 0, 255)
-                    )
-                ),
-            ), modifier = m.padding(horizontal = 16.dp)
-        ) // select car text
-        Spacer(m.height(22.dp))
-        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-            state.availableCars.forEach { car ->
-                UsersCar(
-                    brand = car.brandName,
-                    model = car.modelName,
-                    isSelected = state.selectedCarId == car.id,
-                    onClick = {
-                        viewModel.selectVehicle(car.id)
+        Column(m
+            .fillMaxSize()
+            .verticalScroll(pageScrollState)
 
+        )
+        {
+            Text(
+                "Select Your Car",
+                fontFamily = popSemi,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                style = TextStyle(
+                    brush = Brush.linearGradient(
+                        listOf(
+                            Color(194, 0, 0, 255),
+                            Color(92, 0, 0, 255)
+                        )
+                    ),
+                ), modifier = m.padding(horizontal = 16.dp)
+            ) // select car text
+            Spacer(m.height(22.dp))
+
+            Column(m
+                .height(140.dp)
+                .verticalScroll(selectCarScrollState)
+            ) {
+                state.availableCars.forEach { car ->
+                    UsersCar(
+                        brand = car.brandName,
+                        model = car.modelName,
+                        isSelected = state.selectedCarId == car.id,
+                        onClick = {
+                            viewModel.selectVehicle(car.id)
+
+                        }
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
+
+            Spacer(m.height(18.dp))
+
+            Text(
+                "Select Services",
+                fontFamily = popSemi,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                style = TextStyle(
+                    brush = Brush.linearGradient(
+                        listOf(
+                            Color(194, 0, 0, 255),
+                            Color(92, 0, 0, 255)
+                        )
+                    ),
+                ), modifier = m.padding(horizontal = 16.dp)
+            ) //select services text
+            Spacer(m.height(6.dp))
+            Box(m.padding(horizontal = 26.dp)) {
+                SelectDropdown(
+                    label = "select your Service",
+                    selectedValue = state.selectedService,
+                    options = state.availableServicesTypes.map { it.name },
+                    onSelect = { selectedName ->
+                        // Specify (it: Service) here as well
+                        val serviceType = state.availableServicesTypes.firstOrNull { it: Service ->
+                            it.name == selectedName
+                        }
+                        serviceType?.let { viewModel.selectServiceType(it.name) }
+                    },
+                )
+            } // select service  dropdown
+            Spacer(m.height(18.dp))
+            Text(
+                "Select Provider",
+                fontFamily = popSemi,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                style = TextStyle(
+                    brush = Brush.linearGradient(
+                        listOf(
+                            Color(194, 0, 0, 255),
+                            Color(92, 0, 0, 255)
+                        )
+                    ),
+                ), modifier = m.padding(horizontal = 16.dp)
+            ) //Select Provider text
+            Spacer(m.height(6.dp))
+            Box(m.padding(horizontal = 26.dp)) {
+                SelectDropdown(
+                    label = "select your Provider",
+                    selectedValue = state.selectedCenter,
+                    options = state.availableCenters.mapNotNull { it.name },
+                    onSelect = { name ->
+                        state.availableCenters.firstOrNull { it.name == name }?.let {
+                            viewModel.selectCenter(it)
+                        }
                     }
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
+
+            }     // select Center dropdown
+            Spacer(m.height(6.dp))
+            CalenderBox()
+
         }
-        Spacer(m.height(18.dp))
-
-        Text(
-            "Select Services",
-            fontFamily = popSemi,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            style = TextStyle(
-                brush = Brush.linearGradient(
-                    listOf(
-                        Color(194, 0, 0, 255),
-                        Color(92, 0, 0, 255)
-                    )
-                ),
-            ), modifier = m.padding(horizontal = 16.dp)
-        ) //select services text
-        Spacer(m.height(6.dp))
-        Box(m.padding(horizontal = 26.dp)) {
-            SelectDropdown(
-                label = "select your Service",
-                selectedValue = state.selectedService,
-                options = state.availableServicesTypes.map { it.name },
-                onSelect = { selectedName ->
-                    // Specify (it: Service) here as well
-                    val serviceType = state.availableServicesTypes.firstOrNull { it: Service ->
-                        it.name == selectedName
-                    }
-                    serviceType?.let { viewModel.selectServiceType(it.name) }
-                },
-            )
-        } // select service  dropdown
-        Spacer(m.height(18.dp))
-        Text(
-            "Select Provider",
-            fontFamily = popSemi,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            style = TextStyle(
-                brush = Brush.linearGradient(
-                    listOf(
-                        Color(194, 0, 0, 255),
-                        Color(92, 0, 0, 255)
-                    )
-                ),
-            ), modifier = m.padding(horizontal = 16.dp)
-        ) //Select Provider text
-        Spacer(m.height(6.dp))
-        Box(m.padding(horizontal = 26.dp)) {
-            SelectDropdown(
-                label = "select your Provider",
-                selectedValue = state.selectedCenter,
-                options = state.availableCenters.mapNotNull { it.name },
-                onSelect = { name ->
-                    state.availableCenters.firstOrNull { it.name == name }?.let {
-                        viewModel.selectCenter(it)
-                    }
-                }
-            )
-
-        }     // select Center dropdown
-        Spacer(m.height(6.dp))
-        CalenderBox()
-
-
     }
 }
 
