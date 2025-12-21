@@ -17,6 +17,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -39,6 +40,7 @@ import carware.composeapp.generated.resources.carware
 import carware.composeapp.generated.resources.line_1
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
+import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.navigation.LoginScreen
 import com.example.carware.navigation.NewPasswordScreen
@@ -46,6 +48,7 @@ import com.example.carware.network.apiRequests.auth.OTPRequest
 import com.example.carware.network.api.otpVerificationUser
 import com.example.carware.screens.appButtonBack
 import com.example.carware.screens.appGradBack
+import com.example.carware.util.lang.AppLanguage
 import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -55,9 +58,12 @@ import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun VerificationCodeScreen(navController: NavController,preferencesManager: PreferencesManager) {
-
-
+fun VerificationCodeScreen(navController: NavController,
+                           preferencesManager: PreferencesManager ,
+                           onLangChange: (AppLanguage) -> Unit // Add this
+) {
+    val strings = LocalStrings.current
+    val currentLang = AppLanguage.fromCode(preferencesManager.getLanguageCode())
     val popSemi = FontFamily(
         Font(Res.font.poppins_semibold) // name of your font file without extension
     )
@@ -154,7 +160,7 @@ fun VerificationCodeScreen(navController: NavController,preferencesManager: Pref
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        "Enter Verification Code",
+                        strings.get("ENTER_CODE"),
                         fontFamily = popSemi,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -163,7 +169,7 @@ fun VerificationCodeScreen(navController: NavController,preferencesManager: Pref
 
                         )
                     Text(
-                        "We’ve sent a 6-digit code to your email",
+                        strings.get("OTP_EMAIL"),
                         fontFamily = popSemi,
                         fontSize = 12.sp,
                         color = Color(30, 30, 30, 168)
@@ -171,7 +177,7 @@ fun VerificationCodeScreen(navController: NavController,preferencesManager: Pref
                     )
                     Spacer(modifier = m.padding(vertical = 8.dp))
                     Text(
-                        "enter the code to continue ",
+                        strings.get("ENTER_CODE_SUBTITLE"),
                         fontFamily = popSemi,
                         fontSize = 12.sp,
                         color = Color(30, 30, 30, 168)
@@ -186,7 +192,7 @@ fun VerificationCodeScreen(navController: NavController,preferencesManager: Pref
                         },
                         placeholder = {
                             Text(
-                                text = if (isErrorOTP) "OTP is required" else "OTP",
+                                text = if (isErrorOTP) strings.get("OTP_REQUIRED") else strings.get("OTP"),
                                 fontFamily = popMid,
                                 fontSize = 12.sp,
                                 color = if (isErrorOTP) Color(194, 0, 0, 255)
@@ -212,7 +218,7 @@ fun VerificationCodeScreen(navController: NavController,preferencesManager: Pref
                             .padding(start = 32.dp), horizontalArrangement = Arrangement.Start
                     ) {
                         Text(
-                            "code will expire in 3 minutes ",
+                            strings.get("CODE_EXPIRED"),
                             fontFamily = popSemi,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
@@ -241,7 +247,7 @@ fun VerificationCodeScreen(navController: NavController,preferencesManager: Pref
                                     // 4️⃣ Launch coroutine to call API
                                     CoroutineScope(Dispatchers.Default).launch {
                                         try {
-                                            val response =
+                                            val response = 
                                                 otpVerificationUser(request)
 
                                             withContext(Dispatchers.Main) {
@@ -287,7 +293,7 @@ fun VerificationCodeScreen(navController: NavController,preferencesManager: Pref
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                "Continue",
+                                strings.get("CONTINUE"),
                                 fontFamily = popSemi,
                                 fontSize = 18.sp,
                                 color = Color(217, 217, 217, 255)
@@ -298,12 +304,12 @@ fun VerificationCodeScreen(navController: NavController,preferencesManager: Pref
                     Spacer(modifier = m.padding(vertical = 8.dp))
                     Row {
                         Text(
-                            "Didn't Receive Code? ", fontFamily = popMid,
+                            strings.get("OTP_NOT_SENT"), fontFamily = popMid,
                             fontSize = 12.sp,
                             color = Color(30, 30, 30, 168)
                         )
                         Text(
-                            "Send Again ", fontFamily = popMid,
+                            strings.get("SEND_AGAIN"), fontFamily = popMid,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(194, 0, 0, 255),
@@ -315,12 +321,12 @@ fun VerificationCodeScreen(navController: NavController,preferencesManager: Pref
 
                     Row {
                         Text(
-                            "Back to ", fontFamily = popMid,
+                            strings.get("BACK_TO"), fontFamily = popMid,
                             fontSize = 12.sp,
                             color = Color(30, 30, 30, 168)
                         )
                         Text(
-                            "Log in ", fontFamily = popMid,
+                            strings.get("LOGIN"), fontFamily = popMid,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(194, 0, 0, 255),
@@ -329,7 +335,6 @@ fun VerificationCodeScreen(navController: NavController,preferencesManager: Pref
                     }
 
                     Spacer(m.padding(vertical = 8.dp))
-
 
                 }
 

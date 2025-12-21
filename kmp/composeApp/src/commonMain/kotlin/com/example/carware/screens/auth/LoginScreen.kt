@@ -71,7 +71,7 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun LoginScreen(
     navController: NavController,
-    preferencesManager: PreferencesManager,
+    preferencesManager: PreferencesManager, onLangChange: (AppLanguage) -> Unit // Add this
 ) {
 
     val strings = LocalStrings.current
@@ -415,7 +415,7 @@ fun LoginScreen(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            "Don’t have an account? ", fontFamily = popMid,
+                            strings.get("DONT_HAVE_ACCOUNT"), fontFamily = popMid,
                             fontSize = 12.sp,
                             color = Color(30, 30, 30, 168)
                         )
@@ -431,14 +431,14 @@ fun LoginScreen(
                     } // forget pass textbutton
                     Spacer(m.padding(vertical = 4.dp))
                     Text(
-                        "By logging in, you accept our ",
+                        strings.get("BY_LOGGING_IN"),
                         fontSize = 12.sp,
                         fontFamily = popMid,
                         color = Color(118, 118, 118, 255)
                     )
                     // terms and conditions
                     Text(
-                        "Terms & Conditions and Privacy Policy.",
+                        strings.get("TERMS_AND_CONDITIONS"),
                         fontSize = 12.sp,
                         fontFamily = popMid,
                         fontWeight = FontWeight.Bold,

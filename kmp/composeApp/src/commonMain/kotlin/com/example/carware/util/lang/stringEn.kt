@@ -58,7 +58,7 @@ val StringsEn = mapOf(
     "KEEP_YOUR_CAR" to "Login and keep your car at its best",
     "BY_LOGGING_IN" to " By logging in, you accept our ",
     "TERMS_AND_CONDITIONS" to "Terms and Conditions and Privacy Policy.",
-
+    "DONT_HAVE_ACCOUNT" to "Don’t have an account?",
     // Forgot Password
     "ENTER_EMAIL" to "Enter your email below",
     "EMAIL_SENT" to "Email sent successfully",
@@ -90,5 +90,13 @@ val StringsEn = mapOf(
     "SETTINGS" to " Settings ",
 
     // Home
-    "WELCOME_BACK_HOME" to " Welcome Back"
+    "WELCOME_BACK_HOME" to " Welcome Back",
+    // addcar
+    "ADD_CAR" to "Add Your Car",
+    "SET_UP_CAR_PROFILE" to "Set up your car profile to get personalized \nservice reminders and tips.",
+    "CAR_BRAND" to "Brand",
+    "CAR_MODEL" to " Model",
+    "CAR_YEAR" to "Year",
+    "CAR_COLOR" to "Color",
+
 )

@@ -55,14 +55,16 @@ import com.example.carware.m
 import com.example.carware.navigation.AddCarScreen
 import com.example.carware.navigation.LoginScreen
 import com.example.carware.navigation.SignUpScreen
+import com.example.carware.network.Api.loginUser
 import com.example.carware.network.apiRequests.auth.SignUpRequest
-import com.example.carware.network.api.signupUser
+import com.example.carware.network.Api.signupUser
 import com.example.carware.screens.appButtonBack
 import com.example.carware.screens.appGradBack
 import com.example.carware.util.lang.AppLanguage
 import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.Font
@@ -625,16 +627,6 @@ fun SignUpScreen(
                         }
                         Spacer(Modifier.padding(vertical = 8.dp))
 
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text("العربية")
-                            Switch(
-                                checked = currentLang == AppLanguage.AR,
-                                onCheckedChange = { isAr ->
-                                    val selected = if (isAr) AppLanguage.AR else AppLanguage.EN
-                                    onLangChange(selected)
-                                }
-                            )
-                        } // switch to test lang
 
 
                     }

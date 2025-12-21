@@ -54,6 +54,7 @@ val StringsAr = mapOf(
     "KEEP_YOUR_CAR" to "سجّل الدخول واعتنِ بسيارتك بأفضل حال",
     "BY_LOGGING_IN" to "من خلال تسجيل الدخول، فإنك توافق على",
     "TERMS_AND_CONDITIONS" to "الشروط والأحكام وسياسة الخصوصية.",
+    "DONT_HAVE_ACCOUNT" to "ليس لديك حساب ؟",
 
     // Forgot Password
     "ENTER_EMAIL" to "أدخل بريدك الإلكتروني أدناه",
@@ -86,5 +87,12 @@ val StringsAr = mapOf(
     "SETTINGS" to " الإعدادات ",
 
     // Home
-    "WELCOME_BACK_HOME" to " مرحباً بعودتك "
+    "WELCOME_BACK_HOME" to " مرحباً بعودتك ",
+    // add car
+    "ADD_CAR" to "أضف سيارتك",
+    "SET_UP_CAR_PROFILE" to "قم بإعداد ملف تعريف سيارتك للحصول على \nتذكيرات ونصائح خدمة مخصصة.",
+    "CAR_BRAND" to "ماركة",
+    "CAR_MODEL" to "نموذج",
+    "CAR_YEAR" to "سنة",
+    "CAR_COLOR" to "اللون",
 )
