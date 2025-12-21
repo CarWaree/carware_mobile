@@ -24,14 +24,24 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,20 +50,21 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.arrow_1
-import carware.composeapp.generated.resources.arrow_left
 import carware.composeapp.generated.resources.audi
 import carware.composeapp.generated.resources.car
+import carware.composeapp.generated.resources.check_circle
 import carware.composeapp.generated.resources.color
 import carware.composeapp.generated.resources.cuate
 import carware.composeapp.generated.resources.dots
 import carware.composeapp.generated.resources.failed
+import carware.composeapp.generated.resources.keyboard_arrow_down
+import carware.composeapp.generated.resources.keyboard_arrow_up
 import carware.composeapp.generated.resources.modelyear
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
@@ -399,7 +410,7 @@ fun CarCard(
 }
 
 @Composable
-fun OBDCard(onClick:()-> Unit) {
+fun OBDCard(onClick: () -> Unit) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
 
     val popMid = FontFamily(Font(Res.font.poppins_medium))
@@ -450,7 +461,8 @@ fun OBDCard(onClick:()-> Unit) {
                     Spacer(m.height(2.dp))
 
                     // More details button
-                    Row( m.clickable{onClick},
+                    Row(
+                        m.clickable { onClick },
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
@@ -577,7 +589,7 @@ fun ToastMessage(message: String, state: Boolean) {
                 brush = Brush.radialGradient(
                     colors = listOf(
                         Color.Transparent,
-                        if (state ) Color(0, 200, 116, 255)
+                        if (state) Color(0, 200, 116, 255)
                         else Color(194, 0, 0, 255),
                     )
                 )
@@ -632,51 +644,194 @@ fun CurvedLineCanvas() {
         )
     }
 }
+
 @Composable
-fun SelectedCar(){
-    Row (modifier = Modifier.fillMaxWidth()
-        .background(Color(204, 204, 204, 255))
-        .height(60.dp)
-        .padding(horizontal = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+fun UsersCar(
+    brand: String,
+    model: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val popSemi = FontFamily(Font(Res.font.poppins_semibold))
 
-
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp)
+            .clickable { onClick() }
+            .background(Color(204, 204, 204, 255))
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
     ){
 
-        Box(   modifier = Modifier.size(50.dp) // Set the size of the circle
-            .clip(CircleShape) // This makes it a circle
-            .border(1.dp, Color(30, 30, 30, 51), CircleShape)){
-        Image(
-            painter = painterResource(Res.drawable.audi),
-            contentDescription = "Car Logo",
-            modifier = Modifier
-                .size(40.dp) // Set the size of the circle
-                .align(Alignment.Center)
+        Box(
+            modifier = Modifier.size(50.dp) // Set the size of the circle
+                .clip(CircleShape) // This makes it a circle
+                .border(1.dp, Color(30, 30, 30, 51), CircleShape)
+        ) {
+            Image(
+                painter = painterResource(Res.drawable.audi),
+                contentDescription = "Car Logo",
+                modifier = Modifier
+                    .size(42.dp) // Set the size of the circle
+                    .align(Alignment.Center)
 
-        )}
-        Spacer(modifier = Modifier.width(16.dp))
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text("Audi ")
-            Spacer(modifier = Modifier.height(2.dp))
-            Text("A3" )
+            )
+        } // car image
+        Spacer(modifier = Modifier.width(22.dp))
+        Column(modifier = Modifier.fillMaxHeight(),
+            verticalArrangement = Arrangement.Center) {
+            Text(
+                brand,
+                fontFamily = popSemi,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.W500,
+                color = Color(102, 102, 102, 255)
+            )
+            Text(
+                model,
+                fontFamily = popSemi,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.W300,
+                color = Color(102, 102, 102, 255)
+            )
 
-        }
-        Spacer(modifier = Modifier.width(20.dp))
+        } // car details
+        Spacer(modifier = Modifier.weight(1f))
         Icon(
-            painter = painterResource(Res.drawable.success),
+            painter = painterResource(Res.drawable.check_circle),
             contentDescription = null,
-            tint = Color.Yellow,
+            tint = if (isSelected) Color(194, 0, 0, 255) else Color.Transparent,
             modifier = m
-                .size(30.dp)
+            .size(20.dp)
+
         )
 
 
+    }
 }
+
+
+@Composable
+fun SelectDropdown(
+
+    label: String,
+    selectedValue: String?,
+    options: List<String>,
+    onSelect: (String) -> Unit,
+
+    ) {
+
+    val textFieldColors = TextFieldDefaults.colors(
+
+        unfocusedTextColor = Color.DarkGray,
+        errorTextColor = Color(194, 0, 0, 255),
+
+        focusedContainerColor = Color.Transparent,
+        unfocusedContainerColor = Color.Transparent,
+        disabledContainerColor = Color.Transparent,
+        errorContainerColor = Color.Transparent,
+
+
+        cursorColor = Color(194, 0, 0, 255),
+        focusedIndicatorColor = Color(
+            118,
+            118,
+            118,
+            255
+        ),    // underline/border when focused
+        unfocusedIndicatorColor = Color(
+            118,
+            118,
+            118,
+            255
+        ),  // underline/border when not focused
+        errorIndicatorColor = Color(194, 0, 0, 255),
+        focusedTextColor = Color(0, 0, 0, 255)
+
+
+    )
+    val popSemi = FontFamily(Font(Res.font.poppins_semibold))
+    val popMid = FontFamily(Font(Res.font.poppins_medium))
+    val scrollState = rememberScrollState()
+
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(
+        m
+            .clickable { expanded = true }
+    ) {
+        OutlinedTextField(
+            modifier = m
+                .fillMaxWidth()
+                .clickable { expanded = true }
+                .size(290.dp, 55.dp),
+            value = selectedValue ?: "",
+            onValueChange = {},
+            readOnly = true,
+            placeholder = {
+                Text(
+                    label,
+                    fontFamily = popMid,
+                    fontSize = 16.sp,
+                    color = Color(30, 30, 30, 51)
+                )
+            },
+            trailingIcon = {
+                Icon(
+                    if (expanded == false) {
+                        painterResource(Res.drawable.keyboard_arrow_down)
+                    } else {
+                        painterResource(Res.drawable.keyboard_arrow_up)
+                    },
+                    contentDescription = "dropdown arrow",
+                    m.clickable { expanded = true }
+                )
+            },
+            shape = RoundedCornerShape(8.dp),
+            colors = textFieldColors
+
+
+        )
+        DropdownMenu(
+            modifier = m
+                .verticalScroll(scrollState)
+                .size(300.dp, 135.dp)
+                .background(Color(230, 230, 230, 255)),
+            expanded = expanded, onDismissRequest = { expanded = false }) {
+            options.forEachIndexed { index, option ->
+                DropdownMenuItem(
+                    modifier = m
+                        .height(40.dp),
+                    text = {
+                        Text(
+                            option,
+                            fontFamily = popSemi,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.W400,
+                            color = Color(102, 104, 105, 255),
+                        )
+                    },
+                    onClick = {
+                        onSelect(option)
+                        expanded = false
+                    }
+
+                )
+                if (index < options.size - 1) {
+                    Divider(color = Color(118, 118, 118, 128), thickness = 1.dp)
+                }
+
+            }
+        }
+    }
+
 }
+
+
 @Preview
 @Composable
-fun SelectedCarpreviewe() {
-SelectedCar()
+fun SelectedCarPreviewe() {
 }
 
 

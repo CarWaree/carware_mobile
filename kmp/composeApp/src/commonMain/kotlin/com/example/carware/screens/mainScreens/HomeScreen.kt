@@ -1,6 +1,7 @@
 package com.example.carware.screens.mainScreens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,9 +11,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialogDefaults.shape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,13 +39,13 @@ import carware.composeapp.generated.resources.person
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.m
+import com.example.carware.network.apiResponse.vehicle.Vehicles
 import com.example.carware.screens.CarCard
 import com.example.carware.screens.OBDCard
 import com.example.carware.screens.UpcomingMaintenance
 import com.example.carware.screens.appGradBack
-import com.example.carware.viewModel.HomeScreen.Car
-import com.example.carware.viewModel.HomeScreen.HomeScreenState
-import com.example.carware.viewModel.HomeScreen.HomeScreenViewModel
+import com.example.carware.viewModel.home.HomeScreenState
+import com.example.carware.viewModel.home.HomeScreenViewModel
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 
@@ -55,7 +60,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel) {
     val state = _state
 
     val username = when (state) {
-        is HomeScreenState.Success -> state.car.userName
+        is HomeScreenState.Success -> state.cars.firstOrNull()?.userName ?: "User"
         else -> "Guest"
     }
 
@@ -108,28 +113,20 @@ fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel) {
                 .background(Color(217, 217, 217, 255)),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box {
-
-                when (state) {
-                    is HomeScreenState.Loading -> {
-                        Spacer(modifier = m.padding(vertical = 50.dp))
-                        Text("Loading Car Data...") // Placeholder for LoadingView
-                    }
-
-                    is HomeScreenState.Error -> {
-                        Spacer(modifier = m.padding(vertical = 50.dp))
-                        Text(
-                            "Error: ${state.message}",
-                            color = Color.Red
-                        ) // Placeholder for ErrorView
-                    }
-
-                    is HomeScreenState.Success -> {
-                        // 🚨 SUCCESS: Pass the Car object directly to the content Composable
-                        SuccessCarContent(state.car)
-                    }
+            Box {when (val currentState = state) {
+                is HomeScreenState.Loading -> {
+                    Spacer(modifier = m.padding(vertical = 50.dp))
+                    Text("Loading Car Data...")
                 }
-
+                is HomeScreenState.Error -> {
+                    Spacer(modifier = m.padding(vertical = 50.dp))
+                    Text("Error: ${currentState.message}", color = Color.Red)
+                }
+                is HomeScreenState.Success -> {
+                    // 🚨 LOGIC CHANGE: Pass the whole list to the Pager content
+                    SuccessCarPagerContent(currentState.cars)
+                }
+            }
             }
             Spacer(modifier = m.padding(vertical = 16.dp))
             UpcomingMaintenance()
@@ -146,17 +143,47 @@ fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel) {
 }
 
 @Composable
-fun SuccessCarContent(car: Car) {
+fun SuccessCarPagerContent(cars: List<Vehicles>) {
+    // Initialize pager state with the number of cars
+    val pagerState = rememberPagerState(pageCount = { cars.size })
+
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(modifier = m.padding(vertical = 16.dp))
-        Box {
-            CarCard(
-                brand = car.brandName,
-                model = car.modelName,
-                modelYear = car.year.toString(),
-                color = car.color,
-                image = Res.drawable.audi
-            )
+
+        HorizontalPager(
+            state = pagerState,
+            modifier = m.fillMaxWidth(),
+            verticalAlignment = Alignment.Top
+        ) { page ->
+            val car = cars[page]
+            Box(modifier = m.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                CarCard(
+                    brand = car.brandName,
+                    model = car.modelName,
+                    modelYear = car.year.toString(),
+                    color = car.color,
+                    image = Res.drawable.audi // Keeping your static image as requested
+                )
+            }
+        }
+
+        //  page indicator
+        Row(
+            Modifier.fillMaxWidth().padding(top = 8.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            repeat(cars.size) { iteration ->
+                val color = if (pagerState.currentPage == iteration)
+                    Color(194, 0, 0, 255)
+                else Color.Transparent
+                Box(
+                    modifier = m
+                        .padding(4.dp)
+                        .clip(shape= CircleShape)
+                        .background(color).size(10.dp)
+                        .border(shape= CircleShape, width = 1.dp, color =  Color(194, 0, 0, 255))
+                )
+            }
         }
     }
 }
