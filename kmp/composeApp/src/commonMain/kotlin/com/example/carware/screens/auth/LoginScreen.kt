@@ -13,12 +13,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -47,6 +49,7 @@ import carware.composeapp.generated.resources.google_icon_logo_svgrepo_com
 import carware.composeapp.generated.resources.line_1
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
+import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.navigation.AddCarScreen
 import com.example.carware.navigation.HomeScreen
@@ -55,8 +58,10 @@ import com.example.carware.navigation.ResetPasswordScreen
 import com.example.carware.navigation.SignUpScreen
 import com.example.carware.network.apiRequests.auth.LoginRequest
 import com.example.carware.network.Api.loginUser
+import com.example.carware.screens.LanguageSwitcher
 import com.example.carware.screens.appButtonBack
 import com.example.carware.screens.appGradBack
+import com.example.carware.util.lang.AppLanguage
 import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -69,9 +74,14 @@ import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun LoginScreen(navController: NavController, preferencesManager: PreferencesManager) {
+fun LoginScreen(
+    navController: NavController,
+    preferencesManager: PreferencesManager,
+    onLangChange: (AppLanguage) -> Unit // Add this
+) {
 
-
+    val strings = LocalStrings.current
+    val currentLang = AppLanguage.fromCode(preferencesManager.getLanguageCode())
     val popSemi = FontFamily(
         Font(Res.font.poppins_semibold) // name of your font file without extension
     )
@@ -161,7 +171,7 @@ fun LoginScreen(navController: NavController, preferencesManager: PreferencesMan
 
             ElevatedCard(
                 modifier = m
-                    .size(width = 330.dp, height = 485.dp),
+                    .size(width = 330.dp, height = 500.dp), // change height to 485.dp
                 elevation = CardDefaults.elevatedCardElevation(defaultElevation = 16.dp),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(
@@ -176,7 +186,7 @@ fun LoginScreen(navController: NavController, preferencesManager: PreferencesMan
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        "Welcome back!",
+                        text = strings.get("WELCOME_BACK"),
                         fontFamily = popSemi,
                         fontSize = 28.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -184,7 +194,7 @@ fun LoginScreen(navController: NavController, preferencesManager: PreferencesMan
 
                     ) // welcome text
                     Text(
-                        "Login and keep your car at its best",
+                        text = strings.get("KEEP_YOUR_CAR"),
                         fontFamily = popSemi,
                         fontSize = 13.sp,
                         color = Color(30, 30, 30, 168)
@@ -202,7 +212,9 @@ fun LoginScreen(navController: NavController, preferencesManager: PreferencesMan
                         },
                         placeholder = {
                             Text(
-                                text = if (isErrorEmail) "Email is required" else "Email",
+                                text = if (isErrorEmail) strings.get("USERNAME_REQUIRED")
+                                else
+                                    strings.get("EMAIL"),
                                 fontFamily = popMid,
                                 fontSize = 12.sp,
                                 color = if (isErrorEmail) Color(194, 0, 0, 255)
@@ -235,7 +247,7 @@ fun LoginScreen(navController: NavController, preferencesManager: PreferencesMan
                         },
                         placeholder = {
                             Text(
-                                text = if (isErrorPass) "Password is Required" else "Password",
+                                text = if (isErrorPass) strings.get("PASSWORD_REQUIRED") else strings.get("PASSWORD"),
                                 fontFamily = popMid,
                                 fontSize = 12.sp,
                                 color = if (isErrorPass) Color(194, 0, 0, 255) else Color(
@@ -283,7 +295,7 @@ fun LoginScreen(navController: NavController, preferencesManager: PreferencesMan
                     ) {
 
                         Text(
-                            "Forgot password?",
+                            strings.get("FORGOT_PASSWORD"),
                             fontFamily = popMid,
                             fontSize = 15.sp,
                             color = Color(194, 0, 0, 255),
@@ -354,7 +366,7 @@ fun LoginScreen(navController: NavController, preferencesManager: PreferencesMan
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                "Log In",
+                                strings.get("LOGIN"),
                                 fontFamily = popSemi,
                                 fontSize = 18.sp,
                                 color = Color(217, 217, 217, 255)
@@ -390,7 +402,8 @@ fun LoginScreen(navController: NavController, preferencesManager: PreferencesMan
                                 modifier = m.size(16.dp)
                             )
                             Text(
-                                " Continue with Google", fontFamily = popSemi,
+                                strings.get("CONTINUE_GOOGLE")
+                                , fontFamily = popSemi,
                                 fontSize = 16.sp,
                                 color = Color(30, 30, 30, 163)
                             )
@@ -413,7 +426,8 @@ fun LoginScreen(navController: NavController, preferencesManager: PreferencesMan
                             color = Color(30, 30, 30, 168)
                         )
                         Text(
-                            "Sign Up ", fontFamily = popMid,
+                            strings.get("SIGN_IN")
+                            , fontFamily = popMid,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(194, 0, 0, 255),
@@ -438,6 +452,19 @@ fun LoginScreen(navController: NavController, preferencesManager: PreferencesMan
                         modifier = m.clickable { /*privacy and terms page*/ }
                     )
 
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("العربية")
+                        Switch(
+                            checked = currentLang == AppLanguage.AR,
+                            onCheckedChange = { isAr ->
+                                val selected = if (isAr) AppLanguage.AR else AppLanguage.EN
+                                onLangChange(selected)
+                            }
+                        )
+                    }
+
+                }
+
 
                 }
 
@@ -448,6 +475,6 @@ fun LoginScreen(navController: NavController, preferencesManager: PreferencesMan
 
 
     }
-}
+
 
 

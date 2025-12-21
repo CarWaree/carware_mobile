@@ -97,7 +97,6 @@ fun ScheduleScreen(
                 UsersCar(
                     brand = car.brandName,
                     model = car.modelName,
-                    // 🚨 This comparison triggers the color change
                     isSelected = state.selectedCarId == car.id,
                     onClick = {
                         viewModel.selectVehicle(car.id)

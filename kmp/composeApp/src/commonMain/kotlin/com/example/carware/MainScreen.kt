@@ -7,8 +7,16 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -39,6 +47,8 @@ import com.example.carware.screens.mainScreens.HistoryScreen
 import com.example.carware.screens.mainScreens.HomeScreen
 import com.example.carware.screens.mainScreens.ScheduleScreen
 import com.example.carware.screens.mainScreens.SettingsScreen
+import com.example.carware.util.lang.AppLanguage
+import com.example.carware.util.lang.LocalizedStrings
 import com.example.carware.util.navBar.bottomTabs
 import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.home.HomeScreenViewModel
@@ -46,7 +56,9 @@ import com.example.carware.viewModel.addcar.AddCarViewModel
 import com.example.carware.viewModel.schedule.ScheduleScreenViewModel
 
 val m = Modifier
-
+val LocalStrings = staticCompositionLocalOf<LocalizedStrings> {
+    error("No LocalizedStrings provided")
+}
 @Composable
 fun MainScreen(preferencesManager: PreferencesManager) {
     val navController = rememberNavController()
@@ -57,118 +69,134 @@ fun MainScreen(preferencesManager: PreferencesManager) {
     // Coroutine Scope needed for the BottomNavBar to smoothly animate the Pager scroll
     val scope = rememberCoroutineScope()
 
-//    val startDestination = when {
-//        !loginManager.isOnboardingComplete() -> OnboardingScreen
-//        !loginManager.shouldAutoLogin() -> SignUpScreen
-//        !loginManager.hasAddedCar()->AddCarScreen
-//        else -> HomeScreen  //  should be 'signup'
-//    }
+    var currentLanguage by remember {
+        mutableStateOf(AppLanguage.fromCode(preferencesManager.getLanguageCode()))
+    }
 
+    val localizedStrings = remember(currentLanguage) {
+        LocalizedStrings(preferencesManager)
+    }
+
+    val layoutDirection = if (currentLanguage == AppLanguage.AR) {
+        LayoutDirection.Rtl
+    } else {
+        LayoutDirection.Ltr
+    }
     val vehicleRepository = VehicleRepository(preferencesManager)
     val scheduleRepository = ServiceRepository()
 
 
 
-
-    NavHost(
-        navController = navController,
-        startDestination = HomeScreen ,
-    )
-    {
-        composable<HomeScreen> {
-            Scaffold(
-                bottomBar = {
-                    BottomNavBar(
-                        pagerState = pagerState,
-                        scope = scope,
-                        tabs = bottomTabs,
-                        modifier = Modifier.navigationBarsPadding()
-                    )
-                }
-            ) { innerPadding ->
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier.fillMaxSize(),
-                    userScrollEnabled = true
-                ) { page ->
-                    val currentTab = bottomTabs[page]
-                    when (currentTab.route) {
-                        HomeScreen::class -> HomeScreen(
-                            navController, HomeScreenViewModel(
-                                VehicleRepository(preferencesManager), preferencesManager
+    CompositionLocalProvider(
+        LocalStrings provides localizedStrings,
+        LocalLayoutDirection provides layoutDirection // This line flips the UI
+    ) {
+        NavHost(
+            navController = navController,
+            startDestination = LoginScreen,
+        )
+        {
+            composable<HomeScreen> {
+                Scaffold(
+                    bottomBar = {
+                        BottomNavBar(
+                            pagerState = pagerState,
+                            scope = scope,
+                            tabs = bottomTabs,
+                            modifier = Modifier.navigationBarsPadding()
+                        )
+                    }
+                ) { innerPadding ->
+                    HorizontalPager(
+                        state = pagerState,
+                        modifier = Modifier.fillMaxSize(),
+                        userScrollEnabled = true
+                    ) { page ->
+                        val currentTab = bottomTabs[page]
+                        when (currentTab.route) {
+                            HomeScreen::class -> HomeScreen(
+                                navController, HomeScreenViewModel(
+                                    VehicleRepository(preferencesManager), preferencesManager
+                                )
                             )
-                        )
 
-                        ScheduleScreen::class -> ScheduleScreen(
-                            navController,
-                            viewModel = ScheduleScreenViewModel(ServiceRepository(),
-                                VehicleRepository(preferencesManager))
-                        )
+                            ScheduleScreen::class -> ScheduleScreen(
+                                navController,
+                                viewModel = ScheduleScreenViewModel(
+                                    ServiceRepository(),
+                                    VehicleRepository(preferencesManager)
+                                )
+                            )
 
-                        HistoryScreen::class -> HistoryScreen(navController)
-                        SettingsScreen::class -> SettingsScreen(navController)
-                        else -> Box(Modifier.fillMaxSize())
+                            HistoryScreen::class -> HistoryScreen(navController)
+                            SettingsScreen::class -> SettingsScreen(navController)
+                            else -> Box(Modifier.fillMaxSize())
+                        }
                     }
                 }
             }
-        }
 
-        composable<OnboardingScreen> {
-            OnBoardingScreen(navController, preferencesManager)
-        }
-        composable<SignUpScreen> {
-            SignUpScreen(
-                navController, preferencesManager
-            )
-        }
-        composable<LoginScreen> {
-            LoginScreen(
-                navController, preferencesManager
-            )
-        }
+            composable<OnboardingScreen> {
+                OnBoardingScreen(navController, preferencesManager)
+            }
+            composable<SignUpScreen> {
+                SignUpScreen(
+                    navController, preferencesManager
+                )
+            }
+            composable<LoginScreen> {
+                LoginScreen(
+                    navController, preferencesManager,
+                    onLangChange = { newLang ->
+                        preferencesManager.saveLanguageCode(newLang.isoCode)
+                        currentLanguage = newLang // This triggers the RTL/LTR flip
+                    }
+                )
+            }
 
-        composable<ResetPasswordScreen> {
-            ResetPasswordScreen(navController)
-        }
-        composable<VerificationCodeScreen> {
-            VerificationCodeScreen(navController, preferencesManager)
-        }
-        composable<NewPasswordScreen> {
-            NewPasswordScreen(navController, preferencesManager)
-        }
-        composable<SettingsScreen> {
-            SettingsScreen(navController)
-        }
-        composable<ScheduleScreen> {
-            ScheduleScreen(
-                navController,
-                viewModel = ScheduleScreenViewModel(ServiceRepository(),
-                    VehicleRepository(preferencesManager))
-            )
-        }
-        composable<HistoryScreen> {
-            HistoryScreen(navController)
-        }
-        composable<AddCarScreen> {
-            AddCarScreen(
-                navController,
-                viewModel = AddCarViewModel(vehicleRepository, preferencesManager)
-            )
-        }
-        composable<SplashScreen> {
-            SplashScreen(
-                preferencesManager
-            ) { destination ->
-                navController.navigate(destination) {
-                    popUpTo(SplashScreen) { inclusive = true }
+            composable<ResetPasswordScreen> {
+                ResetPasswordScreen(navController)
+            }
+            composable<VerificationCodeScreen> {
+                VerificationCodeScreen(navController, preferencesManager)
+            }
+            composable<NewPasswordScreen> {
+                NewPasswordScreen(navController, preferencesManager)
+            }
+            composable<SettingsScreen> {
+                SettingsScreen(navController)
+            }
+            composable<ScheduleScreen> {
+                ScheduleScreen(
+                    navController,
+                    viewModel = ScheduleScreenViewModel(
+                        ServiceRepository(),
+                        VehicleRepository(preferencesManager)
+                    )
+                )
+            }
+            composable<HistoryScreen> {
+                HistoryScreen(navController)
+            }
+            composable<AddCarScreen> {
+                AddCarScreen(
+                    navController,
+                    viewModel = AddCarViewModel(vehicleRepository, preferencesManager)
+                )
+            }
+            composable<SplashScreen> {
+                SplashScreen(
+                    preferencesManager
+                ) { destination ->
+                    navController.navigate(destination) {
+                        popUpTo(SplashScreen) { inclusive = true }
+                    }
                 }
             }
+
+
         }
-
-
     }
+
+
 }
-
-
-
-

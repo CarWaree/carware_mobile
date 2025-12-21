@@ -14,6 +14,7 @@ class PreferencesManager(
         private const val KEY_USER_ID = "user_id"
         private const val KEY_ONBOARDING = "onboarding_complete"
         private const val KEY_CAR_ADDED = "car_added_complete"
+        private val LANG_KEY = "selected_language"
     }
 
     /* -------------------- Auth Token -------------------- */
@@ -84,6 +85,14 @@ class PreferencesManager(
         settings.remove(KEY_USER_ID)
     }
 
+    /* ------------------language ---------------*/
+    fun getLanguageCode(): String {
+        return settings.getString(LANG_KEY, "en")
+    }
+
+    fun saveLanguageCode(code: String) {
+        settings.putString(LANG_KEY, code)
+    }
 
     fun clearAll() {
         settings.clear()
