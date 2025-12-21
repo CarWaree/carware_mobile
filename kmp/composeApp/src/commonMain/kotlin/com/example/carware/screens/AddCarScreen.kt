@@ -24,6 +24,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -50,7 +51,11 @@ import carware.composeapp.generated.resources.keyboard_arrow_down
 import carware.composeapp.generated.resources.keyboard_arrow_up
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
+import com.example.carware.LocalStrings
 import com.example.carware.m
+import com.example.carware.util.lang.AppLanguage
+import com.example.carware.util.lang.StringsEn
+import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.addcar.AddCarViewModel
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
@@ -62,8 +67,9 @@ fun AddCarIntDropdown(
     selectedValue: Int?, // Accepts Int?
     options: List<Int>, // Accepts List<Int>
     onSelect: (Int) -> Unit, // Returns Int
-    m: Modifier = Modifier // Added a default modifier parameter for convenience
+    m: Modifier = Modifier, // Added a default modifier parameter for convenience
 ) {
+
     // 1. Convert Int options to String options for display
     val displayOptions = remember(options) { options.map { it.toString() } }
 
@@ -169,9 +175,13 @@ fun AddCarIntDropdown(
 @Composable
 fun AddCarScreen(
     navController: NavController,
-    viewModel: AddCarViewModel
-) {
 
+    viewModel: AddCarViewModel,
+    preferencesManager: PreferencesManager,
+    onLangChange: (AppLanguage) -> Unit // Add this
+) {
+    val strings = LocalStrings.current
+    val currentLang = AppLanguage.fromCode(preferencesManager.getLanguageCode())
     val state by viewModel.state.collectAsState()
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
@@ -209,7 +219,7 @@ fun AddCarScreen(
 
                 // Centered text
                 Text(
-                    "Add Your Car",
+                    strings.get("ADD_CAR"),
                     fontFamily = popMid,
                     fontSize = 26.sp,
                     fontWeight = FontWeight.Bold,
@@ -222,7 +232,7 @@ fun AddCarScreen(
 
             // Subtitle
             Text(
-                "Set up your car profile to get personalized \nservice reminders and tips.",
+                strings.get("SET_UP_CAR_PROFILE"),
                 fontFamily = popMid,
                 fontSize = 14.sp,
                 color = Color(235, 235, 235),
@@ -237,14 +247,14 @@ fun AddCarScreen(
 
             ) {
             Text(
-                "Brand ",
+                strings.get("CAR_BRAND"),
                 fontFamily = popMid,
                 fontSize = 20.sp,
                 fontWeight = Bold,
                 color = Color(30, 30, 30, 153),
             )
             SelectDropdown(
-                "Brand",
+                strings.get("CAR_BRAND"),
                 state.selectedBrand,
                 state.availableBrands,
                 { name ->
@@ -257,14 +267,14 @@ fun AddCarScreen(
 
             Spacer(m.padding(vertical = 8.dp))
             Text(
-                "Model ",
+                strings.get("CAR_MODEL"),
                 fontFamily = popMid,
                 fontSize = 20.sp,
                 fontWeight = Bold,
                 color = Color(30, 30, 30, 153),
             )
             SelectDropdown(
-                "Model",
+                strings.get("CAR_MODEL"),
                 state.selectedModel,
                 state.availableModels,
                 { name ->
@@ -274,14 +284,14 @@ fun AddCarScreen(
 
             )
             Text(
-                "Year ",
+                strings.get("CAR_YEAR"),
                 fontFamily = popMid,
                 fontSize = 20.sp,
                 fontWeight = Bold,
                 color = Color(30, 30, 30, 153),
             )
             AddCarIntDropdown(
-                label = "Year",
+                label = strings.get("CAR_YEAR"),
                 selectedValue = state.selectedYear,
                 options = state.availableYears,
                 onSelect = viewModel::selectYear
@@ -289,14 +299,14 @@ fun AddCarScreen(
             Spacer(m.padding(vertical = 8.dp))
             // Color Dropdown
             Text(
-                "Color ",
+                strings.get("CAR_COLOR"),
                 fontFamily = popMid,
                 fontSize = 20.sp,
                 fontWeight = Bold,
                 color = Color(30, 30, 30, 153),
             )
             SelectDropdown(
-                label = "Color",
+                label = strings.get("CAR_COLOR"),
                 selectedValue = state.selectedColor,
                 options = state.availableColors,
                 onSelect = viewModel::selectColor
@@ -332,13 +342,18 @@ fun AddCarScreen(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        "Add Car",
+                        strings.get("ADD_CAR"),
                         fontFamily = popSemi,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(217, 217, 217, 255)
                     )
+
+
+
+
                 }
+
             } // login button
 
         }

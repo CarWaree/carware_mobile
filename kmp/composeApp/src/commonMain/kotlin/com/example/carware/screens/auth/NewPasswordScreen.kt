@@ -16,6 +16,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -37,18 +38,27 @@ import carware.composeapp.generated.resources.carware
 import carware.composeapp.generated.resources.line_1
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
+import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.navigation.HomeScreen
 import com.example.carware.navigation.LoginScreen
 import com.example.carware.network.apiRequests.auth.ResetPasswordRequest
 import com.example.carware.screens.appButtonBack
 import com.example.carware.screens.appGradBack
+import com.example.carware.util.lang.AppLanguage
 import com.example.carware.util.storage.PreferencesManager
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun NewPasswordScreen(navController: NavController,preferencesManager:PreferencesManager) {
+fun NewPasswordScreen( 
+    navController: NavController,
+    preferencesManager: PreferencesManager, 
+    onLangChange: (AppLanguage) -> Unit // Add this
+) {
+
+    val strings = LocalStrings.current
+    val currentLang = AppLanguage.fromCode(preferencesManager.getLanguageCode())
     val popSemi = FontFamily(
         Font(Res.font.poppins_semibold) // name of your font file without extension
     )
@@ -139,7 +149,7 @@ fun NewPasswordScreen(navController: NavController,preferencesManager:Preference
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        "Create New Password",
+                        strings.get("CREATE_NEW_PASSWORD"),
                         fontFamily = popSemi,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -147,7 +157,7 @@ fun NewPasswordScreen(navController: NavController,preferencesManager:Preference
 
                     ) //main text
                     Text(
-                        "Create your Password",
+                        strings.get("CREATE_YOUR_PASSWORD"),
                         fontFamily = popSemi,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -166,7 +176,7 @@ fun NewPasswordScreen(navController: NavController,preferencesManager:Preference
                         },
                         placeholder = {
                             Text(
-                                text = if (passError) "Password is Required" else "Password",
+                                text = if (passError) strings.get("PASSWORD_REQUIRED") else strings.get("PASSWORD"),
                                 fontFamily = popMid,
                                 fontSize = 12.sp,
                                 color = if (passError) Color(194, 0, 0, 255) else Color(
@@ -191,7 +201,7 @@ fun NewPasswordScreen(navController: NavController,preferencesManager:Preference
                             .padding(start = 32.dp), horizontalArrangement = Arrangement.Start
                     ) {
                         Text(
-                            "minimum 8 characters,letters and numbers",
+                            strings.get("PASSWORD_REQUIREMENTS"),
                             fontFamily = popSemi,
                             fontSize = 8.sp,
                             fontWeight = FontWeight.Bold,
@@ -211,7 +221,7 @@ fun NewPasswordScreen(navController: NavController,preferencesManager:Preference
                         },
                         placeholder = {
                             Text(
-                                text = if (confPassError) "Confirmation is Required" else " Confirm your Password",
+                                text = if (confPassError) strings.get("CONFIRMATION_REQUIRED") else strings.get("CONFIRM_PASSWORD"),
                                 fontFamily = popMid,
                                 fontSize = 12.sp,
                                 color = if (passError) Color(194, 0, 0, 255) else Color(
@@ -273,7 +283,7 @@ fun NewPasswordScreen(navController: NavController,preferencesManager:Preference
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                "Continue",
+                                strings.get("CONTINUE"),
                                 fontFamily = popSemi,
                                 fontSize = 18.sp,
                                 color = Color(217, 217, 217, 255)
@@ -283,12 +293,12 @@ fun NewPasswordScreen(navController: NavController,preferencesManager:Preference
                     Spacer(modifier = m.padding(top = 12.dp))
                     Row {
                         Text(
-                            "Back to ", fontFamily = popMid,
+                            strings.get("BACK_TO"), fontFamily = popMid,
                             fontSize = 12.sp,
                             color = Color(30, 30, 30, 168)
                         )
                         Text(
-                            "Log in ", fontFamily = popMid,
+                            strings.get("LOGIN"), fontFamily = popMid,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(194, 0, 0, 255),

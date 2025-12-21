@@ -32,6 +32,7 @@ import com.example.carware.navigation.SettingsScreen
 import com.example.carware.navigation.SignUpScreen
 import com.example.carware.navigation.SplashScreen
 import com.example.carware.navigation.VerificationCodeScreen
+import com.example.carware.network.apiRequests.auth.ForgotPasswordRequest
 import com.example.carware.repository.ServiceRepository
 import com.example.carware.repository.VehicleRepository
 import com.example.carware.screens.AddCarScreen
@@ -93,7 +94,7 @@ fun MainScreen(preferencesManager: PreferencesManager) {
     ) {
         NavHost(
             navController = navController,
-            startDestination = SignUpScreen,
+            startDestination = LoginScreen,
         )
         {
             composable<HomeScreen> {
@@ -149,19 +150,33 @@ fun MainScreen(preferencesManager: PreferencesManager) {
             }
             composable<LoginScreen> {
                 LoginScreen(
-                    navController, preferencesManager,
-
+                    navController, preferencesManager,onLangChange = { newLang ->
+                        preferencesManager.saveLanguageCode(newLang.isoCode)
+                        currentLanguage = newLang // This triggers the RTL/LTR flip
+                    }
                 )
             }
 
             composable<ResetPasswordScreen> {
-                ResetPasswordScreen(navController)
+                ResetPasswordScreen(navController,preferencesManager,onLangChange = { newLang ->
+                    preferencesManager.saveLanguageCode(newLang.isoCode)
+                    currentLanguage = newLang // This triggers the RTL/LTR flip
+                 }
+                )
             }
             composable<VerificationCodeScreen> {
-                VerificationCodeScreen(navController, preferencesManager)
+                VerificationCodeScreen(navController, preferencesManager,onLangChange = { newLang ->
+                    preferencesManager.saveLanguageCode(newLang.isoCode)
+                    currentLanguage = newLang // This triggers the RTL/LTR flip
+                 }
+                )
             }
             composable<NewPasswordScreen> {
-                NewPasswordScreen(navController, preferencesManager)
+                NewPasswordScreen(navController,preferencesManager, onLangChange = { newLang ->
+                    preferencesManager.saveLanguageCode(newLang.isoCode)
+                    currentLanguage = newLang // This triggers the RTL/LTR flip
+                }
+                )
             }
             composable<SettingsScreen> {
                 SettingsScreen(navController)
@@ -181,7 +196,12 @@ fun MainScreen(preferencesManager: PreferencesManager) {
             composable<AddCarScreen> {
                 AddCarScreen(
                     navController,
-                    viewModel = AddCarViewModel(vehicleRepository, preferencesManager)
+                    viewModel = AddCarViewModel(vehicleRepository, preferencesManager),
+                    onLangChange = { newLang ->
+                        preferencesManager.saveLanguageCode(newLang.isoCode)
+                        currentLanguage = newLang // This triggers the RTL/LTR flip
+                    },
+                    preferencesManager= preferencesManager
                 )
             }
             composable<SplashScreen> {
