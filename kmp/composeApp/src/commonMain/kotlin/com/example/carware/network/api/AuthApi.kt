@@ -1,4 +1,4 @@
-package com.example.carware.network.Api
+package com.example.carware.network.api
 
 import com.example.carware.network.apiRequests.auth.LoginRequest
 import com.example.carware.network.apiRequests.auth.SignUpRequest
@@ -16,7 +16,7 @@ import io.ktor.client.request.setBody
 import io.ktor.http.*
 import io.ktor.http.contentType
 
-val baseUrl="https://7qp9xzq3-7136.uks1.devtunnels.ms"
+val baseUrl="https://gdmq2n74-7136.uks1.devtunnels.ms"
     suspend fun signupUser(request: SignUpRequest): AuthResponse {
     val client = createHttpClient()
     return client.post("$baseUrl/api/Auth/register") {

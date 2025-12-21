@@ -1,12 +1,13 @@
 package com.example.carware
 
-import IOSUserSession
 import androidx.compose.ui.window.ComposeUIViewController
+import com.example.carware.util.storage.PreferencesManager
+import com.russhwolf.settings.KeychainSettings
+import com.russhwolf.settings.Settings
+import platform.Foundation.NSUserDefaults
 
-val iosSession = IOSUserSession()
+val preferencesManager = PreferencesManager(Settings())
 
-
-val iosLoginManager = LoginManager(iosSession)
-
-
-fun MainViewController() = ComposeUIViewController { MainScreen(iosLoginManager) }
+fun MainViewController() = ComposeUIViewController {
+    MainScreen(preferencesManager = preferencesManager)
+}

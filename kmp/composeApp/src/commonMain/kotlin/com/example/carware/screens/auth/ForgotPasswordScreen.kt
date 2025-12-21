@@ -15,6 +15,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -37,13 +38,16 @@ import carware.composeapp.generated.resources.carware
 import carware.composeapp.generated.resources.line_1
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
+import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.navigation.LoginScreen
 import com.example.carware.navigation.VerificationCodeScreen
 import com.example.carware.network.apiRequests.auth.ForgotPasswordRequest
-import com.example.carware.network.Api.forgotPasswordUser
+import com.example.carware.network.api.forgotPasswordUser
 import com.example.carware.screens.appButtonBack
 import com.example.carware.screens.appGradBack
+import com.example.carware.util.lang.AppLanguage
+import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -53,8 +57,11 @@ import org.jetbrains.compose.resources.painterResource
 
 
 @Composable
-fun ResetPasswordScreen(navController: NavController) {
-
+fun ResetPasswordScreen(navController: NavController,
+                        preferencesManager: PreferencesManager,
+) {
+    val strings = LocalStrings.current
+    val currentLang = AppLanguage.fromCode(preferencesManager.getLanguageCode())
 
     val popSemi = FontFamily(
         Font(Res.font.poppins_semibold ) // name of your font file without extension
@@ -148,7 +155,7 @@ fun ResetPasswordScreen(navController: NavController) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        "Reset Your Password",
+                        strings.get("RESET_PASSWORD"),
                         fontFamily = popSemi,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -156,7 +163,7 @@ fun ResetPasswordScreen(navController: NavController) {
 
                     )
                     Text(
-                        "Enter your email below",
+                        strings.get("ENTER_EMAIL"),
                         fontFamily = popSemi,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -174,7 +181,7 @@ fun ResetPasswordScreen(navController: NavController) {
                         },
                         placeholder = {
                             Text(
-                                text = if (isErrorEmail) "Email is required" else "Email",
+                                text = if (isErrorEmail) strings.get("EMAIL_REQUIRED") else strings.get("EMAIL"),
                                 fontFamily = popMid,
                                 fontSize = 12.sp,
                                 color = if (isErrorEmail) Color(194, 0, 0, 255)
@@ -261,7 +268,7 @@ fun ResetPasswordScreen(navController: NavController) {
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                "Continue",
+                                strings.get("CONTINUE"),
                                 fontFamily = popSemi,
                                 fontSize = 18.sp,
                                 color = Color(217, 217, 217, 255)
@@ -273,12 +280,12 @@ fun ResetPasswordScreen(navController: NavController) {
 
                     Row {
                         Text(
-                            "Back to ", fontFamily = popMid,
+                            strings.get("BACK_TO"), fontFamily = popMid,
                             fontSize = 12.sp,
                             color = Color(30, 30, 30, 168)
                         )
                         Text(
-                            "Log in ", fontFamily = popMid,
+                            strings.get("LOGIN"), fontFamily = popMid,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(194, 0, 0, 255),
@@ -301,7 +308,3 @@ fun ResetPasswordScreen(navController: NavController) {
 
 
 }
-
-
-
-

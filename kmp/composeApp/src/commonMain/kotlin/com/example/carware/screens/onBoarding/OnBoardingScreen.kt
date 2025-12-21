@@ -1,4 +1,4 @@
-package com.example.carware.screens
+package com.example.carware.screens.onBoarding
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -40,10 +40,12 @@ import carware.composeapp.generated.resources.carware
 import carware.composeapp.generated.resources.line_1
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
+import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.navigation.HomeScreen
 import com.example.carware.navigation.OnboardingScreen
 import com.example.carware.navigation.SignUpScreen
+import com.example.carware.screens.appGradBack
 import com.example.carware.util.onBoarding.OnboardingConfig.pages
 import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.launch
@@ -56,6 +58,9 @@ fun OnBoardingScreen(
     navController: NavController,
     preferencesManager: PreferencesManager
 ) {
+    val strings = LocalStrings.current
+
+
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
 
@@ -67,6 +72,7 @@ fun OnBoardingScreen(
             .fillMaxSize()
             .appGradBack()
     ) {
+
 
         HorizontalPager(
             state = pagerState,
@@ -101,7 +107,7 @@ fun OnBoardingScreen(
                 ) // image
 //                Spacer(Modifier.padding(vertical = 5.dp))
                 Text(
-                    text = page.title,
+                    text = strings.get(page.title),
                     color = Color.White,
                     fontSize = 26.sp,
                     fontFamily = popSemi,
@@ -110,7 +116,7 @@ fun OnBoardingScreen(
                 ) //Title
                 Spacer(Modifier.padding(vertical = 2.dp))
                 Text(
-                    text = page.description,
+                    text = strings.get(page.description),
                     color = Color.White.copy(alpha = 0.8f),
                     fontSize = 16.sp,
                     fontFamily = popMid,
@@ -149,7 +155,7 @@ fun OnBoardingScreen(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            "Get Started",
+                            strings.get("GET_STARTED"),
                             fontFamily = popSemi,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
@@ -179,7 +185,7 @@ fun OnBoardingScreen(
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            "Continue as a Guest",
+                            strings.get("CONTINUE_AS_GUEST"),
                             fontFamily = popSemi,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
@@ -195,7 +201,7 @@ fun OnBoardingScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = if (isFirstPage) "Skip" else "Back",
+                        text = if (isFirstPage) strings.get("SKIP") else strings.get("BACK"),
                         color = Color.White,
                         modifier = m
                             .clickable {
@@ -242,7 +248,7 @@ fun OnBoardingScreen(
 
                     if (!isLastPage) {
                         Text(
-                            text = if (isFirstPage) "Skip" else "Back",
+                            text = if (isFirstPage) strings.get("SKIP") else strings.get("BACK"),
                             color = Color.White,
                             modifier = Modifier.clickable {
                                 if (isFirstPage) {
@@ -265,7 +271,7 @@ fun OnBoardingScreen(
                     }
 
                     Text(
-                        text = if (isLastPage) "Get Started" else "Next",
+                        text = if (isLastPage) strings.get("GET_STARTED") else strings.get("NEXT"),
                         color = Color.White,
                         modifier = Modifier.clickable {
                             if (isLastPage) {
@@ -329,8 +335,3 @@ fun PagerIndicator(size: Int, currentPage: Int) {
     }
 }
 
-//@Preview
-//@Composable
-//fun prev() {
-//    OnboardingScreen()
-//}
