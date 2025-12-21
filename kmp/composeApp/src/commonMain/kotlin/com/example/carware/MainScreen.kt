@@ -93,7 +93,7 @@ fun MainScreen(preferencesManager: PreferencesManager) {
     ) {
         NavHost(
             navController = navController,
-            startDestination = LoginScreen,
+            startDestination = SignUpScreen,
         )
         {
             composable<HomeScreen> {
@@ -141,16 +141,16 @@ fun MainScreen(preferencesManager: PreferencesManager) {
             }
             composable<SignUpScreen> {
                 SignUpScreen(
-                    navController, preferencesManager
+                    navController, preferencesManager, onLangChange = { newLang ->
+                        preferencesManager.saveLanguageCode(newLang.isoCode)
+                        currentLanguage = newLang // This triggers the RTL/LTR flip
+                    }
                 )
             }
             composable<LoginScreen> {
                 LoginScreen(
                     navController, preferencesManager,
-                    onLangChange = { newLang ->
-                        preferencesManager.saveLanguageCode(newLang.isoCode)
-                        currentLanguage = newLang // This triggers the RTL/LTR flip
-                    }
+
                 )
             }
 

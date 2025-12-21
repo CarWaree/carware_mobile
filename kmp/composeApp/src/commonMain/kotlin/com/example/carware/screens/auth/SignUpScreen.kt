@@ -22,6 +22,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -49,6 +50,7 @@ import carware.composeapp.generated.resources.google_icon_logo_svgrepo_com
 import carware.composeapp.generated.resources.line_1
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
+import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.navigation.AddCarScreen
 import com.example.carware.navigation.LoginScreen
@@ -58,6 +60,7 @@ import com.example.carware.network.apiRequests.auth.SignUpRequest
 import com.example.carware.network.Api.signupUser
 import com.example.carware.screens.appButtonBack
 import com.example.carware.screens.appGradBack
+import com.example.carware.util.lang.AppLanguage
 import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -68,7 +71,14 @@ import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun SignUpScreen(navController: NavController, preferencesManager: PreferencesManager) {
+fun SignUpScreen(
+    navController: NavController,
+    preferencesManager: PreferencesManager,
+    onLangChange: (AppLanguage) -> Unit // Add this
+) {
+    val strings = LocalStrings.current
+    val currentLang = AppLanguage.fromCode(preferencesManager.getLanguageCode())
+
 
     val popSemi = FontFamily(
         Font(Res.font.poppins_semibold) // name of your font file without extension
@@ -173,7 +183,7 @@ fun SignUpScreen(navController: NavController, preferencesManager: PreferencesMa
                     modifier = m
                         .padding(horizontal = 14.dp)
                         .padding(vertical = 15.dp)
-                        .clip(RoundedCornerShape(16.dp)), // 👈 important
+                        .clip(RoundedCornerShape(16.dp)),
 
                     shape = RoundedCornerShape(15.dp),
                     colors = CardDefaults.cardColors(
@@ -188,7 +198,7 @@ fun SignUpScreen(navController: NavController, preferencesManager: PreferencesMa
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            "Welcome!",
+                            strings.get("WELCOME_MESSAGE"),
                             fontFamily = popSemi,
                             fontSize = 30.sp,
                             fontWeight = FontWeight.SemiBold,
@@ -196,19 +206,19 @@ fun SignUpScreen(navController: NavController, preferencesManager: PreferencesMa
 
                         )  //welcome
                         Text(
-                            "Drive with confidence.Enroll in smarter",
+                            strings.get("MARKETING_SLOGAN"),
                             fontFamily = popSemi,
                             fontSize = 12.sp,
                             color = Color(30, 30, 30, 168)
 
                         )  // 2ndline
-                        Text(
-                            " CarWare today .",
-                            fontFamily = popSemi,
-                            fontSize = 12.sp,
-                            color = Color(30, 30, 30, 168)
-
-                        )  // 3rd line
+//                        Text(
+//                            " CarWare today .",
+//                            fontFamily = popSemi,
+//                            fontSize = 12.sp,
+//                            color = Color(30, 30, 30, 168)
+//
+//                        )  // 3rd line
                         Spacer(modifier = m.padding(vertical = 10.dp))
 
                         Row(
@@ -225,7 +235,7 @@ fun SignUpScreen(navController: NavController, preferencesManager: PreferencesMa
                                 onValueChange = { fName = it },
                                 placeholder = {
                                     Text(
-                                        "First Name",
+                                        strings.get("FIRST_NAME"),
                                         fontFamily = popMid,
                                         fontSize = 12.sp,
                                         color = Color(30, 30, 30, 168)
@@ -242,7 +252,7 @@ fun SignUpScreen(navController: NavController, preferencesManager: PreferencesMa
                                 onValueChange = { lName = it },
                                 placeholder = {
                                     Text(
-                                        "Last Name",
+                                        strings.get("LAST_NAME"),
                                         fontFamily = popMid,
                                         fontSize = 12.sp,
                                         color = Color(30, 30, 30, 168)
@@ -265,7 +275,8 @@ fun SignUpScreen(navController: NavController, preferencesManager: PreferencesMa
                             },
                             placeholder = {
                                 Text(
-                                    text = if (userNameError) "Username is Required" else "Username",
+                                    text = if (userNameError) strings.get("USERNAME_REQUIRED")
+                                    else strings.get("USERNAME"),
                                     fontFamily = popMid,
                                     fontSize = 12.sp,
                                     color = if (userNameError) Color(194, 0, 0, 255) else Color(
@@ -293,7 +304,8 @@ fun SignUpScreen(navController: NavController, preferencesManager: PreferencesMa
                             },
                             placeholder = {
                                 Text(
-                                    text = if (emailError) "Email is Required" else "Email",
+                                    text = if (emailError) strings.get("EMAIL_REQUIRED")
+                                    else strings.get("EMAIL"),
                                     fontFamily = popMid,
                                     fontSize = 12.sp,
                                     color = if (emailError) Color(194, 0, 0, 255) else Color(
@@ -325,7 +337,7 @@ fun SignUpScreen(navController: NavController, preferencesManager: PreferencesMa
                             },
                             placeholder = {
                                 Text(
-                                    text = if (numError) "phone number is Required" else "Phone number",
+                                    text = if (numError) strings.get("PHONE_REQUIRED") else strings.get("PHONE"),
                                     fontFamily = popMid,
                                     fontSize = 12.sp,
                                     color = if (numError) Color(194, 0, 0, 255) else Color(
@@ -357,7 +369,7 @@ fun SignUpScreen(navController: NavController, preferencesManager: PreferencesMa
                             },
                             placeholder = {
                                 Text(
-                                    text = if (passError) "Password is Required" else "Password",
+                                    text = if (passError) strings.get("PASSWORD_REQUIRED") else strings.get("PASSWORD"),
                                     fontFamily = popMid,
                                     fontSize = 12.sp,
                                     color = if (passError) Color(194, 0, 0, 255) else Color(
@@ -393,7 +405,7 @@ fun SignUpScreen(navController: NavController, preferencesManager: PreferencesMa
 
                         ) //password field
                         Text(
-                            "minimum 8 characters,letters and numbers       ",
+                           strings.get("PASSWORD_REQUIREMENTS"),
                             fontFamily = popMid,
                             fontSize = 10.sp,
                             color = Color(30, 30, 30, 168)
@@ -410,7 +422,7 @@ fun SignUpScreen(navController: NavController, preferencesManager: PreferencesMa
                             },
                             placeholder = {
                                 Text(
-                                    text = if (confPassError) "Confirmation is Required" else " Confirm your Password",
+                                    text = if (confPassError) strings.get("CONFIRM_PASSWORD_REQUIRED") else strings.get("CONFIRM_PASSWORD"),
                                     fontFamily = popMid,
                                     fontSize = 12.sp,
                                     color = if (passError) Color(194, 0, 0, 255) else Color(
@@ -461,8 +473,7 @@ fun SignUpScreen(navController: NavController, preferencesManager: PreferencesMa
                                     unselectedColor = Color.Gray,
                                 )
                             )
-                            Text(
-                                "I agree to terms and conditions ",
+                            Text(strings.get("AGREE_TERMS"),
                                 fontFamily = popMid,
                                 fontSize = 12.sp,
                                 color = Color(30, 30, 30, 168)
@@ -553,7 +564,7 @@ fun SignUpScreen(navController: NavController, preferencesManager: PreferencesMa
                                 horizontalArrangement = Arrangement.Center
                             ) {
                                 Text(
-                                    "Sign Up",
+                                    strings.get("SIGN_IN"),
                                     fontFamily = popSemi,
                                     fontSize = 18.sp,
                                     color = Color(217, 217, 217, 255)
@@ -589,10 +600,10 @@ fun SignUpScreen(navController: NavController, preferencesManager: PreferencesMa
                                     modifier = m.size(16.dp)
                                 )
                                 Text(
-                                    " Continue with Google", fontFamily = popSemi,
+                                    strings.get("CONTINUE_GOOGLE"), fontFamily = popSemi,
                                     fontSize = 16.sp,
                                     color = Color(30, 30, 30, 163)
-                                )
+                                ) //CONT with google text
 
                             }
 
@@ -601,12 +612,13 @@ fun SignUpScreen(navController: NavController, preferencesManager: PreferencesMa
                         Spacer(modifier = m.padding(vertical = 8.dp))
                         Row() {
                             Text(
-                                "Already have an account?", fontFamily = popMid,
+                                strings.get("ALREADY_HAVE_ACCOUNT")
+                                , fontFamily = popMid,
                                 fontSize = 12.sp,
                                 color = Color(30, 30, 30, 168)
                             )
                             Text(
-                                " Log in", fontFamily = popMid,
+                                strings.get("LOGIN"), fontFamily = popMid,
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(194, 0, 0, 255),
@@ -614,6 +626,17 @@ fun SignUpScreen(navController: NavController, preferencesManager: PreferencesMa
                             )
                         }
                         Spacer(Modifier.padding(vertical = 8.dp))
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text("العربية")
+                            Switch(
+                                checked = currentLang == AppLanguage.AR,
+                                onCheckedChange = { isAr ->
+                                    val selected = if (isAr) AppLanguage.AR else AppLanguage.EN
+                                    onLangChange(selected)
+                                }
+                            )
+                        }
 
 
                     }
