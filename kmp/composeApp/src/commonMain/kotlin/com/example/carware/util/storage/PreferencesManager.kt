@@ -15,6 +15,7 @@ class PreferencesManager(
         private const val KEY_ONBOARDING = "onboarding_complete"
         private const val KEY_CAR_ADDED = "car_added_complete"
         private val LANG_KEY = "selected_language"
+        private const val KEY_LANGUAGE_SELECTED = "is_lang_selected" // The new key
     }
 
     /* -------------------- Auth Token -------------------- */
@@ -86,6 +87,17 @@ class PreferencesManager(
     }
 
     /* ------------------language ---------------*/
+    fun setLanguageSelected(isComplete: Boolean) {
+        settings.putBoolean(KEY_LANGUAGE_SELECTED, isComplete)
+    }
+
+
+    fun isLanguageSelected(): Boolean {
+        return settings.getBoolean(KEY_LANGUAGE_SELECTED, false)
+    }
+
+    /* ------------------ language Code ------------------*/
+
     fun getLanguageCode(): String {
         return settings.getString(LANG_KEY, "en")
     }

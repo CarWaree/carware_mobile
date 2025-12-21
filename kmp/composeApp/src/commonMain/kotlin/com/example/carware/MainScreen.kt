@@ -23,6 +23,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.carware.navigation.AddCarScreen
 import com.example.carware.navigation.HistoryScreen
 import com.example.carware.navigation.HomeScreen
+import com.example.carware.navigation.LanguageSelectionScreen
 import com.example.carware.navigation.LoginScreen
 import com.example.carware.navigation.NewPasswordScreen
 import com.example.carware.navigation.OnboardingScreen
@@ -36,7 +37,7 @@ import com.example.carware.repository.ServiceRepository
 import com.example.carware.repository.VehicleRepository
 import com.example.carware.screens.AddCarScreen
 import com.example.carware.screens.BottomNavBar
-import com.example.carware.screens.OnBoardingScreen
+import com.example.carware.screens.onBoarding.OnBoardingScreen
 import com.example.carware.screens.SplashScreen
 import com.example.carware.screens.auth.LoginScreen
 import com.example.carware.screens.auth.NewPasswordScreen
@@ -47,6 +48,7 @@ import com.example.carware.screens.mainScreens.HistoryScreen
 import com.example.carware.screens.mainScreens.HomeScreen
 import com.example.carware.screens.mainScreens.ScheduleScreen
 import com.example.carware.screens.mainScreens.SettingsScreen
+import com.example.carware.screens.onBoarding.LanguageSelectionScreen
 import com.example.carware.util.lang.AppLanguage
 import com.example.carware.util.lang.LocalizedStrings
 import com.example.carware.util.navBar.bottomTabs
@@ -59,6 +61,7 @@ val m = Modifier
 val LocalStrings = staticCompositionLocalOf<LocalizedStrings> {
     error("No LocalizedStrings provided")
 }
+
 @Composable
 fun MainScreen(preferencesManager: PreferencesManager) {
     val navController = rememberNavController()
@@ -83,6 +86,7 @@ fun MainScreen(preferencesManager: PreferencesManager) {
         LayoutDirection.Ltr
     }
     val vehicleRepository = VehicleRepository(preferencesManager)
+
     val scheduleRepository = ServiceRepository()
 
 
@@ -93,7 +97,7 @@ fun MainScreen(preferencesManager: PreferencesManager) {
     ) {
         NavHost(
             navController = navController,
-            startDestination = SignUpScreen,
+            startDestination = SplashScreen,
         )
         {
             composable<HomeScreen> {
@@ -141,7 +145,8 @@ fun MainScreen(preferencesManager: PreferencesManager) {
             }
             composable<SignUpScreen> {
                 SignUpScreen(
-                    navController, preferencesManager, onLangChange = { newLang ->
+                    navController, preferencesManager,
+                    onLangChange = { newLang ->
                         preferencesManager.saveLanguageCode(newLang.isoCode)
                         currentLanguage = newLang // This triggers the RTL/LTR flip
                     }
@@ -151,7 +156,7 @@ fun MainScreen(preferencesManager: PreferencesManager) {
                 LoginScreen(
                     navController, preferencesManager,
 
-                )
+                    )
             }
 
             composable<ResetPasswordScreen> {
@@ -192,6 +197,16 @@ fun MainScreen(preferencesManager: PreferencesManager) {
                         popUpTo(SplashScreen) { inclusive = true }
                     }
                 }
+            }
+            composable<LanguageSelectionScreen> {
+                LanguageSelectionScreen(
+                    navController,
+                    preferencesManager,
+                    onLangChange = { newLang ->
+                        preferencesManager.saveLanguageCode(newLang.isoCode)
+                        currentLanguage = newLang // This triggers the RTL/LTR flip
+                    }
+                )
             }
 
 

@@ -1,6 +1,5 @@
-package com.example.carware.network.Api
+package com.example.carware.network.api
 
-import com.example.carware.network.apiRequests.auth.SignUpRequest
 import com.example.carware.network.apiRequests.vehicle.VehicleRequest
 import com.example.carware.network.apiResponse.vehicle.Brand
 import com.example.carware.network.apiResponse.vehicle.BrandResponse
@@ -8,12 +7,10 @@ import com.example.carware.network.apiResponse.vehicle.GetVehicleResponse
 import com.example.carware.network.apiResponse.vehicle.Model
 import com.example.carware.network.apiResponse.vehicle.ModelResponse
 import com.example.carware.network.apiResponse.vehicle.VehicleResponse
-import com.example.carware.network.apiResponse.vehicle.Vehicles
 import com.example.carware.network.createHttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
-import io.ktor.client.request.headers
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -23,7 +20,6 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
-import kotlinx.coroutines.delay
 
 suspend fun getBrands(): List<Brand> {
     val client = createHttpClient()

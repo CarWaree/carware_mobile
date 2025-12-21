@@ -41,7 +41,7 @@ import com.example.carware.m
 import com.example.carware.navigation.LoginScreen
 import com.example.carware.navigation.VerificationCodeScreen
 import com.example.carware.network.apiRequests.auth.ForgotPasswordRequest
-import com.example.carware.network.Api.forgotPasswordUser
+import com.example.carware.network.api.forgotPasswordUser
 import com.example.carware.screens.appButtonBack
 import com.example.carware.screens.appGradBack
 import kotlinx.coroutines.CoroutineScope

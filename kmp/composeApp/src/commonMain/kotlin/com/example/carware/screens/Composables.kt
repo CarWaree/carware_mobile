@@ -47,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -54,6 +55,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import carware.composeapp.generated.resources.Res
@@ -61,6 +63,7 @@ import carware.composeapp.generated.resources.arrow_1
 import carware.composeapp.generated.resources.audi
 import carware.composeapp.generated.resources.car
 import carware.composeapp.generated.resources.check_circle
+import carware.composeapp.generated.resources.clander_right_arrow
 import carware.composeapp.generated.resources.color
 import carware.composeapp.generated.resources.cuate
 import carware.composeapp.generated.resources.dots
@@ -665,10 +668,10 @@ fun UsersCar(
             .background(Color(204, 204, 204, 255))
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
-    ){
+    ) {
 
         Box(
-            modifier = Modifier.size(50.dp) // Set the size of the circle
+            m.size(50.dp) // Set the size of the circle
                 .clip(CircleShape) // This makes it a circle
                 .border(1.dp, Color(30, 30, 30, 51), CircleShape)
         ) {
@@ -682,8 +685,10 @@ fun UsersCar(
             )
         } // car image
         Spacer(modifier = Modifier.width(22.dp))
-        Column(modifier = Modifier.fillMaxHeight(),
-            verticalArrangement = Arrangement.Center) {
+        Column(
+            modifier = Modifier.fillMaxHeight(),
+            verticalArrangement = Arrangement.Center
+        ) {
             Text(
                 brand,
                 fontFamily = popSemi,
@@ -706,7 +711,7 @@ fun UsersCar(
             contentDescription = null,
             tint = if (isSelected) Color(194, 0, 0, 255) else Color.Transparent,
             modifier = m
-            .size(20.dp)
+                .size(20.dp)
 
         )
 
@@ -833,37 +838,212 @@ fun SelectDropdown(
 
 
 @Composable
-fun LanguageSwitcher(
-    currentLanguage: AppLanguage,
-    onLangChange: (AppLanguage) -> Unit
-) {
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text(text = "Language / اللغة", style = MaterialTheme.typography.titleMedium)
+fun CalenderBox() {
+    var currentMonthIndex by remember { mutableStateOf(10) } // November
+    var currentYear by remember { mutableStateOf(2025) }
+    var selectedDay by remember { mutableStateOf<String?>(null) }
+    val months = listOf(
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    )
+    val daysOfWeek = listOf("SUN", "MON", "TUE", "WEN", "THU", "FRI", "SAT")
 
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            // Button for English
-            Button(
-                onClick = { onLangChange(AppLanguage.EN) },
-                enabled = currentLanguage != AppLanguage.EN // Disable if already English
-            ) {
-                Text("English")
+    val popSemi = FontFamily(Font(Res.font.poppins_semibold))
+
+    Column(
+        modifier = m
+            .width(375.dp)
+            .clip(RoundedCornerShape(5.dp))
+            .background(Color(207, 207, 207, 207))
+    ) {
+        Row(
+            modifier = m
+                .fillMaxWidth()
+                .height(50.dp)
+                .appButtonBack(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            // Month Selector
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    painter = painterResource(Res.drawable.clander_right_arrow),
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = m
+                        .rotate(180f)
+                        .size(20.dp)
+                        .clickable {
+                            if (currentMonthIndex > 0) currentMonthIndex--
+                            else {
+                                currentMonthIndex = 11
+                                currentYear--
+                            }
+                        }
+                )
+                Text(
+                    text = months[currentMonthIndex],
+                    color = Color.White,
+                    fontFamily = popSemi,
+                    fontSize = 20.sp,
+                    modifier = m.padding(horizontal = 10.dp)
+                )
+                Icon(
+                    painter = painterResource(Res.drawable.clander_right_arrow),
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = m
+                        .size(20.dp)
+                        .clickable {
+                            if (currentMonthIndex < 11) currentMonthIndex++
+                            else {
+                                currentMonthIndex = 0
+                                currentYear++
+                            }
+                        }
+                )
             }
 
-            Spacer(Modifier.width(8.dp))
+            // Year Selector
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    painter = painterResource(Res.drawable.clander_right_arrow),
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = m
+                        .rotate(180f)
+                        .size(20.dp)
+                        .clickable { currentYear-- }
+                )
+                Text(
+                    text = currentYear.toString(),
+                    color = Color.White,
+                    fontFamily = popSemi,
+                    fontSize = 20.sp,
+                    modifier = m.padding(horizontal = 10.dp)
+                )
+                Icon(
+                    painter = painterResource(Res.drawable.clander_right_arrow),
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = m
+                        .size(20.dp)
+                        .clickable { currentYear++ }
+                )
+            }
+        }
 
-            // Button for Arabic
-            Button(
-                onClick = { onLangChange(AppLanguage.AR) },
-                enabled = currentLanguage != AppLanguage.AR // Disable if already Arabic
-            ) {
-                Text("العربية")
+        Spacer(modifier = m.height(10.dp))
+
+        // Days Header
+        Row(
+            modifier = m.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            daysOfWeek.forEach { day ->
+                Text(
+                    text = day,
+                    fontSize = 12.sp,
+                    color = Color(30, 30, 30, 153),
+                    fontFamily = popSemi,
+                    modifier = m.width(40.dp),
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+
+        // Days Grid (Hardcoded to match image)
+        val calendarDays = listOf(
+            listOf(
+                "28" to false,
+                "29" to false,
+                "30" to false,
+                "1" to true,
+                "2" to true,
+                "3" to true,
+                "4" to true
+            ),
+            listOf(
+                "5" to true,
+                "6" to true,
+                "7" to true,
+                "8" to true,
+                "9" to true,
+                "10" to true,
+                "11" to true
+            ),
+            listOf(
+                "12" to true,
+                "13" to true,
+                "14" to true,
+                "15" to true,
+                "16" to true,
+                "17" to true,
+                "18" to true
+            ),
+            listOf(
+                "19" to true,
+                "20" to true,
+                "21" to true,
+                "22" to true,
+                "23" to true,
+                "24" to true,
+                "25" to true
+            ),
+            listOf(
+                "26" to true,
+                "27" to true,
+                "28" to true,
+                "29" to true,
+                "30" to true,
+                "1" to false,
+                "2" to false
+            )
+        )
+
+        Column(modifier = m.padding(vertical = 10.dp)) {
+            calendarDays.forEach { week ->
+                Row(
+                    modifier = m.fillMaxWidth().padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    week.forEach { (day, isCurrentMonth) ->
+                        val isSelected = selectedDay == day && isCurrentMonth
+
+                        Box(
+                            modifier = m
+                                .size(40.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                // Highlight the background if selected
+                                .background(if (isSelected) Color(0xFFC20000) else Color.Transparent)
+                                .clickable(enabled = isCurrentMonth) {
+                                    selectedDay = day
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = day,
+                                fontSize = 18.sp,
+                                // Change text color based on selection and month
+                                color = when {
+                                    isSelected -> Color.White
+                                    isCurrentMonth -> Color(30, 30, 30, 153)
+                                    else -> Color(30, 30, 30, 102)
+                                },
+                                fontFamily = popSemi,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                }
             }
         }
     }
 }
+
+
 @Preview
 @Composable
-fun SelectedCarPreviewe() {
+fun PrevLine() {
+    CalenderBox()
 }
-
-

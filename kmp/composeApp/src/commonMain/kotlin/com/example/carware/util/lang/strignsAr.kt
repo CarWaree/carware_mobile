@@ -1,10 +1,28 @@
 package com.example.carware.util.lang
 val StringsAr = mapOf(
+
+    "CHOOSE_LANG" to "اختر لغتك",
+    "LANGUAGE_SELECTION_SUBTITLE" to "تفضيل اللغة الخاص بك",
+    "ENGLISH" to "الإنجليزية",
+    "ARABIC" to "العربية",
+    "CONTINUE" to "متابعة",
+    "CHANGE_LANG" to "يمكنك تغيير ذلك لاحقًا من الإعدادات",
+
+
     // Onboarding
     "GET_STARTED" to "ابدأ",
+    "CONTINUE_AS_GUEST" to "متابعه ك زأئر",
     "SKIP" to "تخطي",
     "BACK" to "رجوع",
     "NEXT" to "التالي",
+    "ONBOARDING_TITLE_1" to "رعاية موثوقة يمكنك الاعتماد عليها",
+    "ONBOARDING_DESC_1" to "خدمات معتمدة، أسعار واضحة، و\nجودة يمكنك الوثوق بها.",
+
+    "ONBOARDING_TITLE_2" to "اعرف حالة سيارتك",
+    "ONBOARDING_DESC_2" to "قم بتوصيل مستشعر OBD لمتابعة حالة المحرك واكتشاف المشاكل فورًا.",
+
+    "ONBOARDING_TITLE_3" to "جاهز للحفاظ على سيارتك في أفضل حال؟",
+    "ONBOARDING_DESC_3" to "انضم إلى الآلاف الذين يثقون بـ CarWare.",
 
     // Sign up
     "WELCOME_MESSAGE" to "مرحباً!",

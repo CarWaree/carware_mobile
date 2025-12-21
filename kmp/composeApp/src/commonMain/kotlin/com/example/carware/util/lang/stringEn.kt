@@ -1,11 +1,32 @@
 package com.example.carware.util.lang
 
 val StringsEn = mapOf(
+
+
+    //Select Language Screen
+    "CHOOSE_LANG" to "Choose your Language",
+    "LANGUAGE_SELECTION_SUBTITLE" to "Your  language  preference",
+    "ENGLISH" to "English",
+    "ARABIC" to "Arabic",
+    "CONTINUE" to "Continue",
+    "CHANGE_LANG" to " you can change this later in settings",
+
+
     // Onboarding
     "GET_STARTED" to "Get Started",
+    "CONTINUE_AS_GUEST" to "Continue as a Guest",
     "SKIP" to "Skip",
     "BACK" to "Back",
     "NEXT" to "Next",
+
+    "ONBOARDING_TITLE_1" to "Reliable Care You Can Trust",
+    "ONBOARDING_DESC_1" to "Certified services, clear pricing, and\nquality you can depend on.",
+
+    "ONBOARDING_TITLE_2" to "Know Your Car’s Health",
+    "ONBOARDING_DESC_2" to "Connect your OBD sensor to monitor engine health and detect issues instantly.",
+
+    "ONBOARDING_TITLE_3" to "Ready to keep your car in top shape!",
+    "ONBOARDING_DESC_3" to "Join thousands who trust CarWare.",
 
     // Sign up
     "WELCOME_MESSAGE" to "Welcome!",

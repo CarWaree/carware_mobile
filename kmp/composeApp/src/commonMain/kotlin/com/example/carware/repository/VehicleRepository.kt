@@ -1,17 +1,15 @@
 package com.example.carware.repository
 
-import com.example.carware.network.Api.addVehicles
-import com.example.carware.network.Api.getBrands
-import com.example.carware.network.Api.getModels
-import com.example.carware.network.Api.getVehicles
+import com.example.carware.network.api.addVehicles
+import com.example.carware.network.api.getBrands
+import com.example.carware.network.api.getModels
+import com.example.carware.network.api.getVehicles
 import com.example.carware.network.apiRequests.vehicle.VehicleRequest
 import com.example.carware.network.apiResponse.vehicle.Brand
 import com.example.carware.network.apiResponse.vehicle.Model
-import com.example.carware.network.apiResponse.vehicle.Vehicle
 import com.example.carware.network.apiResponse.vehicle.VehicleResponse
 import com.example.carware.network.apiResponse.vehicle.Vehicles
 import com.example.carware.util.storage.PreferencesManager
-import kotlinx.coroutines.delay
 
 class VehicleRepository(private val prefs: PreferencesManager) {
 

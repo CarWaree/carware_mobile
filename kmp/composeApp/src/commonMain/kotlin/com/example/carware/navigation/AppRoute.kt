@@ -39,6 +39,9 @@ object AddCarScreen
 @Serializable
 object SplashScreen
 
+@Serializable
+object LanguageSelectionScreen
+
 //// Optional: Sealed class wrapper without serialization
 //sealed class AppRoute {
 //    object SignUp : AppRoute()

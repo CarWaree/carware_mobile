@@ -1,8 +1,7 @@
-package com.example.carware.network.Api
+package com.example.carware.network.api
 
 import com.example.carware.network.apiResponse.schedule.Centers
 import com.example.carware.network.apiResponse.schedule.Service
-import com.example.carware.network.apiResponse.schedule.ServiceCentersResponse
 import com.example.carware.network.apiResponse.schedule.ServiceTypesResponse
 import com.example.carware.network.createHttpClient
 import io.ktor.client.call.body

@@ -15,6 +15,7 @@ import carware.composeapp.generated.resources.Res
 
 import com.example.carware.navigation.AddCarScreen
 import com.example.carware.navigation.HomeScreen
+import com.example.carware.navigation.LanguageSelectionScreen
 import com.example.carware.navigation.OnboardingScreen
 import com.example.carware.navigation.SignUpScreen
 import com.example.carware.util.storage.PreferencesManager
@@ -34,6 +35,7 @@ fun SplashScreen(
         delay(1800)
 
         val destination = when {
+            !preferencesManager.isLanguageSelected() -> LanguageSelectionScreen
             !preferencesManager.isOnboardingComplete() -> OnboardingScreen
             !preferencesManager.isLoggedIn() -> SignUpScreen
             !preferencesManager.hasAddedCar() -> AddCarScreen

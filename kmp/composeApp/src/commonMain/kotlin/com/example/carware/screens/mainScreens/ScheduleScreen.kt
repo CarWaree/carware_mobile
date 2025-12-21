@@ -32,6 +32,7 @@ import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.m
 import com.example.carware.network.apiResponse.schedule.Service
+import com.example.carware.screens.CalenderBox
 import com.example.carware.screens.SelectDropdown
 import com.example.carware.screens.UsersCar
 import com.example.carware.viewModel.schedule.ScheduleScreenViewModel
@@ -157,7 +158,7 @@ fun ScheduleScreen(
             SelectDropdown(
                 label = "select your Provider",
                 selectedValue = state.selectedCenter,
-                options = state.availableCenters.mapNotNull { it.name } ,
+                options = state.availableCenters.mapNotNull { it.name },
                 onSelect = { name ->
                     state.availableCenters.firstOrNull { it.name == name }?.let {
                         viewModel.selectCenter(it)
@@ -166,9 +167,8 @@ fun ScheduleScreen(
             )
 
         }     // select Center dropdown
-
-
-
+        Spacer(m.height(6.dp))
+        CalenderBox()
 
 
     }

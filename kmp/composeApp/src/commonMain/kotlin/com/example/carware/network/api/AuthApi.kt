@@ -1,4 +1,4 @@
-package com.example.carware.network.Api
+package com.example.carware.network.api
 
 import com.example.carware.network.apiRequests.auth.LoginRequest
 import com.example.carware.network.apiRequests.auth.SignUpRequest
