@@ -73,10 +73,10 @@ val StringsEn = mapOf(
     "CONFIRM_YOUR_PASSWORD_TITLE" to "Confirm your Password",
 
     // Verification Code
-    "OTP_EMAIL" to "We’ve sent a 6-digit code to your email",
+    "OTP_EMAIL" to "We’ve sent a 6-digit code to your email\n enter the code to continue",
     "CODE_SENT" to "Code sent successfully",
     "ENTER_CODE" to "Enter Verification Code",
-    "ENTER_CODE_SUBTITLE" to "\"enter the code to continues",
+//    "ENTER_CODE_SUBTITLE" to "enter the code to continue",
     "CODE_EXPIRED" to "Code will expire in 3 minutes",
     "OTP_REQUIRED" to "OTP is required",
     "OTP" to "OTP ",

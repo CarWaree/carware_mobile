@@ -1,33 +1,38 @@
 package com.example.carware.screens.auth
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -36,31 +41,34 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
-import carware.composeapp.generated.resources.carware
-import carware.composeapp.generated.resources.line_1
+import carware.composeapp.generated.resources.new_logo
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.navigation.LoginScreen
 import com.example.carware.navigation.NewPasswordScreen
-import com.example.carware.network.apiRequests.auth.OTPRequest
-import com.example.carware.network.api.otpVerificationUser
+import com.example.carware.navigation.VerificationCodeScreen
+import com.example.carware.screens.LoadingOverlay
+import com.example.carware.screens.ToastMessage
 import com.example.carware.screens.appButtonBack
 import com.example.carware.screens.appGradBack
 import com.example.carware.util.lang.AppLanguage
 import com.example.carware.util.storage.PreferencesManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.example.carware.viewModel.auth.otpVerification.OTPViewModel
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun VerificationCodeScreen(navController: NavController,
-                           preferencesManager: PreferencesManager ,
+fun VerificationCodeScreen(
+    navController: NavController,
+    preferencesManager: PreferencesManager,
+    viewModel: OTPViewModel
 ) {
+
+    val state by viewModel.state.collectAsState()
+
     val strings = LocalStrings.current
     val currentLang = AppLanguage.fromCode(preferencesManager.getLanguageCode())
     val popSemi = FontFamily(
@@ -72,11 +80,14 @@ fun VerificationCodeScreen(navController: NavController,
     val previousEntry = navController.previousBackStackEntry
     val previousRoute = previousEntry?.destination?.route
 
-    val cameFromSignup = previousRoute?.contains("SignUpScreen") == true
-    val cameFromReset = previousRoute?.contains("ResetPasswordScreen") == true
+    val otpState = rememberTextFieldState()
+    val errorColor = Color(194, 0, 0, 255)
+    val normalBorderColor = Color(118, 118, 118, 255)
+    val placeholderColor = Color(30, 30, 30, 168)
 
-    var OTP by remember { mutableStateOf("") }
-    var isErrorOTP by remember { mutableStateOf(false) }
+//
+//    var OTP by remember { mutableStateOf("") }
+//    var isErrorOTP by remember { mutableStateOf(false) }
 
     val textFieldColors = TextFieldDefaults.colors(
 
@@ -108,6 +119,14 @@ fun VerificationCodeScreen(navController: NavController,
 
     )
 
+    LaunchedEffect(state.isSuccess) {
+        if (state.isSuccess) {
+            navController.navigate(NewPasswordScreen ){
+                popUpTo(VerificationCodeScreen) { inclusive = true }
+            }
+        }
+    }
+
     Column(
         modifier = m
             .fillMaxSize()
@@ -115,37 +134,43 @@ fun VerificationCodeScreen(navController: NavController,
             .padding(top = 100.dp)
 
     ) {
-        Box(
-            modifier = m
-                .padding(start = 95.dp),
+        Column(
+            m
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            AnimatedVisibility(
+                visible = state.errorMessage != null,
+                enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+                exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
+                modifier = Modifier
+                    .padding(top = 20.dp) // Gap from the very top of the phone
+            ) {
+                state.errorMessage?.let { msg ->
+                    ToastMessage(message = msg, state = false)
+
+                    LaunchedEffect(msg) {
+                        delay(3000)
+                        viewModel.clearErrorMessage()
+                    }
+                }
+            }
+
             Icon(
-                painter = painterResource(Res.drawable.line_1),
+                painter = painterResource(Res.drawable.new_logo),
                 contentDescription = null,
-                tint = Color(211, 203, 203, 255)
+                tint = Color(211, 203, 203, 255),
+                modifier = m.scale(0.8f)
             )
 
-        }
-        Spacer(modifier = m.padding(vertical = 4.dp))
-
-        Box(
-            modifier = m.padding(start = 95.dp),
-        ) {
-            Icon(
-                painter = painterResource(Res.drawable.carware),
-                contentDescription = null,
-                tint = Color(211, 203, 203, 255)
-            )
-
 
         }
-        Spacer(modifier = m.padding(vertical = 20.dp))
-
         Column(modifier = m.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
 
             Card(
                 modifier = m
-                    .size(width = 325.dp, height = 350.dp),
+                    .fillMaxWidth(0.87f)
+                    .height(375.dp),
                 shape = RoundedCornerShape(15.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = Color(217, 217, 217, 255)
@@ -167,6 +192,8 @@ fun VerificationCodeScreen(navController: NavController,
 
 
                         )
+                    Spacer(modifier = Modifier.padding(top = 4.dp))
+
                     Text(
                         strings.get("OTP_EMAIL"),
                         fontFamily = popSemi,
@@ -174,27 +201,19 @@ fun VerificationCodeScreen(navController: NavController,
                         color = Color(30, 30, 30, 168)
 
                     )
-                    Spacer(modifier = m.padding(vertical = 8.dp))
-                    Text(
-                        strings.get("ENTER_CODE_SUBTITLE"),
-                        fontFamily = popSemi,
-                        fontSize = 12.sp,
-                        color = Color(30, 30, 30, 168)
-
-                    )
+                    Spacer(modifier = m.padding(vertical = 18.dp))
                     OutlinedTextField(
                         modifier = m.size(280.dp, 50.dp),
-                        value = OTP,
+                        value = state.otp,
                         onValueChange = {
-                            if (it.length <= 6) OTP = it
-                            isErrorOTP
+                            viewModel.onOtpChange(it)
                         },
                         placeholder = {
                             Text(
-                                text = if (isErrorOTP) strings.get("OTP_REQUIRED") else strings.get("OTP"),
+                                text = if (state.otpError) strings.get("OTP_REQUIRED") else strings.get("OTP"),
                                 fontFamily = popMid,
                                 fontSize = 12.sp,
-                                color = if (isErrorOTP) Color(194, 0, 0, 255)
+                                color = if (state.otpError) Color(194, 0, 0, 255)
                                 else Color(
                                     30,
                                     30,
@@ -210,21 +229,20 @@ fun VerificationCodeScreen(navController: NavController,
                         shape = RoundedCornerShape(8.dp),
                         colors = textFieldColors
                     ) // otp
-
+//                    OtpCodeInput(6,preferencesManager)
+                    Spacer(modifier = Modifier.padding(top = 8.dp))
 
                     Row(
-                        m.fillMaxWidth()
-                            .padding(start = 32.dp), horizontalArrangement = Arrangement.Start
+                        m.fillMaxWidth(0.87f)
+                            , horizontalArrangement = Arrangement.Start
                     ) {
-                        Text(
-                            strings.get("CODE_EXPIRED"),
-                            fontFamily = popSemi,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(30, 30, 30, 168)
-
-                        )
-
+                            Text(
+                                text = if (state.otpError) strings.get("OTP_REQUIRED") else strings.get("CODE_EXPIRED"),
+                                fontFamily = popMid,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.W500,
+                                color = if (state.otpError) errorColor else placeholderColor
+                            )
                     }
                     Spacer(modifier = m.padding(vertical = 8.dp))
 
@@ -234,44 +252,7 @@ fun VerificationCodeScreen(navController: NavController,
 //                        cameFromReset -> navController.navigate(NewPasswordScreen)
 //                        else -> navController.popBackStack() // fallback
                         //}
-                        onClick = {
-                            isErrorOTP = OTP.isBlank()
-                            if (!isErrorOTP) {
-                                try {
-                                    // 3️⃣ Create signup request
-                                    val request = OTPRequest(
-                                        otp = OTP
-                                    )
-
-                                    // 4️⃣ Launch coroutine to call API
-                                    CoroutineScope(Dispatchers.Default).launch {
-                                        try {
-                                            val response = 
-                                                otpVerificationUser(request)
-
-                                            withContext(Dispatchers.Main) {
-                                                // Use performLogin to save the token and potentially the user ID if available
-                                                preferencesManager.performLogin(
-                                                    token = response.data.token,
-                                                )
-                                                navController.navigate(NewPasswordScreen)
-                                            }
-
-
-                                        } catch (e: Exception) {
-                                            withContext(Dispatchers.Main) {
-                                                //  Handle error
-                                                println("email  failed: ${e.message}")
-                                            }
-                                        }
-                                    }
-
-                                } catch (e: Exception) {
-                                    // This should rarely happen unless request creation fails
-                                    println("Request creation failed: ${e.message}")
-                                }
-                            }
-                        },
+                        onClick = { viewModel.otpVerification() },
                         modifier = m
 
                             .size(width = 280.dp, height = 45.dp)
@@ -340,6 +321,9 @@ fun VerificationCodeScreen(navController: NavController,
 
             }
 
+        }
+        if (state.isLoading) {
+            LoadingOverlay()
         }
 
 

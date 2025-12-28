@@ -21,6 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.carware.navigation.AddCarScreen
+import com.example.carware.navigation.EmailVerificationScreen
 import com.example.carware.navigation.HistoryScreen
 import com.example.carware.navigation.HomeScreen
 import com.example.carware.navigation.LanguageSelectionScreen
@@ -32,13 +33,16 @@ import com.example.carware.navigation.ScheduleScreen
 import com.example.carware.navigation.SettingsScreen
 import com.example.carware.navigation.SignUpScreen
 import com.example.carware.navigation.SplashScreen
+import com.example.carware.navigation.TestScreen
 import com.example.carware.navigation.VerificationCodeScreen
 import com.example.carware.repository.ServiceRepository
 import com.example.carware.repository.VehicleRepository
+import com.example.carware.repository.auth.AuthRepository
 import com.example.carware.screens.AddCarScreen
 import com.example.carware.screens.BottomNavBar
 import com.example.carware.screens.onBoarding.OnBoardingScreen
 import com.example.carware.screens.SplashScreen
+import com.example.carware.screens.auth.EmailVerificationScreen
 import com.example.carware.screens.auth.LoginScreen
 import com.example.carware.screens.auth.NewPasswordScreen
 import com.example.carware.screens.auth.ResetPasswordScreen
@@ -55,6 +59,10 @@ import com.example.carware.util.navBar.bottomTabs
 import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.home.HomeScreenViewModel
 import com.example.carware.viewModel.addcar.AddCarViewModel
+import com.example.carware.viewModel.auth.logIn.LogInViewModel
+import com.example.carware.viewModel.auth.newPassword.NewPasswordViewModel
+import com.example.carware.viewModel.auth.otpVerification.OTPViewModel
+import com.example.carware.viewModel.auth.signUp.SignUpViewModel
 import com.example.carware.viewModel.schedule.ScheduleScreenViewModel
 
 val m = Modifier
@@ -97,7 +105,7 @@ fun MainScreen(preferencesManager: PreferencesManager) {
     ) {
         NavHost(
             navController = navController,
-            startDestination =SplashScreen,
+            startDestination = VerificationCodeScreen,
         )
         {
             composable<HomeScreen> {
@@ -133,13 +141,15 @@ fun MainScreen(preferencesManager: PreferencesManager) {
                             )
 
                             HistoryScreen::class -> HistoryScreen(navController)
-                            SettingsScreen::class -> SettingsScreen(navController,
+                            SettingsScreen::class -> SettingsScreen(
+                                navController,
                                 preferencesManager,
                                 onLangChange = { newLang ->
                                     preferencesManager.saveLanguageCode(newLang.isoCode)
                                     currentLanguage = newLang // This is the magic that flips the UI
                                 }
                             )
+
                             else -> Box(Modifier.fillMaxSize())
                         }
                     }
@@ -151,33 +161,42 @@ fun MainScreen(preferencesManager: PreferencesManager) {
             }
             composable<SignUpScreen> {
                 SignUpScreen(
-                    navController, preferencesManager,
-                    onLangChange = { newLang ->
-                        preferencesManager.saveLanguageCode(newLang.isoCode)
-                        currentLanguage = newLang // This triggers the RTL/LTR flip
-                    }
+                    navController,
+                    preferencesManager,
+                    SignUpViewModel(AuthRepository(preferencesManager),
+                        preferencesManager)
                 )
             }
             composable<LoginScreen> {
                 LoginScreen(
                     navController,
                     preferencesManager,
-
+                    LogInViewModel(AuthRepository(preferencesManager),
+                        preferencesManager)
                     )
             }
 
             composable<ResetPasswordScreen> {
-                ResetPasswordScreen(navController,preferencesManager)
+                ResetPasswordScreen(navController, preferencesManager)
             }
             composable<VerificationCodeScreen> {
-                VerificationCodeScreen(navController, preferencesManager)
+                VerificationCodeScreen(navController,
+                    preferencesManager,
+                    OTPViewModel(AuthRepository(preferencesManager),
+                        preferencesManager)
+                )
             }
             composable<NewPasswordScreen> {
-                NewPasswordScreen(navController, preferencesManager)
+                NewPasswordScreen(navController,
+                    preferencesManager,
+                    NewPasswordViewModel(AuthRepository(preferencesManager),
+                        preferencesManager)
+                    )
             }
             composable<SettingsScreen> {
-                SettingsScreen(navController,
-                        preferencesManager,
+                SettingsScreen(
+                    navController,
+                    preferencesManager,
                     onLangChange = { newLang ->
                         preferencesManager.saveLanguageCode(newLang.isoCode)
                         currentLanguage = newLang // This is the magic that flips the UI
@@ -221,9 +240,14 @@ fun MainScreen(preferencesManager: PreferencesManager) {
                 )
             }
 
+            composable<TestScreen> {
+                com.example.carware.screens.TestScreen(navController, preferencesManager)
 
+            }
+            composable<EmailVerificationScreen> {
+                EmailVerificationScreen(navController)
+
+            }
         }
     }
-
-
 }

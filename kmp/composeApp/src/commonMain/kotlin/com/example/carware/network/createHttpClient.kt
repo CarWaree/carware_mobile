@@ -8,7 +8,9 @@ import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.basic
 import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
@@ -23,12 +25,15 @@ fun createHttpClient(): HttpClient {
                 allowSpecialFloatingPointValues = true
             })
         }
+        HttpClient {
+            expectSuccess = true // default
+        }
 
 
         install(Logging) {
+            logger = Logger.DEFAULT
             level = LogLevel.ALL
         }
-
 
 //        install(Auth) {
 //            bearer {

@@ -45,3 +45,32 @@ class VehicleRepository(private val prefs: PreferencesManager) {
 
 }
 
+
+
+
+//class ItemsRepository(
+//    private val api: ItemsApi
+//) {
+//    private var currentPage = 1
+//    private var totalPages = Int.MAX_VALUE
+//    private val pageSize = 20
+//
+//    suspend fun loadNextPage(): List<Item> {
+//        if (currentPage > totalPages) {
+//            println("🚫 No more pages")
+//            return emptyList()
+//        }
+//
+//        val response = api.fetchItems(currentPage, pageSize)
+//
+//        totalPages = response.totalPages
+//        currentPage++
+//
+//        return response.data
+//    }
+//
+//    fun reset() {
+//        currentPage = 1
+//        totalPages = Int.MAX_VALUE
+//    }
+//}

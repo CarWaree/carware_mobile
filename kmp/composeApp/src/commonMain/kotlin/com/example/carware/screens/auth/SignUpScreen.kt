@@ -1,9 +1,13 @@
 package com.example.carware.screens.auth
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,10 +26,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -43,29 +49,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
-import carware.composeapp.generated.resources.carware
 import carware.composeapp.generated.resources.eye_off
 import carware.composeapp.generated.resources.eyee
 import carware.composeapp.generated.resources.google_icon_logo_svgrepo_com
-import carware.composeapp.generated.resources.line_1
+import carware.composeapp.generated.resources.new_logo
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.LocalStrings
 import com.example.carware.m
-import com.example.carware.navigation.AddCarScreen
+import com.example.carware.navigation.EmailVerificationScreen
 import com.example.carware.navigation.LoginScreen
 import com.example.carware.navigation.SignUpScreen
-import com.example.carware.network.api.signupUser
-import com.example.carware.network.apiRequests.auth.SignUpRequest
+import com.example.carware.screens.LoadingOverlay
+import com.example.carware.screens.ToastMessage
 import com.example.carware.screens.appButtonBack
 import com.example.carware.screens.appGradBack
 import com.example.carware.util.lang.AppLanguage
 import com.example.carware.util.storage.PreferencesManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.example.carware.viewModel.auth.signUp.SignUpViewModel
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 
@@ -73,10 +75,12 @@ import org.jetbrains.compose.resources.painterResource
 fun SignUpScreen(
     navController: NavController,
     preferencesManager: PreferencesManager,
-    onLangChange: (AppLanguage) -> Unit // Add this
+    viewModel: SignUpViewModel
 ) {
     val strings = LocalStrings.current
     val currentLang = AppLanguage.fromCode(preferencesManager.getLanguageCode())
+
+    val state by viewModel.state.collectAsState()
 
 
     val popSemi = FontFamily(
@@ -85,22 +89,8 @@ fun SignUpScreen(
 
     val popMid = FontFamily(Font(Res.font.poppins_medium))
 
-    var fName by remember { mutableStateOf("") }
-    var lName by remember { mutableStateOf("") }
-    var userName by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var pass by remember { mutableStateOf("") }
-    var num by remember { mutableStateOf("") }
-
     var isPassVisible by remember { mutableStateOf(false) }
 
-    var confPass by remember { mutableStateOf("") }
-    var userNameError by remember { mutableStateOf(false) }
-    var emailError by remember { mutableStateOf(false) }
-    var passError by remember { mutableStateOf(false) }
-    var numError by remember { mutableStateOf(false) }
-    var confPassError by remember { mutableStateOf(false) }
-    var agreed by remember { mutableStateOf(false) }
 
     val scrollState = rememberScrollState()
     val textFieldColors = TextFieldDefaults.colors(
@@ -133,7 +123,14 @@ fun SignUpScreen(
 
     )
 
-//    val token = preferencesManager.getToken()
+    LaunchedEffect(state.needsEmailVerification) {
+        if (state.needsEmailVerification) {
+            navController.navigate(EmailVerificationScreen) {  // Create this screen
+                popUpTo(SignUpScreen) { inclusive = true }
+            }
+        }
+    }
+
 
 
     Column(modifier = m.verticalScroll(scrollState)) {
@@ -141,35 +138,46 @@ fun SignUpScreen(
             modifier = m
                 .fillMaxSize()
                 .appGradBack()
-                .padding(top = 100.dp)
+                .padding(top = 54.dp)
 
 
         ) {
-            Box(
-                modifier = m
-                    .padding(start = 95.dp),
+            Column(
+                m
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Icon(
-                    painter = painterResource(Res.drawable.line_1),
-                    contentDescription = null,
-                    tint = Color(211, 203, 203, 255)
-                )
+                if (state.needsEmailVerification) {
+                    ToastMessage(message = "Check your email to verify your account", state = true)
+                }
+                if (state.errorMessage!=null) {
+                    AnimatedVisibility(
+                        visible = state.errorMessage != null,
+                        enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+                        exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
+                        modifier = Modifier
+                            .padding(top = 20.dp) // Gap from the very top of the phone
+                    ) {
+                        state.errorMessage?.let { msg ->
+                            ToastMessage(message = msg, state = false)
+
+                            LaunchedEffect(msg) {
+                                delay(3000)
+                                viewModel.clearErrorMessage()
+                            }
+                        }
+                    }
+                }else {
+                    Icon(
+                        painter = painterResource(Res.drawable.new_logo),
+                        contentDescription = null,
+                        tint = Color(211, 203, 203, 255),
+                        modifier = m.scale(0.7f)
+                    )
+                }
 
             }
-            Spacer(modifier = m.padding(vertical = 4.dp))
 
-            Box(
-                modifier = m.padding(start = 95.dp),
-            ) {
-                Icon(
-                    painter = painterResource(Res.drawable.carware),
-                    contentDescription = null,
-                    tint = Color(211, 203, 203, 255)
-                )
-
-
-            }
-            Spacer(modifier = m.padding(vertical = 20.dp))
 
             Column(
                 modifier = m
@@ -230,8 +238,8 @@ fun SignUpScreen(
 
                             OutlinedTextField(
                                 modifier = m.size(125.dp, 55.dp),
-                                value = fName,
-                                onValueChange = { fName = it },
+                                value = state.firstName,
+                                onValueChange = { viewModel.onFirstNameChange(it) },
                                 placeholder = {
                                     Text(
                                         strings.get("FIRST_NAME"),
@@ -247,8 +255,8 @@ fun SignUpScreen(
                             Spacer(modifier = m.padding(horizontal = 12.dp))
                             OutlinedTextField(
                                 modifier = m.size(130.dp, 55.dp),
-                                value = lName,
-                                onValueChange = { lName = it },
+                                value = state.lastName,
+                                onValueChange = { viewModel.onLastNameChange(it) },
                                 placeholder = {
                                     Text(
                                         strings.get("LAST_NAME"),
@@ -267,18 +275,22 @@ fun SignUpScreen(
                         Spacer(modifier = m.padding(vertical = 8.dp))
                         OutlinedTextField(
                             modifier = m.size(280.dp, 55.dp),
-                            value = userName,
+                            value = state.userName,
                             onValueChange = {
-                                userName = it
-                                userNameError = false
+                                viewModel.onUserNameChange(it)
                             },
                             placeholder = {
                                 Text(
-                                    text = if (userNameError) strings.get("USERNAME_REQUIRED")
+                                    text = if (state.userNameError) strings.get("USERNAME_REQUIRED")
                                     else strings.get("USERNAME"),
                                     fontFamily = popMid,
                                     fontSize = 12.sp,
-                                    color = if (userNameError) Color(194, 0, 0, 255) else Color(
+                                    color = if (state.userNameError) Color(
+                                        194,
+                                        0,
+                                        0,
+                                        255
+                                    ) else Color(
                                         30,
                                         30,
                                         30,
@@ -286,7 +298,7 @@ fun SignUpScreen(
                                     )
                                 )
                             },
-                            isError = userNameError,
+                            isError = state.userNameError,
 
                             singleLine = true,
                             shape = RoundedCornerShape(8.dp),
@@ -296,18 +308,17 @@ fun SignUpScreen(
                         Spacer(modifier = m.padding(vertical = 8.dp))
                         OutlinedTextField(
                             modifier = m.size(280.dp, 55.dp),
-                            value = email,
+                            value = state.email,
                             onValueChange = {
-                                email = it
-                                emailError = false
+                                viewModel.onEmailChange(it)
                             },
                             placeholder = {
                                 Text(
-                                    text = if (emailError) strings.get("EMAIL_REQUIRED")
+                                    text = if (state.emailError) strings.get("EMAIL_REQUIRED")
                                     else strings.get("EMAIL"),
                                     fontFamily = popMid,
                                     fontSize = 12.sp,
-                                    color = if (emailError) Color(194, 0, 0, 255) else Color(
+                                    color = if (state.emailError) Color(194, 0, 0, 255) else Color(
                                         30,
                                         30,
                                         30,
@@ -315,7 +326,7 @@ fun SignUpScreen(
                                     )
                                 )
                             },
-                            isError = emailError,
+                            isError = state.emailError,
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 keyboardType = KeyboardType.Email
                             ),
@@ -329,49 +340,18 @@ fun SignUpScreen(
                         OutlinedTextField(
 
                             modifier = m.size(280.dp, 55.dp),
-                            value = num,
+                            value = state.pass,
                             onValueChange = {
-                                num = it
-                                passError = false
+                                viewModel.onPasswordChange(it)
                             },
                             placeholder = {
                                 Text(
-                                    text = if (numError) strings.get("PHONE_REQUIRED") else strings.get("PHONE"),
+                                    text = if (state.passError) strings.get("PASSWORD_REQUIRED") else strings.get(
+                                        "PASSWORD"
+                                    ),
                                     fontFamily = popMid,
                                     fontSize = 12.sp,
-                                    color = if (numError) Color(194, 0, 0, 255) else Color(
-                                        30,
-                                        30,
-                                        30,
-                                        168
-                                    )
-                                )
-                            },
-                            isError = numError,
-                            keyboardOptions = KeyboardOptions.Default.copy(
-                                keyboardType = KeyboardType.Phone
-                            ),
-                            singleLine = true,
-                            shape = RoundedCornerShape(8.dp),
-                            colors = textFieldColors
-
-
-                        )//number field
-                        Spacer(modifier = m.padding(vertical = 8.dp))
-                        OutlinedTextField(
-
-                            modifier = m.size(280.dp, 55.dp),
-                            value = pass,
-                            onValueChange = {
-                                pass = it
-                                passError = false
-                            },
-                            placeholder = {
-                                Text(
-                                    text = if (passError) strings.get("PASSWORD_REQUIRED") else strings.get("PASSWORD"),
-                                    fontFamily = popMid,
-                                    fontSize = 12.sp,
-                                    color = if (passError) Color(194, 0, 0, 255) else Color(
+                                    color = if (state.passError) Color(194, 0, 0, 255) else Color(
                                         30,
                                         30,
                                         30,
@@ -380,7 +360,7 @@ fun SignUpScreen(
 
                                 )
                             },
-                            isError = passError,
+                            isError = state.passError,
                             visualTransformation = if (isPassVisible) VisualTransformation.None
                             else PasswordVisualTransformation(),
                             keyboardOptions = KeyboardOptions.Default.copy(
@@ -404,7 +384,7 @@ fun SignUpScreen(
 
                         ) //password field
                         Text(
-                           strings.get("PASSWORD_REQUIREMENTS"),
+                            strings.get("PASSWORD_REQUIREMENTS"),
                             fontFamily = popMid,
                             fontSize = 10.sp,
                             color = Color(30, 30, 30, 168)
@@ -414,17 +394,23 @@ fun SignUpScreen(
                         OutlinedTextField(
 
                             modifier = m.size(280.dp, 55.dp),
-                            value = confPass,
+                            value = state.confPass,
                             onValueChange = {
-                                confPass = it
-                                confPassError = false
+                                viewModel.onConfirmPasswordChange(it)
                             },
                             placeholder = {
                                 Text(
-                                    text = if (confPassError) strings.get("CONFIRM_PASSWORD_REQUIRED") else strings.get("CONFIRM_PASSWORD"),
+                                    text = if (state.confPassError) strings.get("CONFIRM_PASSWORD_REQUIRED") else strings.get(
+                                        "CONFIRM_PASSWORD"
+                                    ),
                                     fontFamily = popMid,
                                     fontSize = 12.sp,
-                                    color = if (passError) Color(194, 0, 0, 255) else Color(
+                                    color = if (state.confPassError) Color(
+                                        194,
+                                        0,
+                                        0,
+                                        255
+                                    ) else Color(
                                         30,
                                         30,
                                         30,
@@ -433,7 +419,7 @@ fun SignUpScreen(
 
                                 )
                             },
-                            isError = confPassError,
+                            isError = state.confPassError,
                             visualTransformation = if (isPassVisible) VisualTransformation.None
                             else PasswordVisualTransformation(),
                             keyboardOptions = KeyboardOptions.Default.copy(
@@ -465,14 +451,15 @@ fun SignUpScreen(
                         ) {
 
                             RadioButton(
-                                selected = agreed,
-                                onClick = { agreed = !agreed },
+                                selected = state.agreeTerms,
+                                onClick = { viewModel.onToggleAgree(!state.agreeTerms) },
                                 colors = RadioButtonDefaults.colors(
                                     selectedColor = Color(0xFFC20000),
                                     unselectedColor = Color.Gray,
                                 )
                             )
-                            Text(strings.get("AGREE_TERMS"),
+                            Text(
+                                strings.get("AGREE_TERMS"),
                                 fontFamily = popMid,
                                 fontSize = 12.sp,
                                 color = Color(30, 30, 30, 168)
@@ -485,64 +472,7 @@ fun SignUpScreen(
                         Card(
 
                             onClick = {
-                                // 1️⃣ Validate fields
-                                val emailEmpty = email.isBlank()
-                                val passwordEmpty = pass.isBlank()
-                                val userEmpty = userName.isBlank()
-                                val confPassEmpty = confPass.isBlank()
-                                val numEmpty = num.isBlank()
-                                val passMismatch = pass != confPass
-                                val agreedEmpty = !agreed
-
-                                // 2️⃣ Show errors
-                                emailError = emailEmpty
-                                passError = passwordEmpty
-                                userNameError = userEmpty
-                                confPassError = confPassEmpty || passMismatch
-                                numError = numEmpty
-
-                                if (!emailEmpty && !passwordEmpty && !userEmpty && !confPassEmpty && !numEmpty && !passMismatch && agreed) {
-                                    try {
-                                        // 3️⃣ Create signup request
-                                        val request = SignUpRequest(
-                                            firstName = fName,
-                                            lastName = lName,
-                                            userName = userName,
-                                            email = email,
-                                            password = pass,
-                                            confirmPassword = confPass
-                                        )
-                                        CoroutineScope(Dispatchers.Default).launch {
-                                            try {
-                                                val response = signupUser(request)
-
-                                                val token = response.data?.token
-                                                    ?: throw IllegalStateException("Token missing in response")
-
-                                                // ✅ Save token (this replaces LoginManager)
-                                                preferencesManager.saveToken(token)
-
-                                                withContext(Dispatchers.Main) {
-                                                    navController.navigate(AddCarScreen) {
-                                                        popUpTo(SignUpScreen) { inclusive = true }
-                                                    }
-                                                }
-
-                                            } catch (e: Exception) {
-                                                withContext(Dispatchers.Main) {
-                                                    // show error to user
-                                                    println("Login failed: ${e.message}")
-                                                }
-                                            }
-
-                                        }
-
-
-                                    } catch (e: Exception) {
-                                        // This should rarely happen unless request creation fails
-                                        println("Request creation failed: ${e.message}")
-                                    }
-                                }
+                                viewModel.signup()
                             },
                             modifier = m
                                 .size(width = 280.dp, height = 50.dp)
@@ -563,7 +493,7 @@ fun SignUpScreen(
                                 horizontalArrangement = Arrangement.Center
                             ) {
                                 Text(
-                                    strings.get("SIGN_IN"),
+                                    strings.get("CREATE_ACCOUNT"),
                                     fontFamily = popSemi,
                                     fontSize = 18.sp,
                                     color = Color(217, 217, 217, 255)
@@ -611,8 +541,7 @@ fun SignUpScreen(
                         Spacer(modifier = m.padding(vertical = 8.dp))
                         Row() {
                             Text(
-                                strings.get("ALREADY_HAVE_ACCOUNT")
-                                , fontFamily = popMid,
+                                strings.get("ALREADY_HAVE_ACCOUNT"), fontFamily = popMid,
                                 fontSize = 12.sp,
                                 color = Color(30, 30, 30, 168)
                             )
@@ -627,7 +556,6 @@ fun SignUpScreen(
                         Spacer(Modifier.padding(vertical = 8.dp))
 
 
-
                     }
 
 
@@ -639,6 +567,9 @@ fun SignUpScreen(
         }
     }
 
+    if (state.isLoading) {
+        LoadingOverlay()
+    }
 
 }
 

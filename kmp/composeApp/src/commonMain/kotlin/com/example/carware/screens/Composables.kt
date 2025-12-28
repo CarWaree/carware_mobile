@@ -28,14 +28,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -46,6 +45,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
@@ -76,7 +76,6 @@ import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import carware.composeapp.generated.resources.success
 import com.example.carware.m
-import com.example.carware.util.lang.AppLanguage
 import com.example.carware.util.navBar.TabItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -362,7 +361,7 @@ fun CarCard(
                     ) //car icon
                     Spacer(modifier = m.padding(horizontal = 2.dp))
                     Text(
-                        brand,
+                        model,
                         fontFamily = popSemi,
                         fontSize = 14.sp,
                         color = Color(102, 102, 102, 255)
@@ -582,12 +581,12 @@ fun UpcomingMaintenance() {
 
 @Composable
 fun ToastMessage(message: String, state: Boolean) {
-//true for success  false for failed
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
 
     Row(
         m
-            .size(360.dp, 50.dp)
+            .fillMaxWidth(0.9f)
+            .height( 50.dp)
             .clip(shape = RoundedCornerShape(8.dp))
             .background(Color(217, 217, 217, 255))
             .border(
@@ -1044,6 +1043,21 @@ fun CalenderBox() {
 }
 
 
+@Composable
+fun LoadingOverlay() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.4f))
+            .blur(radius = 8.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            color = Color(0xFF002F53),
+            modifier = Modifier.size(50.dp)
+        )
+    }
+}
 @Preview
 @Composable
 fun PrevLine() {

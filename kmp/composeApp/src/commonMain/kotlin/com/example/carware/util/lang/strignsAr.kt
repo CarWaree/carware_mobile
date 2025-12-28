@@ -70,10 +70,10 @@ val StringsAr = mapOf(
     "CONFIRM_YOUR_PASSWORD_TITLE" to "تأكيد كلمة المرور",
 
     // Verification Code
-    "OTP_EMAIL" to "لقد أرسلنا رمزًا مكوّنًا من 6 أرقام إلى بريدك الإلكتروني",
+    "OTP_EMAIL" to "لقد أرسلنا رمزًا مكوّنًا من 6 أرقام إلى بريدك الإلكتروني\n أدخل الرمز للمتابعة",
     "CODE_SENT" to "تم إرسال الرمز بنجاح",
     "ENTER_CODE" to "أدخل رمز التحقق",
-    "ENTER_CODE_SUBTITLE" to "أدخل الرمز للمتابعة",
+//    "ENTER_CODE_SUBTITLE" to "أدخل الرمز للمتابعة",
     "CODE_EXPIRED" to "ستنتهي صلاحية الرمز خلال 3 دقائق",
     "OTP_REQUIRED" to "رمز التحقق مطلوب",
     "OTP" to "رمز التحقق",

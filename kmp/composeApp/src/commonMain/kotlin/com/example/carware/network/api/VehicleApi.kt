@@ -21,9 +21,14 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 
-suspend fun getBrands(): List<Brand> {
+suspend fun getBrands(
+    page: Int=1,
+    pageSize: Int=100
+): List<Brand> {
     val client = createHttpClient()
     return client.get("$baseUrl/api/Vehicle/brands") {
+        parameter("page", page)
+        parameter("pageSize", pageSize)
         contentType(ContentType.Application.Json)
     }.body<BrandResponse>().data
 }
