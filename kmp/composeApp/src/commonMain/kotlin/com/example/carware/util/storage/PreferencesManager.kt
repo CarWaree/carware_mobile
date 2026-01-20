@@ -15,9 +15,32 @@ class PreferencesManager(
         private const val KEY_ONBOARDING = "onboarding_complete"
         private const val KEY_CAR_ADDED = "car_added_complete"
         private val LANG_KEY = "selected_language"
-        private const val KEY_LANGUAGE_SELECTED = "is_lang_selected" // The new key
+        private const val KEY_LANGUAGE_SELECTED = "is_lang_selected"
+        private const val KEY_EXPIRES_ON = "expires_on"
+        private const val KEY_EMAIL_VERIFIED = "is_email_verified"
     }
 
+    /* -------------------- Expires On -------------------- */
+    fun saveExpiresOn(expiresOn: String?) {
+        if (expiresOn != null) {
+            settings[KEY_EXPIRES_ON] = expiresOn
+        } else {
+            settings.remove(KEY_EXPIRES_ON)
+        }
+    }
+
+    fun getExpiresOn(): String? {
+        return settings.getStringOrNull(KEY_EXPIRES_ON)
+    }
+
+    /* -------------------- Email Verified -------------------- */
+    fun saveEmailVerified(isVerified: Boolean) {
+        settings.putBoolean(KEY_EMAIL_VERIFIED, isVerified)
+    }
+
+    fun isEmailVerified(): Boolean {
+        return settings.getBoolean(KEY_EMAIL_VERIFIED, false)
+    }
     /* -------------------- Auth Token -------------------- */
 
     fun saveToken(token: String?) {

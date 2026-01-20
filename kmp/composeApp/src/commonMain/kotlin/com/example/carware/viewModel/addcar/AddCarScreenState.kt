@@ -16,5 +16,6 @@ data class AddCarScreenState(
     val availableModels: List<String> = emptyList(),
     val availableColors: List<String> = listOf("Red","Blue","Black","Silver","White","Gray"),
     val availableYears: List<Int> = (1990..2100).toList(),
-    val isSaveButtonEnabled: Boolean = false
+    val isSaveButtonEnabled: Boolean = false,
+    val isSelectedCar: Boolean =false
 )

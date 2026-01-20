@@ -1,10 +1,12 @@
 package com.example.carware.repository
 
 import com.example.carware.network.api.addVehicles
+import com.example.carware.network.api.getAppointments
 import com.example.carware.network.api.getBrands
 import com.example.carware.network.api.getModels
 import com.example.carware.network.api.getVehicles
 import com.example.carware.network.apiRequests.vehicle.VehicleRequest
+import com.example.carware.network.apiResponse.appointment.Appointments
 import com.example.carware.network.apiResponse.vehicle.Brand
 import com.example.carware.network.apiResponse.vehicle.Model
 import com.example.carware.network.apiResponse.vehicle.VehicleResponse
@@ -43,6 +45,23 @@ class VehicleRepository(private val prefs: PreferencesManager) {
         token: String  // Add token parameter
     ): VehicleResponse = addVehicles(vehicleRequest, token)
 
+
+    suspend fun getAppointmentsRepo(): List<Appointments> {
+        // 1. Get token from SharedPrefs
+        val token = prefs.getToken() ?: ""
+
+        if (token.isEmpty()) return emptyList()
+
+        return try {
+            // 2. Call API
+            val response = getAppointments(token)
+
+            // 3. Return only the list of data
+            response.data ?: emptyList()
+        } catch (e: Exception) {
+            emptyList() // Return empty on error to prevent UI crashes
+        }
+    }
 }
 
 

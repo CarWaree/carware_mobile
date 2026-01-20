@@ -5,20 +5,24 @@ import com.example.carware.network.api.loginUser
 import com.example.carware.network.api.otpVerificationUser
 import com.example.carware.network.api.resetPasswordUser
 import com.example.carware.network.api.signupUser
+import com.example.carware.network.api.verifyEmailUser
+import com.example.carware.network.apiRequests.auth.EmailVerificationRequest
 import com.example.carware.network.apiRequests.auth.ForgotPasswordRequest
 import com.example.carware.network.apiRequests.auth.LoginRequest
 import com.example.carware.network.apiRequests.auth.OTPRequest
 import com.example.carware.network.apiRequests.auth.ResetPasswordRequest
 import com.example.carware.network.apiRequests.auth.SignUpRequest
 import com.example.carware.network.apiResponse.auth.AuthResponse
+import com.example.carware.network.apiResponse.auth.EmailVerificationResponse
 import com.example.carware.network.apiResponse.auth.ForgotPasswordResponse
 import com.example.carware.network.apiResponse.auth.OTPResponse
 import com.example.carware.network.apiResponse.auth.ResetPasswordResponse
+import com.example.carware.network.apiResponse.auth.SignUpResponse
 import com.example.carware.util.storage.PreferencesManager
 
 class AuthRepository(private val preferencesManager: PreferencesManager) {
 
-    suspend fun signUpRepo(request: SignUpRequest): AuthResponse {
+    suspend fun signUpRepo(request: SignUpRequest): SignUpResponse {
 
         return signupUser(request)  // Calls your API function directly
     }
@@ -38,6 +42,9 @@ class AuthRepository(private val preferencesManager: PreferencesManager) {
 
     suspend fun resetPasswordRepo(request: ResetPasswordRequest): ResetPasswordResponse {
         return resetPasswordUser(request)
+    }
+    suspend fun verifyEmailRepo(request: EmailVerificationRequest): EmailVerificationResponse{
+        return verifyEmailUser(request)
     }
 
 }

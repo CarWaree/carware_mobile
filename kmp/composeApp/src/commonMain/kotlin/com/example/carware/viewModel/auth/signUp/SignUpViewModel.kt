@@ -101,18 +101,12 @@ class SignUpViewModel(
 
                 val response = repository.signUpRepo(request)
 
-                if (response.data?.isAuthenticated == true) {
+                if (response.data?.isEmailVerified == true) {
                     _state.update { it.copy(isLoading = false, isSuccess = true) }
                 } else {
                     // User created but needs email verification
                     _state.update { it.copy(isLoading = false, needsEmailVerification = true) }
                 }
-
-
-                val token = response.data?.token
-                    ?: throw IllegalStateException("Token missing in response")
-                preferencesManager.saveToken(token)
-
 
                 _state.update {
                     it.copy(isLoading = false, isSuccess = true)

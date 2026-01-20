@@ -20,12 +20,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class AddCarViewModel(val repository: VehicleRepository, preferencesManager: PreferencesManager) : ViewModel() {
+class AddCarViewModel( private val repository: VehicleRepository,
+                       private  val preferencesManager: PreferencesManager
+) : ViewModel() {
     var brands by mutableStateOf<List<Brand>>(emptyList())
     var models: List<Model> = emptyList()
     val availableYears: List<Int> = (1990..2100).toList()
     val colors = listOf("Red", "Blue", "Black", "White", "Silver")  // predefined colors
-    val preferencesManager = preferencesManager
     private val _state = MutableStateFlow(AddCarScreenState())
     val state: StateFlow<AddCarScreenState> = _state
 
@@ -144,6 +145,7 @@ class AddCarViewModel(val repository: VehicleRepository, preferencesManager: Pre
 
                 // Mark car as added
                 preferencesManager.setCarAdded(true)
+
 
                 println("Vehicle added successfully: ${response.message}")
 

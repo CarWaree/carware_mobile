@@ -135,7 +135,7 @@ fun LoginScreen(
 
 LaunchedEffect(state.isSuccess) {
     if (state.isSuccess) {
-        navController.navigate(HomeScreen) {
+        navController.navigate(AddCarScreen) {
             popUpTo(LoginScreen) { inclusive = true }
         }
     }

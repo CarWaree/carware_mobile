@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import carware.composeapp.generated.resources.Res
 
 import com.example.carware.navigation.AddCarScreen
+import com.example.carware.navigation.EmailVerificationScreen
 import com.example.carware.navigation.HomeScreen
 import com.example.carware.navigation.LanguageSelectionScreen
 import com.example.carware.navigation.OnboardingScreen
@@ -37,8 +38,9 @@ fun SplashScreen(
         val destination = when {
             !preferencesManager.isLanguageSelected() -> LanguageSelectionScreen
             !preferencesManager.isOnboardingComplete() -> OnboardingScreen
-            !preferencesManager.isLoggedIn() -> SignUpScreen
+            !preferencesManager.isEmailVerified() -> EmailVerificationScreen
             !preferencesManager.hasAddedCar() -> AddCarScreen
+            !preferencesManager.isLoggedIn() -> SignUpScreen
             else -> HomeScreen
         }
 

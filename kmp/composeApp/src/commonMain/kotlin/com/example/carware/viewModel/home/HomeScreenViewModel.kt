@@ -32,11 +32,12 @@ class HomeScreenViewModel(
             _state.value = HomeScreenState.Loading
             try {
                 val vehicleList = repository.getVehiclesRepo()
+                val appointmentsList=repository.getAppointmentsRepo()
 
                 if (vehicleList.isEmpty()) {
                     _state.value = HomeScreenState.Error("No vehicles found.")
                 } else {
-                    _state.value = HomeScreenState.Success(vehicleList)
+                    _state.value = HomeScreenState.Success(vehicleList,appointmentsList)
                 }
             } catch (e: Exception) {
                 _state.value = HomeScreenState.Error(e.message ?: "An error occurred")

@@ -59,11 +59,12 @@ import com.example.carware.util.navBar.bottomTabs
 import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.home.HomeScreenViewModel
 import com.example.carware.viewModel.addcar.AddCarViewModel
+import com.example.carware.viewModel.auth.emailVerification.EmailVerificationViewModel
 import com.example.carware.viewModel.auth.logIn.LogInViewModel
 import com.example.carware.viewModel.auth.newPassword.NewPasswordViewModel
 import com.example.carware.viewModel.auth.otpVerification.OTPViewModel
 import com.example.carware.viewModel.auth.signUp.SignUpViewModel
-import com.example.carware.viewModel.schedule.ScheduleScreenViewModel
+import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
 
 val m = Modifier
 val LocalStrings = staticCompositionLocalOf<LocalizedStrings> {
@@ -105,7 +106,7 @@ fun MainScreen(preferencesManager: PreferencesManager) {
     ) {
         NavHost(
             navController = navController,
-            startDestination = VerificationCodeScreen,
+            startDestination = SplashScreen,
         )
         {
             composable<HomeScreen> {
@@ -136,8 +137,9 @@ fun MainScreen(preferencesManager: PreferencesManager) {
                                 navController,
                                 viewModel = ScheduleScreenViewModel(
                                     ServiceRepository(),
-                                    VehicleRepository(preferencesManager)
-                                )
+                                    VehicleRepository(preferencesManager),
+                                    preferencesManager =preferencesManager,
+                                ),
                             )
 
                             HistoryScreen::class -> HistoryScreen(navController)
@@ -207,8 +209,11 @@ fun MainScreen(preferencesManager: PreferencesManager) {
                     navController,
                     viewModel = ScheduleScreenViewModel(
                         ServiceRepository(),
-                        VehicleRepository(preferencesManager)
-                    )
+                        VehicleRepository(preferencesManager),
+                        preferencesManager = preferencesManager
+                    ),
+
+
                 )
             }
             composable<HistoryScreen> {
@@ -245,7 +250,11 @@ fun MainScreen(preferencesManager: PreferencesManager) {
 
             }
             composable<EmailVerificationScreen> {
-                EmailVerificationScreen(navController)
+                EmailVerificationScreen(navController,
+                    preferencesManager,
+                    EmailVerificationViewModel(AuthRepository(preferencesManager),
+                        preferencesManager)
+                )
 
             }
         }

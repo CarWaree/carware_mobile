@@ -1,14 +1,17 @@
 package com.example.carware.network.api
 
+import com.example.carware.network.apiRequests.auth.EmailVerificationRequest
 import com.example.carware.network.apiRequests.auth.LoginRequest
 import com.example.carware.network.apiRequests.auth.SignUpRequest
 import com.example.carware.network.apiRequests.auth.ForgotPasswordRequest
 import com.example.carware.network.apiRequests.auth.OTPRequest
 import com.example.carware.network.apiRequests.auth.ResetPasswordRequest
 import com.example.carware.network.apiResponse.auth.AuthResponse
+import com.example.carware.network.apiResponse.auth.EmailVerificationResponse
 import com.example.carware.network.apiResponse.auth.ForgotPasswordResponse
 import com.example.carware.network.apiResponse.auth.OTPResponse
 import com.example.carware.network.apiResponse.auth.ResetPasswordResponse
+import com.example.carware.network.apiResponse.auth.SignUpResponse
 import com.example.carware.network.createHttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ClientRequestException
@@ -21,9 +24,9 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.*
 import io.ktor.http.contentType
 
-const val baseUrl = "https://lj7pt7bd-7136.uks1.devtunnels.ms"
+const val baseUrl = "https://gvz7cbxn-7136.uks1.devtunnels.ms"
 
-suspend fun signupUser(request: SignUpRequest): AuthResponse {
+suspend fun signupUser(request: SignUpRequest): SignUpResponse {
     val client = createHttpClient()
 
     println("➡️ Signup request started")
@@ -40,12 +43,12 @@ suspend fun signupUser(request: SignUpRequest): AuthResponse {
         // Check HTTP status code first
         if (!response.status.isSuccess()) {
             // 400, 401, 500, etc. - treat as error
-            val errorResponse = response.body<AuthResponse>()
+            val errorResponse = response.body<SignUpResponse>()
             throw Exception(errorResponse.message ?: "Request failed")
         }
 
         // HTTP 200 - parse and return
-        response.body<AuthResponse>()
+        response.body<SignUpResponse>()
 
     } catch (e: Exception) {
         println("❌ Signup failed: ${e.message}")
@@ -101,6 +104,14 @@ suspend fun otpVerificationUser(request: OTPRequest): OTPResponse {
     suspend fun resetPasswordUser(request: ResetPasswordRequest): ResetPasswordResponse {
     val client = createHttpClient()
     return client.post("$baseUrl/api/Auth/reset-password") {
+        contentType(ContentType.Application.Json)
+        setBody(request)
+    }.body()
+}
+
+suspend fun verifyEmailUser(request: EmailVerificationRequest): EmailVerificationResponse{
+    val client = createHttpClient()
+    return client.post("$baseUrl/api/Auth/verify-email-otp") {
         contentType(ContentType.Application.Json)
         setBody(request)
     }.body()
