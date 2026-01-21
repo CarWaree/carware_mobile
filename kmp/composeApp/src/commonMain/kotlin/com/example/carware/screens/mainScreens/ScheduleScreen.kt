@@ -35,6 +35,7 @@ import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
+import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.network.apiResponse.schedule.Service
 import com.example.carware.screens.CalenderBox
@@ -42,6 +43,8 @@ import com.example.carware.screens.SelectDateBox
 import com.example.carware.screens.SelectDropdown
 import com.example.carware.screens.UsersCar
 import com.example.carware.screens.appButtonBack
+import com.example.carware.util.lang.AppLanguage
+import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
 import org.jetbrains.compose.resources.Font
 
@@ -49,10 +52,12 @@ import org.jetbrains.compose.resources.Font
 fun ScheduleScreen(
     navController: NavController,
     viewModel: ScheduleScreenViewModel,
+    preferencesManager: PreferencesManager,
 ) {
 
     val state by viewModel.state.collectAsState()
-
+    val strings = LocalStrings.current
+    val currentLang = AppLanguage.fromCode(preferencesManager.getLanguageCode())
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
     val pageScrollState = rememberScrollState()
@@ -70,7 +75,7 @@ fun ScheduleScreen(
                 .background(Color(217, 217, 217, 255)),
         ) {
             Text(
-                "Schedule Service",
+               strings.get("SCHEDULE_SERVICE"),
                 fontFamily = popSemi,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
@@ -92,7 +97,7 @@ fun ScheduleScreen(
             Column(m.fillMaxSize()) {
                 // ============ SELECT CAR SECTION ============
                 Text(
-                    "Select Your Car",
+                    strings.get("SELECT_CAR"),
                     fontFamily = popSemi,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
@@ -130,7 +135,7 @@ fun ScheduleScreen(
 
                 // ============ SELECT SERVICES SECTION ============
                 Text(
-                    "Select Services",
+                    strings.get("SELECT_SERVICE"),
                     fontFamily = popSemi,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
@@ -148,7 +153,7 @@ fun ScheduleScreen(
 
                 Box(m.padding(horizontal = 26.dp)) {
                     SelectDropdown(
-                        label = "select your Service",
+                        label = strings.get("SELECT_SERVICE"),
                         selectedValue = state.selectedService.toString(),
                         options = state.availableServicesTypes.map { it.name },
                         onSelect = { selectedName ->
@@ -166,7 +171,7 @@ fun ScheduleScreen(
 
                 // ============ SELECT PROVIDER SECTION ============
                 Text(
-                    "Select Provider",
+                    strings.get("SELECT_YOUR_PROVIDER"),
                     fontFamily = popSemi,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
@@ -184,7 +189,7 @@ fun ScheduleScreen(
 
                 Column(m.padding(horizontal = 26.dp)) {
                     SelectDropdown(
-                        label = "select your Provider",
+                        label = strings.get("SELECT_YOUR_PROVIDER"),
                         selectedValue = state.selectedCenter.toString(),
                         options = state.availableCenters.mapNotNull { it.name },
                         onSelect = { name ->
@@ -223,7 +228,7 @@ fun ScheduleScreen(
                     // Display loading state
                     if (state.isLoading) {
                         Text(
-                            text = "Processing...",
+                            text = strings.get("PROCESSING"),
                             fontFamily = popSemi,
                             fontSize = 14.sp,
                             color = Color(194, 0, 0, 255)
@@ -256,7 +261,7 @@ fun ScheduleScreen(
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                "Confirm Reservation",
+                                strings.get("CONFIRM_RESERVATION"),
                                 fontFamily = popSemi,
                                 fontSize = 18.sp,
                                 color = Color(217, 217, 217, 255)
@@ -268,7 +273,7 @@ fun ScheduleScreen(
 
                     // Reservation Details
                     Text(
-                        "Reservation Details",
+                        strings.get("RESERVATION_DETAILS"),
                         fontFamily = popSemi,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.W600,
@@ -287,7 +292,7 @@ fun ScheduleScreen(
                         )
                     } ?: run {
                         Text(
-                            text = "No date/time selected",
+                            text = strings.get("no_date/time_selected"),
                             fontFamily = popMid,
                             fontSize = 12.sp,
                             color = Color.Gray
@@ -300,14 +305,14 @@ fun ScheduleScreen(
                     // Selected Service
                     state.selectedService?.let {
                         Text(
-                            text = "Service: $it",
+                            text = strings.get("SERVICE") +"$it",
                             fontFamily = popMid,
                             fontSize = 12.sp,
                             color = Color.DarkGray
                         )
                     } ?: run {
                         Text(
-                            text = "Service: Not selected",
+                            text =strings.get("SERVICE_NOT_SELECTED"),
                             fontFamily = popMid,
                             fontSize = 12.sp,
                             color = Color.Gray
@@ -319,14 +324,14 @@ fun ScheduleScreen(
                     // Selected Center
                     state.selectedCenter?.let {
                         Text(
-                            text = "Provider: $it",
+                            text = strings.get("PROVIDER") +"$it",
                             fontFamily = popMid,
                             fontSize = 12.sp,
                             color = Color.DarkGray
                         )
                     } ?: run {
                         Text(
-                            text = "Provider: Not selected",
+                            text =strings.get("PROVIDER_NOT_SELECTED"),
                             fontFamily = popMid,
                             fontSize = 12.sp,
                             color = Color.Gray
@@ -345,7 +350,7 @@ fun ScheduleScreen(
                         )
                     } ?: run {
                         Text(
-                            text = "Car: Not selected",
+                            text = strings.get("CAR_NOT_SELECTED"),
                             fontFamily = popMid,
                             fontSize = 12.sp,
                             color = Color.Gray

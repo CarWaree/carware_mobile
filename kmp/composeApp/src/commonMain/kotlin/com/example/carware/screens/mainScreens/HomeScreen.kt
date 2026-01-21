@@ -42,6 +42,7 @@ import carware.composeapp.generated.resources.notification
 import carware.composeapp.generated.resources.person
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
+import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.network.apiResponse.appointment.Appointments
 import com.example.carware.network.apiResponse.vehicle.Vehicles
@@ -54,15 +55,17 @@ import com.example.carware.viewModel.home.HomeScreenState
 import com.example.carware.viewModel.home.HomeScreenViewModel
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
-
+import com.example.carware.util.lang.AppLanguage
+import com.example.carware.util.storage.PreferencesManager
 
 @Composable
-fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel) {
+fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel,preferencesManager: PreferencesManager) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
     val scrollState = rememberScrollState()
     val horizontalScrollState = rememberScrollState()
-
+    val strings = LocalStrings.current
+    val currentLang = AppLanguage.fromCode(preferencesManager.getLanguageCode())
 
     val _state by viewModel.state.collectAsState()
     val state = _state
@@ -94,7 +97,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel) {
                 ) //profile icon
                 Spacer(modifier = m.padding(horizontal = 4.dp))
                 Text(
-                    "Welcome Back \n $username",
+                   text = strings.get("WELCOME_BACK_HOME") + " \n $username",
                     fontFamily = popSemi,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
@@ -125,7 +128,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel) {
                 when (val currentState = state) {
                     is HomeScreenState.Loading -> {
                         Spacer(modifier = m.padding(vertical = 50.dp))
-                        Text("Loading Car Data...")
+                        Text(strings.get("LOADING_CAR_DATA"))
                     }
 
                     is HomeScreenState.Error -> {
@@ -143,7 +146,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel) {
             UpcomingMaintenance()
             Spacer(modifier = m.padding(vertical = 12.dp))
             Text(
-                "Secluded Services",
+                strings.get("SCHEDULED_SERVICES"),
                 fontFamily = popSemi,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
@@ -170,7 +173,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel) {
                         } else {
                             Spacer(modifier = m.padding(vertical = 50.dp))
                             Text(
-                                "No upcoming appointments",
+                                strings.get("NO_UPCOMING_APPOINTMENTS"),
                                 fontFamily = popMid,
                                 fontSize = 14.sp,
                                 color = Color.Gray

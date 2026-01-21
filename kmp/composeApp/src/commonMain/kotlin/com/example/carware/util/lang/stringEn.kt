@@ -98,5 +98,31 @@ val StringsEn = mapOf(
     "CAR_MODEL" to " Model",
     "CAR_YEAR" to "Year",
     "CAR_COLOR" to "Color",
-
+    //history
+    "HISTORY" to "History",
+    //settings
+    "SETTINGS" to "Settings",
+    //home screen
+    "LOADING_CAR_DATA" to "Loading car data ...",
+     "SCHEDULED_SERVICES" to "Scheduled Services",
+    "NO_UPCOMING_APPOINTMENTS" to "No upcoming appointments",
+    // schedule screen
+"SCHEDULE_SERVICE" to "Schedule Service",
+    "SELECT_CAR" to "Select your Car",
+    "SELECT_SERVICE"  to "Select Service",
+    "SELECT_YOUR_PROVIDER" to "select your Provider",
+    "PROCESSING" to "Processing...",
+    "CONFIRM_RESERVATION" to "Confirm Reservation",
+     "RESERVATION_DETAILS" to "Reservation Details",
+     "no_date/time_selected" to  "No date/time selected",
+    "SERVICE_NOT_SELECTED" to "Service: Not selected",
+    "SERVICE"   to  "Service:",
+    "PROVIDER" to "Provider:",
+    "PROVIDER_NOT_SELECTED" to "Provider: Not selected",
+     "CAR_NOT_SELECTED"   to "Car: Not selected"
 )
+
+
+
+
+
