@@ -88,6 +88,7 @@ val StringsAr = mapOf(
 
     // Home
     "WELCOME_BACK_HOME" to " مرحباً بعودتك ",
+    "MORE_DETAILS" to " تفاصيل أكتر",
     // add car
     "ADD_CAR" to "أضف سيارتك",
     "SET_UP_CAR_PROFILE" to "قم بإعداد ملف تعريف سيارتك للحصول على \nتذكيرات ونصائح خدمة مخصصة.",
@@ -95,4 +96,31 @@ val StringsAr = mapOf(
     "CAR_MODEL" to "الموديل",
     "CAR_YEAR" to "سنة",
     "CAR_COLOR" to "اللون",
+    "HOUR" to "ساعه",
+    "DAY" to "يوم",
+    "MINUTE" to "دقيقه",
+    //history
+    "HISTORY" to "القديم",
+    //settings
+    "SETTINGS" to "الاعدادات",
+    //home screen
+    "LOADING_CAR_DATA" to "يتم تحميل بيانات السيارة",
+    "SCHEDULED_SERVICES" to "الخدمات المحجوزه",
+    "NO_UPCOMING_APPOINTMENTS" to "لا يوجد مواعيد قادمه",
+    "UP_COMING_MAINTENANCE" to "مواعيد قادمه ",
+    // schedule screen
+    "SCHEDULE_SERVICE" to "خدمه الحجز ",
+    "SELECT_CAR" to "اختر سيارتك",
+    "SELECT_SERVICE"  to "اخنر الخدمه",
+    "SELECT_YOUR_PROVIDER" to "اختر موفر الخدمه",
+    "PROCESSING" to "قيد المعالجة",
+    "CONFIRM_RESERVATION" to "تأكيد الحجز",
+    "RESERVATION_DETAILS" to "تفاصيل الحجز",
+    "no_date/time_selected" to "لم يتم اختيار التاريخ/الوقت",
+    "SERVICE_NOT_SELECTED" to "الخدمة: غير محددة",
+    "SERVICE" to "الخدمة:",
+    "PROVIDER" to "المزوّد:",
+    "PROVIDER_NOT_SELECTED" to "المزوّد: غير محدد",
+    "CAR_NOT_SELECTED" to "السيارة: غير محددة"
+
 )

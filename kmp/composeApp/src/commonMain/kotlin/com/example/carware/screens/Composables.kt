@@ -66,11 +66,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.arrow_1
 import carware.composeapp.generated.resources.audi
 import carware.composeapp.generated.resources.car
 import carware.composeapp.generated.resources.check_circle
+import carware.composeapp.generated.resources.check_onboard
 import carware.composeapp.generated.resources.check_time_slot
 import carware.composeapp.generated.resources.clander_right_arrow
 import carware.composeapp.generated.resources.color
@@ -85,8 +87,11 @@ import carware.composeapp.generated.resources.poppins_semibold
 import carware.composeapp.generated.resources.recycle_bin
 import carware.composeapp.generated.resources.success
 import carware.composeapp.generated.resources.x_time_slot
+import com.example.carware.LocalStrings
 import com.example.carware.m
+import com.example.carware.navigation.AddCarScreen
 import com.example.carware.util.navBar.TabItem
+import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenState
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
 import com.example.carware.viewModel.schedule.screen.TimeSlot
@@ -227,7 +232,7 @@ fun BottomNavBar(
                                 tint = if (isSelected) Color(
                                     204, 204, 204, 255
                                 ) else Color.Unspecified,
-                                modifier = Modifier.size(22.dp)
+                                modifier = Modifier.size(26.dp)
                             )
 
                             // TITLE
@@ -254,7 +259,12 @@ fun BottomNavBar(
 // home Screen
 @Composable
 fun CarCard(
-    brand: String, model: String, modelYear: String, color: String, image: DrawableResource
+    navController: NavController,
+    brand: String,
+    model: String,
+    modelYear: String,
+    color: String,
+    image: DrawableResource
 ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
@@ -285,10 +295,16 @@ fun CarCard(
                 horizontalArrangement = Arrangement.End
             ) {
                 Icon(
-                    painter = painterResource(Res.drawable.dots),
+                    painter = painterResource(Res.drawable.x_time_slot),
                     contentDescription = null,
-                    tint = Color.Unspecified,
+                    tint = Color(30, 30, 30, 168),
                     modifier = m.size(20.dp)
+                        .clickable {
+                            navController.navigate(AddCarScreen)
+                        }
+                        .rotate(45f)
+                        .size(4.dp)
+
 
                 )
             } // top dots
@@ -383,11 +399,11 @@ fun CarCard(
 }
 
 @Composable
-fun OBDCard(onClick: () -> Unit) {
+fun OBDCard(onClick: () -> Unit, preferencesManager: PreferencesManager) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
 
     val popMid = FontFamily(Font(Res.font.poppins_medium))
-
+    val strings = LocalStrings.current
     Card(
         m.fillMaxWidth().height(170.dp),
         shape = RoundedCornerShape(15.dp),
@@ -431,7 +447,7 @@ fun OBDCard(onClick: () -> Unit) {
                         m.clickable { onClick }, verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "More details",
+                            text = strings.get("MORE_DETAILS"),
                             fontFamily = popSemi,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Medium,
@@ -452,10 +468,12 @@ fun OBDCard(onClick: () -> Unit) {
 }
 
 @Composable
-fun UpcomingMaintenance() {
+fun UpcomingMaintenance(
+    preferencesManager: PreferencesManager,
+) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
-
     val popMid = FontFamily(Font(Res.font.poppins_medium))
+    val strings = LocalStrings.current
 
     @Composable
     fun TimerUpcomingMaintenance(time: String) {
@@ -481,8 +499,10 @@ fun UpcomingMaintenance() {
 
     }
     Row(
-        m.appButtonBack().padding(vertical = 20.dp, horizontal = 12.dp).fillMaxWidth()
-            .height(50.dp),
+        m.appButtonBack()
+            .padding(vertical = 20.dp, horizontal = 10.dp)
+            .fillMaxWidth()
+            .height(54.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
 
@@ -490,7 +510,7 @@ fun UpcomingMaintenance() {
 
     {
         Text(
-            "Upcoming \n Maintenance ",
+            strings.get("UP_COMING_MAINTENANCE"),
             fontFamily = popSemi,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
@@ -498,32 +518,62 @@ fun UpcomingMaintenance() {
         )
 
         Spacer(m.padding(horizontal = 2.dp))
-        TimerUpcomingMaintenance("10")
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            TimerUpcomingMaintenance("10")
+            Text(
+                strings.get("DAY"),
+                fontFamily = popSemi,
+                fontSize = 12.sp,
+                color = Color(217, 217, 217, 255)
+            )
+            Spacer(m.padding(horizontal = 2.dp))
+
+        }
         Spacer(m.padding(horizontal = 4.dp))
 
         Text(
             ":",
             fontFamily = popSemi,
             fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
             color = Color(217, 217, 217, 255)
         ) // two dots
         Spacer(m.padding(horizontal = 4.dp))
 
-        TimerUpcomingMaintenance("25")
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            TimerUpcomingMaintenance("25")
+            Text(
+                strings.get("HOUR"),
+                fontFamily = popSemi,
+                fontSize = 12.sp,
+                color = Color(217, 217, 217, 255)
+            )
+            Spacer(m.padding(horizontal = 2.dp))
+
+        }
         Spacer(m.padding(horizontal = 4.dp))
 
         Text(
             ":",
             fontFamily = popSemi,
             fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
             color = Color(217, 217, 217, 255)
         ) // two dots
         Spacer(m.padding(horizontal = 4.dp))
 
-        TimerUpcomingMaintenance("50")
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally) {
+            TimerUpcomingMaintenance("50")
+            Text(
+                strings.get("MINUTE"),
+                fontFamily = popSemi,
+                fontSize = 12.sp,
+                color = Color(217, 217, 217, 255)
+            )
+            Spacer(m.width(width = 50.dp))
 
+        }
 
     }
 
@@ -688,7 +738,10 @@ fun SelectDropdown(
 }
 
 @Composable
-fun CalenderBox(viewModel: ScheduleScreenViewModel) {
+fun CalenderBox(
+    viewModel: ScheduleScreenViewModel,
+    preferencesManager: PreferencesManager
+) {
     val _state by viewModel.state.collectAsState()
     val state = _state
 
@@ -752,7 +805,12 @@ fun CalenderBox(viewModel: ScheduleScreenViewModel) {
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             // Month Control
-            CalendarArrowButton(isLeft = true) { viewModel.changeMonth(false) }
+            CalendarArrowButton(
+                isLeft = true,
+                onClick = { viewModel.changeMonth(false) },
+                preferencesManager
+            )
+
 
             Text(
                 viewModel.months[state.currentMonthIndex],
@@ -761,10 +819,16 @@ fun CalenderBox(viewModel: ScheduleScreenViewModel) {
                 fontSize = 20.sp,
                 modifier = m.padding(horizontal = 10.dp)
             )
-            CalendarArrowButton(isLeft = false) { viewModel.changeMonth(true) }
+            CalendarArrowButton(
+                isLeft = false,
+                onClick =  { viewModel.changeMonth(true) },
+                preferencesManager
+            )
 
             // Year Control
-            CalendarArrowButton(isLeft = true) { state.currentYear-- }
+            CalendarArrowButton(isLeft = true,
+                { viewModel.changeYear(false) },
+                preferencesManager)
             Text(
                 state.currentYear.toString(),
                 color = Color.White,
@@ -772,7 +836,11 @@ fun CalenderBox(viewModel: ScheduleScreenViewModel) {
                 fontSize = 20.sp,
                 modifier = m.padding(horizontal = 10.dp)
             )
-            CalendarArrowButton(isLeft = false) { state.currentYear++ }
+            CalendarArrowButton(
+                isLeft = false,
+                { viewModel.changeYear(true) },
+                preferencesManager
+            )
         }
 
         // Days Header (SUN, MON...)
@@ -823,12 +891,32 @@ fun CalenderBox(viewModel: ScheduleScreenViewModel) {
 }
 
 @Composable
-fun CalendarArrowButton(isLeft: Boolean, onClick: () -> Unit) {
+fun CalendarArrowButton(
+    isLeft: Boolean,
+    onClick: () -> Unit,
+    preferencesManager: PreferencesManager
+) {
+    preferencesManager.getLanguageCode()
     Icon(
         painter = painterResource(Res.drawable.clander_right_arrow),
         contentDescription = null,
         tint = Color.White,
-        modifier = m.size(20.dp).rotate(if (isLeft) 180f else 360f).clickable { onClick() })
+        modifier = m
+            .size(20.dp)
+            .rotate(
+                if (isLeft)
+                180f
+            else
+                360f)
+                .clickable { onClick() }
+            .rotate(if (preferencesManager.getLanguageCode()=="ar")
+                180f
+                else
+                360f
+
+            )
+    )
+
 }
 
 @Composable
@@ -1061,7 +1149,7 @@ fun TimeSlotItem(
 fun LoadingOverlay() {
     Box(
         modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.2f))
-            .blur(radius = 2.dp), contentAlignment = Alignment.Center
+            , contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator(
             color = Color(0xFFC40000), modifier = Modifier.size(50.dp)
@@ -1154,18 +1242,18 @@ fun ServiceHistoryItem(
 
         ) {
             Box(
-            m.size(28.dp) // Set the size of the circle
-                .clip(CircleShape) // This makes it a circle
-                .border(1.dp, Color(30, 30, 30, 51), CircleShape)
-        ) {
-            Image(
-                painter = painterResource(Res.drawable.audi),
-                contentDescription = "Car Logo",
-                modifier = Modifier.size(23.dp) // Set the size of the circle
-                    .align(Alignment.Center)
+                m.size(28.dp) // Set the size of the circle
+                    .clip(CircleShape) // This makes it a circle
+                    .border(1.dp, Color(30, 30, 30, 51), CircleShape)
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.audi),
+                    contentDescription = "Car Logo",
+                    modifier = Modifier.size(23.dp) // Set the size of the circle
+                        .align(Alignment.Center)
 
-            )
-        } // car image
+                )
+            } // car image
             Spacer(m.padding(start = 2.dp))
             Text(
                 carName,
@@ -1180,7 +1268,7 @@ fun ServiceHistoryItem(
         Text(
             serviceName,
             fontFamily = popSemi,
-                fontSize = 12.sp,
+            fontSize = 12.sp,
             fontWeight = FontWeight.W400,
             color = Color(102, 102, 102, 255)
         )
@@ -1188,8 +1276,9 @@ fun ServiceHistoryItem(
         Spacer(m.padding(vertical = 1.dp))
 
 
-        Row(m
-            .fillMaxWidth(),
+        Row(
+            m
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -1213,7 +1302,6 @@ fun ServiceHistoryItem(
 
     }
 }
-
 
 
 @Preview

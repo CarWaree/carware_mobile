@@ -13,10 +13,10 @@ data class TimeSlot(
 
 data class ScheduleScreenState(
 // --- Service Selection ---
-    val selectedService: String?=null,
+    val selectedService: String?=" ",
     val selectedServiceId: Int? = null,      // ============ NEW: Add Int ID ============
 
-    val selectedCenter: String? = null,
+    val selectedCenter: String? = " ",
     val selectedCenterId: Int? = null,       // ============ NEW: Add Int ID ============
 
     val selectedCarId: Int? = null,          // Already Int - good!
@@ -30,8 +30,8 @@ data class ScheduleScreenState(
     // --- Calendar & Time Selection ---
     val selectedDay: String? = null,
     val selectedTime: String? = null,
-    val currentMonthIndex: Int = 10,
-    var currentYear: Int = 2025,
+    val currentMonthIndex: Int = 1,
+    var currentYear: Int = 2026,
     var isTimePickerVisible: Boolean = false,
 
     // --- Loading & Error States ---

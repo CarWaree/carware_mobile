@@ -129,8 +129,10 @@ fun MainScreen(preferencesManager: PreferencesManager) {
                         when (currentTab.route) {
                             HomeScreen::class -> HomeScreen(
                                 navController, HomeScreenViewModel(
-                                    VehicleRepository(preferencesManager), preferencesManager
-                                )
+                                    VehicleRepository(preferencesManager),
+                                    preferencesManager
+                                ),
+                                 preferencesManager
                             )
 
                             ScheduleScreen::class -> ScheduleScreen(
@@ -138,8 +140,10 @@ fun MainScreen(preferencesManager: PreferencesManager) {
                                 viewModel = ScheduleScreenViewModel(
                                     ServiceRepository(),
                                     VehicleRepository(preferencesManager),
-                                    preferencesManager =preferencesManager,
-                                ),
+                                    preferencesManager = preferencesManager,
+
+                                    ),
+                                preferencesManager
                             )
 
                             HistoryScreen::class -> HistoryScreen(navController)
@@ -212,6 +216,7 @@ fun MainScreen(preferencesManager: PreferencesManager) {
                         VehicleRepository(preferencesManager),
                         preferencesManager = preferencesManager
                     ),
+                    preferencesManager
 
 
                 )

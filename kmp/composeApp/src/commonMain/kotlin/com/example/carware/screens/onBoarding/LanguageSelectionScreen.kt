@@ -8,11 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -23,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -36,6 +34,7 @@ import carware.composeapp.generated.resources.carware
 import carware.composeapp.generated.resources.check_onboard
 import carware.composeapp.generated.resources.en_flag
 import carware.composeapp.generated.resources.line_1
+import carware.composeapp.generated.resources.new_logo
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.LocalStrings
 import com.example.carware.m
@@ -68,22 +67,20 @@ fun LanguageSelectionScreen(
     ) {
 
         Icon(
-            painter = painterResource(Res.drawable.line_1),
+            painter = painterResource(Res.drawable.new_logo),
             contentDescription = null,
-            tint = Color(211, 203, 203, 255)
+            tint = Color(211, 203, 203, 255),
+            modifier = m.scale(0.7f)
         )
-        Spacer(modifier = m.padding(vertical = 4.dp))
-        Icon(
-            painter = painterResource(Res.drawable.carware),
-            contentDescription = null,
-            tint = Color(211, 203, 203, 255)
-        )
+        Spacer(modifier = m.padding(vertical = 25.dp))
+
+
         Column(
             m.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Spacer(modifier = Modifier.weight(0.6f)) // pushes content below to bottom
+            Spacer(modifier = Modifier.weight(0.9f)) // pushes content below to bottom
 
             Text(
                 strings.get("CHOOSE_LANG"),
