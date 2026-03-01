@@ -1,5 +1,6 @@
 package com.example.carware.repository
 
+import com.example.carware.cache.vehiclesStore
 import com.example.carware.network.api.addVehicles
 import com.example.carware.network.api.getAppointments
 import com.example.carware.network.api.getBrands
@@ -11,7 +12,9 @@ import com.example.carware.network.apiResponse.vehicle.Brand
 import com.example.carware.network.apiResponse.vehicle.Model
 import com.example.carware.network.apiResponse.vehicle.VehicleResponse
 import com.example.carware.network.apiResponse.vehicle.Vehicles
+import com.example.carware.network.cache.VehiclesCacheData
 import com.example.carware.util.storage.PreferencesManager
+import kotlinx.coroutines.flow.Flow
 
 class VehicleRepository(private val prefs: PreferencesManager) {
 
@@ -20,19 +23,25 @@ class VehicleRepository(private val prefs: PreferencesManager) {
     }
 
     suspend fun getVehiclesRepo(): List<Vehicles> {
-        // 1. Get token from SharedPrefs
         val token = prefs.getToken() ?: ""
-
         if (token.isEmpty()) return emptyList()
 
         return try {
-            // 2. Call API
             val response = getVehicles(token)
+            val vehicles = response.data ?: emptyList()
 
-            // 3. Return only the list of data
-            response.data ?: emptyList()
+            // NEW: Save to cache using set()
+            vehiclesStore.set(
+                VehiclesCacheData(vehicles = vehicles, userId = 0)
+            )
+
+            // Return fresh data
+            vehicles
+
         } catch (e: Exception) {
-            emptyList() // Return empty on error to prevent UI crashes
+            // CHANGED: get() instead of read()
+            val cached = vehiclesStore.get()
+            cached?.vehicles ?: emptyList()
         }
     }
 
@@ -67,29 +76,3 @@ class VehicleRepository(private val prefs: PreferencesManager) {
 
 
 
-//class ItemsRepository(
-//    private val api: ItemsApi
-//) {
-//    private var currentPage = 1
-//    private var totalPages = Int.MAX_VALUE
-//    private val pageSize = 20
-//
-//    suspend fun loadNextPage(): List<Item> {
-//        if (currentPage > totalPages) {
-//            println("🚫 No more pages")
-//            return emptyList()
-//        }
-//
-//        val response = api.fetchItems(currentPage, pageSize)
-//
-//        totalPages = response.totalPages
-//        currentPage++
-//
-//        return response.data
-//    }
-//
-//    fun reset() {
-//        currentPage = 1
-//        totalPages = Int.MAX_VALUE
-//    }
-//}

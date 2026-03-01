@@ -35,6 +35,8 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.core.splashscreen)
             implementation("com.airbnb.android:lottie-compose:6.4.0")
+
+
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -51,11 +53,17 @@ kotlin {
             implementation("com.russhwolf:multiplatform-settings-no-arg:1.1.1")
             implementation("com.russhwolf:multiplatform-settings:1.1.1")
             implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
+            implementation(libs.kstore)
+            implementation(libs.kstore.file)
+
+
 
         }
 
         nativeMain.dependencies {
             implementation(libs.ktor.client.darwin)
+
+
         }//ios
 
         commonTest.dependencies {
