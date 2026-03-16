@@ -1,6 +1,6 @@
 package com.example.carware.cache
 
-import com.example.carware.network.cache.VehiclesCacheData
+import com.example.carware.network.cacheData.VehiclesCacheData
 import getCacheDirectory
 import io.github.xxfast.kstore.KStore
 import io.github.xxfast.kstore.file.storeOf

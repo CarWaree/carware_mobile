@@ -106,7 +106,7 @@ fun MainScreen(preferencesManager: PreferencesManager) {
     ) {
         NavHost(
             navController = navController,
-            startDestination = SplashScreen,
+            startDestination = HistoryScreen,
         )
         {
             composable<HomeScreen> {
