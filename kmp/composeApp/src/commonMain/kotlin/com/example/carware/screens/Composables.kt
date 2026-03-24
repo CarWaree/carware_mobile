@@ -78,6 +78,7 @@ import carware.composeapp.generated.resources.clander_right_arrow
 import carware.composeapp.generated.resources.color
 import carware.composeapp.generated.resources.cuate
 import carware.composeapp.generated.resources.dots
+import carware.composeapp.generated.resources.eyee
 import carware.composeapp.generated.resources.failed
 import carware.composeapp.generated.resources.keyboard_arrow_down
 import carware.composeapp.generated.resources.keyboard_arrow_up
@@ -85,6 +86,7 @@ import carware.composeapp.generated.resources.modelyear
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import carware.composeapp.generated.resources.recycle_bin
+import carware.composeapp.generated.resources.schedule
 import carware.composeapp.generated.resources.success
 import carware.composeapp.generated.resources.x_time_slot
 import com.example.carware.LocalStrings
@@ -1302,10 +1304,163 @@ fun ServiceHistoryItem(
 
     }
 }
+@Composable
+fun ServiceHistoryCard(
 
+    onViewDetails: () -> Unit,
+    modifier: Modifier = Modifier
+
+) {
+    val popSemi = FontFamily(Font(Res.font.poppins_semibold))
+    val popMid = FontFamily(Font(Res.font.poppins_medium))
+
+    val gradientBrush = Brush.linearGradient(
+        listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
+    )
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color(210, 210, 210))
+            .padding(14.dp)
+    ) {
+
+        // ── Top row: car image + name/service + price/payment ──
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Car image
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(CircleShape)
+                    .background(Color(210, 210, 210)),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.car),
+                    contentDescription = "car ",
+                    modifier = Modifier
+                        .size(44.dp)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Fit
+                )
+            }
+
+            Spacer(Modifier.width(10.dp))
+
+            // Car brand + service name
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = "brand , service name ",
+                    fontFamily = popMid,
+                    fontSize = 13.sp,
+                    color = Color(90, 90, 90)
+                )
+                Text(
+                    text = "service name ",
+                    fontFamily = popSemi,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(25, 25, 25)
+                )
+            }
+
+            // Price + payment method
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    text = "100 egp ",
+                    fontFamily = popSemi,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(25, 25, 25)
+                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        painter = painterResource(Res.drawable.eyee),
+                        contentDescription = null,
+                        tint = Color(194, 0, 0, 255),
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Spacer(Modifier.width(3.dp))
+                    Text(
+                        text ="payment method ",
+                        fontFamily = popMid,
+                        fontSize = 12.sp,
+                        color = Color(194, 0, 0, 255)
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.height(10.dp))
+
+        // ── Bottom row: date + location ──────────────────────
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(Res.drawable.schedule),
+                contentDescription = null,
+                tint = Color(194, 0, 0, 255),
+                modifier = Modifier.size(15.dp)
+            )
+            Spacer(Modifier.width(4.dp))
+            Text(
+                text = "10/12/2026",
+                fontFamily = popMid,
+                fontSize = 13.sp,
+                color = Color(50, 50, 50)
+            )
+            Spacer(Modifier.width(16.dp))
+            Icon(
+                painter = painterResource(Res.drawable.check_circle),
+                contentDescription = null,
+                tint = Color(194, 0, 0, 255),
+                modifier = Modifier.size(15.dp)
+            )
+            Spacer(Modifier.width(4.dp))
+            Text(
+                text = "nasr city ",
+                fontFamily = popMid,
+                fontSize = 13.sp,
+                color = Color(50, 50, 50)
+            )
+        }
+
+        Spacer(Modifier.height(12.dp))
+
+        // ── View Details button ──────────────────────────────
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(10.dp))
+                .border(
+                    width = 1.5.dp,
+                    brush = gradientBrush,
+                    shape = RoundedCornerShape(10.dp)
+                )
+                .clickable { onViewDetails() }
+                .padding(vertical = 10.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "view Details",
+                fontFamily = popMid,
+                fontSize = 14.sp,
+                style = TextStyle(brush = gradientBrush),
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+}
 
 @Preview
 @Composable
 fun prev() {
-    ServiceHistoryItem("brand", "service", "date", {})
+    ServiceHistoryCard(onViewDetails = {})
 }
+
