@@ -8,6 +8,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,6 +66,8 @@ import com.example.carware.viewModel.auth.newPassword.NewPasswordViewModel
 import com.example.carware.viewModel.auth.otpVerification.OTPViewModel
 import com.example.carware.viewModel.auth.signUp.SignUpViewModel
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
+import com.mmk.kmpauth.google.GoogleAuthCredentials
+import com.mmk.kmpauth.google.GoogleAuthProvider
 
 val m = Modifier
 val LocalStrings = staticCompositionLocalOf<LocalizedStrings> {
@@ -100,13 +103,16 @@ fun MainScreen(preferencesManager: PreferencesManager) {
 
 
 
+
+
+
     CompositionLocalProvider(
         LocalStrings provides localizedStrings,
         LocalLayoutDirection provides layoutDirection // This line flips the UI
     ) {
         NavHost(
             navController = navController,
-            startDestination = SplashScreen,
+            startDestination = SignUpScreen,
         )
         {
             composable<HomeScreen> {
