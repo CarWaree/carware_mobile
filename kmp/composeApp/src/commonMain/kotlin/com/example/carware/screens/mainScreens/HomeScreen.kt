@@ -197,11 +197,7 @@ fun HomeScreen(
                 when (state) {
                     is HomeScreenState.Success -> {
                         if (state.appointments.isNotEmpty()) {
-                            val cachedAppointments by
-                            viewModel.cachedAppointments.collectAsState(initial = emptyList())
-                            val appointmentsToDisplay = if (cachedAppointments.isNotEmpty()) cachedAppointments else state.appointments
-
-                            SuccessServicePagerContent(appointmentsToDisplay)
+                            SuccessServicePagerContent(state.appointments)
 
                         } else {
                             Spacer(modifier = m.padding(vertical = 50.dp))

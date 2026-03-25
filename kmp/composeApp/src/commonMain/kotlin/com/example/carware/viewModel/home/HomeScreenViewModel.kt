@@ -2,9 +2,7 @@ package com.example.carware.viewModel.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.carware.cache.appointmentsStore
 import com.example.carware.cache.vehiclesStore
-import com.example.carware.network.apiResponse.appointment.Appointments
 import com.example.carware.repository.VehicleRepository
 import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,12 +26,6 @@ class HomeScreenViewModel(
     val cachedVehicles = vehiclesStore.updates
         .filterNotNull()
         .map { it.vehicles }
-
-    val cachedAppointments = appointmentsStore.updates
-        .filterNotNull()
-        .map { it.appointments }
-
-
     init {
         loadVehicles()
     }

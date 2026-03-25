@@ -1,5 +1,6 @@
-package com.example.carware.network.cacheData
+package com.example.carware.network.cache
 
+import com.example.carware.network.apiResponse.vehicle.Vehicle
 import com.example.carware.network.apiResponse.vehicle.Vehicles
 import kotlinx.serialization.Serializable
 import kotlin.time.Clock
