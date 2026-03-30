@@ -112,7 +112,7 @@ fun MainScreen(preferencesManager: PreferencesManager) {
     ) {
         NavHost(
             navController = navController,
-            startDestination = SignUpScreen,
+            startDestination = SplashScreen,
         )
         {
             composable<HomeScreen> {

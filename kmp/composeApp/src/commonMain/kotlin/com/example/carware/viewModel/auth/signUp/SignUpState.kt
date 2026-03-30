@@ -13,7 +13,8 @@ package com.example.carware.viewModel.auth.signUp
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
     val errorMessage: String? = null,
-    val needsEmailVerification: Boolean = false,  // Add this
+    val needsEmailVerification: Boolean = false,
+
 
 
     val userNameError: Boolean = false,

@@ -58,6 +58,7 @@ import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.navigation.EmailVerificationScreen
+import com.example.carware.navigation.HomeScreen
 import com.example.carware.navigation.LoginScreen
 import com.example.carware.navigation.SignUpScreen
 import com.example.carware.screens.LoadingOverlay
@@ -139,6 +140,13 @@ fun SignUpScreen(
     LaunchedEffect(state.needsEmailVerification) {
         if (state.needsEmailVerification) {
             navController.navigate(EmailVerificationScreen) {  // Create this screen
+                popUpTo(SignUpScreen) { inclusive = true }
+            }
+        }
+    }
+    LaunchedEffect(state.isSuccess) {
+        if (state.isSuccess) {
+            navController.navigate(HomeScreen) {
                 popUpTo(SignUpScreen) { inclusive = true }
             }
         }
@@ -518,9 +526,10 @@ fun SignUpScreen(
                         if (authReady) {
                             GoogleButtonUiContainer(
                                 onGoogleSignInResult = { googleUser ->
-                                    val tokenId = googleUser?.idToken
-                                    println("TOKEN: $tokenId")
-                                    println("User: ${googleUser?.displayName}")
+                                    val idToken = googleUser?.idToken
+                                    if (idToken != null) {
+                                        viewModel.googleSignIn(idToken)  // ← pass it here
+                                    }
                                 }
                             ) {
                                 Card(

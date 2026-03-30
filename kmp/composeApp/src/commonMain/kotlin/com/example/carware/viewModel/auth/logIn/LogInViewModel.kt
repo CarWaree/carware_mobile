@@ -2,6 +2,7 @@ package com.example.carware.viewModel.auth.logIn
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.carware.network.apiRequests.auth.GoogleSignInRequest
 import com.example.carware.network.apiRequests.auth.LoginRequest
 import com.example.carware.repository.auth.AuthRepository
 import com.example.carware.util.storage.PreferencesManager
@@ -68,7 +69,7 @@ class LogInViewModel(
 
                 val token = response.data?.token
                     ?: throw IllegalStateException("Token missing in response")
-                preferencesManager.saveToken(token)
+                preferencesManager.performLogin(token)
 
                 _state.update {
                     it.copy(isLoading = false, isSuccess = true)
@@ -80,6 +81,26 @@ class LogInViewModel(
                     it.copy(
                         isLoading = false,
                         errorMessage = e.message ?: "An error occurred"
+                    )
+                }
+            }
+        }
+    }
+
+    fun googleSignIn(idToken: String) {
+        viewModelScope.launch {
+            try {
+                _state.update { it.copy(isLoading = true, errorMessage = null) }
+                val request = GoogleSignInRequest(idToken)
+                val response = repository.googleSignInRepo(request)
+                preferencesManager.performLogin(token = response.token)
+                preferencesManager.saveEmailVerified(true)
+                _state.update { it.copy(isLoading = false, isSuccess = true) } // ← missing
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = e.message ?: "GoogleSignIn failed"
                     )
                 }
             }

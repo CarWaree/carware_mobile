@@ -1,6 +1,7 @@
 package com.example.carware.repository.auth
 
 import com.example.carware.network.api.forgotPasswordUser
+import com.example.carware.network.api.googleSignIn
 import com.example.carware.network.api.loginUser
 import com.example.carware.network.api.otpVerificationUser
 import com.example.carware.network.api.resetPasswordUser
@@ -8,10 +9,12 @@ import com.example.carware.network.api.signupUser
 import com.example.carware.network.api.verifyEmailUser
 import com.example.carware.network.apiRequests.auth.EmailVerificationRequest
 import com.example.carware.network.apiRequests.auth.ForgotPasswordRequest
+import com.example.carware.network.apiRequests.auth.GoogleSignInRequest
 import com.example.carware.network.apiRequests.auth.LoginRequest
 import com.example.carware.network.apiRequests.auth.OTPRequest
 import com.example.carware.network.apiRequests.auth.ResetPasswordRequest
 import com.example.carware.network.apiRequests.auth.SignUpRequest
+import com.example.carware.network.apiResponse.auth.GoogleSignInResponse
 import com.example.carware.network.apiResponse.auth.AuthResponse
 import com.example.carware.network.apiResponse.auth.EmailVerificationResponse
 import com.example.carware.network.apiResponse.auth.ForgotPasswordResponse
@@ -45,6 +48,10 @@ class AuthRepository(private val preferencesManager: PreferencesManager) {
     }
     suspend fun verifyEmailRepo(request: EmailVerificationRequest): EmailVerificationResponse{
         return verifyEmailUser(request)
+    }
+
+    suspend fun googleSignInRepo(request: GoogleSignInRequest): GoogleSignInResponse {
+        return googleSignIn(request)
     }
 
 }

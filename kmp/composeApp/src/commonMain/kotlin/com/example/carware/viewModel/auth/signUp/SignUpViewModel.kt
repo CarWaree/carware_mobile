@@ -2,6 +2,7 @@ package com.example.carware.viewModel.auth.signUp
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.carware.network.apiRequests.auth.GoogleSignInRequest
 import com.example.carware.network.apiRequests.auth.SignUpRequest
 import com.example.carware.repository.auth.AuthRepository
 import com.example.carware.util.storage.PreferencesManager
@@ -118,6 +119,27 @@ class SignUpViewModel(
                     it.copy(
                         isLoading = false,
                         errorMessage = e.message ?: "An error occurred"
+                    )
+                }
+            }
+        }
+    }
+
+
+    fun googleSignIn(idToken: String) {
+        viewModelScope.launch {
+            try {
+                _state.update { it.copy(isLoading = true, errorMessage = null) }
+                val request = GoogleSignInRequest(idToken)
+                val response = repository.googleSignInRepo(request)
+                preferencesManager.performLogin(token = response.token)
+                preferencesManager.saveEmailVerified(true)
+                _state.update { it.copy(isLoading = false, isSuccess = true) } // ← missing
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = e.message ?: "GoogleSignIn failed"
                     )
                 }
             }

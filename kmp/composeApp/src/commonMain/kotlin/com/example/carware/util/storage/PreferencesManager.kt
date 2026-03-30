@@ -90,7 +90,7 @@ class PreferencesManager(
     /* -------------------- Car Added -------------------- */
 
     fun hasAddedCar(): Boolean {
-        return settings.getBoolean(KEY_CAR_ADDED, false)
+        return settings.getBoolean(KEY_CAR_ADDED, true)
     }
 
     fun setCarAdded(isAdded: Boolean) {

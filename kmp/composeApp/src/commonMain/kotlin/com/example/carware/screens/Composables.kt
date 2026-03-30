@@ -612,7 +612,7 @@ fun ToastMessage(message: String, state: Boolean) {
         Text(
             message,
             fontFamily = popSemi,
-            fontSize = 16.sp,
+            fontSize = 8.sp,
             fontWeight = FontWeight.Medium,
             color = Color(30, 30, 30, 161)
         )
