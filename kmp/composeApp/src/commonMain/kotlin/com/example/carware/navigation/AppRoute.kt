@@ -48,3 +48,7 @@ object TestScreen
 @Serializable
 object EmailVerificationScreen
 
+@Serializable
+object ProfileScreen
+
+
