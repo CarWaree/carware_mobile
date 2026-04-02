@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 
 
 class HomeScreenViewModel(
-    val repository: VehicleRepository,
+    private val repository: VehicleRepository,
     private val preferencesManager: PreferencesManager
 
 ) : ViewModel() {

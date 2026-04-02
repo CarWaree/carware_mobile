@@ -9,6 +9,7 @@ import androidx.navigation.NavController
 import com.example.carware.LocalStrings
 import com.example.carware.util.lang.AppLanguage
 import com.example.carware.util.storage.PreferencesManager
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun SettingsScreen(navController: NavController
