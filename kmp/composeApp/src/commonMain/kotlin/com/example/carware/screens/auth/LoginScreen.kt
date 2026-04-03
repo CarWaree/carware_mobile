@@ -396,9 +396,7 @@ LaunchedEffect(state.isSuccess) {
                 } // google sign in button
                 Spacer(modifier = m.padding(vertical = 8.dp))
                 Row(
-                    m
-
-                        .fillMaxWidth(),
+                    m.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
