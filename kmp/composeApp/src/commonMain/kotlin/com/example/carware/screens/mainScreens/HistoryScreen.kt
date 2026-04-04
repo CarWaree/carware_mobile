@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,20 +49,29 @@ import carware.composeapp.generated.resources.history_visa
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.m
+import com.example.carware.viewModel.history.HistoryScreenState
+import com.example.carware.viewModel.history.HistoryScreenViewModel
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
-fun HistoryScreen(navController: NavController) {
+fun HistoryScreen(
+    navController: NavController,
+    viewModel: HistoryScreenViewModel,
 
+    ) {
+
+    val filterOptions = listOf("All", "Oil Change", "Tires", "Maintenance", "Brakes")
 
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
+
     val pageScrollState = rememberScrollState()
     val selectCarScrollState = rememberScrollState()
-    val filterOptions = listOf("All", "Oil Change", "Tires", "Maintenance", "Brakes")
 
+    val _state by viewModel.state.collectAsState()
+    val state = _state
 
     Column(
         m
@@ -85,9 +97,11 @@ fun HistoryScreen(navController: NavController) {
                 "Service History",
                 fontFamily = popMid,
                 fontSize = 26.sp,
-                style = TextStyle(brush = Brush.linearGradient(
-                    listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
-                )),
+                style = TextStyle(
+                    brush = Brush.linearGradient(
+                        listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
+                    )
+                ),
                 fontWeight = FontWeight.W500,
                 modifier = Modifier.align(Alignment.Center)
             )
@@ -95,7 +109,7 @@ fun HistoryScreen(navController: NavController) {
             Icon(
                 painter = painterResource(Res.drawable.history_filter),
                 contentDescription = null,
-                tint = Color.Unspecified    ,
+                tint = Color.Unspecified,
                 modifier = Modifier
                     .size(26.dp)
                     .align(Alignment.CenterEnd)
@@ -103,10 +117,11 @@ fun HistoryScreen(navController: NavController) {
         }
         Spacer(m.height(8.dp))
 
-        Text("View and manage your maintenance records for all your vehicles.",
+        Text(
+            "View and manage your maintenance records for all your vehicles.",
             fontFamily = popMid,
             fontSize = 12.sp,
-           color = Color(102, 102, 102, 204),
+            color = Color(102, 102, 102, 204),
             fontWeight = FontWeight.W500,
         )
         Spacer(m.height(4.dp))
@@ -124,14 +139,208 @@ fun HistoryScreen(navController: NavController) {
                 .fillMaxSize()
         )
         {
+            when (state) {
+                is HistoryScreenState.Loading -> {
+                    Spacer(modifier = m.padding(vertical = 50.dp))
+                    Text("LOADING_CAR_DATA")
+                }
+
+                is HistoryScreenState.Error -> {
+                    Spacer(modifier = m.padding(vertical = 50.dp))
+                    Text("Error: ${state.message}", color = Color.Red)
+                }
+
+                is HistoryScreenState.Success -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        state.historyItems.forEach { item ->
+                            ServiceHistoryCard(
+                                carName = item.carName,
+                                serviceName = item.providerName,
+                                date = item.date,
+                                location = "BNU", // ⚠️ no location in model, using providerName as placeholder
+                                cost = item.totalPrice,
+                                paymentMethod = item.paymentMethod,
+                                onClick = {
+                                    // navController.navigate("serviceRecord/${item.id}")
+                                }
+                            )
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+}
+// ServiceRecordScreen.kt
 
 
 
+@Composable
+fun ServiceHistoryCard(
+    carName: String,
+    serviceName: String,
+    date: String,
+    location: String,
+    cost: String,
+    paymentMethod: String,
+    onClick: () -> Unit
+) {
+    val popSemi = FontFamily(Font(Res.font.poppins_semibold))
+    val popMid = FontFamily(Font(Res.font.poppins_medium))
+
+    val gradientBrush = Brush.linearGradient(
+        listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
+    )
+
+    Column(
+        modifier = m
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color(210, 210, 210))
+            .padding(14.dp)
+    ) {
+
+        // ── Top row: car image + name/service + price/payment ──
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Car image
+            Box(
+                m.size(38.dp) // Set the size of the circle
+                    .clip(CircleShape) // This makes it a circle
+                    .border(1.dp, Color(30, 30, 30, 51), CircleShape)
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.audi),
+                    contentDescription = "Car Logo",
+                    modifier = m.size(32.dp) // Set the size of the circle
+                        .align(Alignment.Center)
+
+                )
+            } // car image
+
+            Spacer(m.width(10.dp))
+
+            // Car brand + service name
+            Column(modifier = m.weight(1f)) {
+                Text(
+                    text = carName,
+                    fontFamily = popMid,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.W300,
+                    color = Color(102, 102, 102, 255)
+                )
+                Text(
+                    text = serviceName,
+                    fontFamily = popSemi,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.W500,
+                    color = Color(102, 102, 102, 255)
+                )
+            }
+
+            // Price + payment method
+            Column(horizontalAlignment = Alignment.End) {
+                Text(
+                    text = cost,
+                    fontFamily = popSemi,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.W500,
+                    color = Color(102, 102, 102, 255)
+                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        painter = painterResource(Res.drawable.history_visa),
+                        // need to add condition
+                        contentDescription = null,
+                        tint = Color.Unspecified,
+                        modifier = Modifier.size(14.dp)
+                    )
+                    Spacer(Modifier.width(3.dp))
+                    Text(
+                        text = paymentMethod,
+                        fontFamily = popMid,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.W300,
+                        color = Color(102, 102, 102, 255)
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.height(12.dp))
+
+        // ── Bottom row: date + location ──────────────────────
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(Res.drawable.history_date),
+                contentDescription = null,
+                tint = Color.Unspecified,
+                modifier = Modifier.size(15.dp)
+            )
+            Spacer(Modifier.width(6.dp))
+            Text(
+                text = date,
+                fontFamily = popMid,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.W300,
+                color = Color(102, 102, 102, 255)
+            )
+            Spacer(Modifier.width(16.dp))
+            Icon(
+                painter = painterResource(Res.drawable.history_location),
+                contentDescription = null,
+                tint = Color.Unspecified,
+                modifier = Modifier.size(15.dp)
+            )
+            Spacer(Modifier.width(4.dp))
+            Text(
+                text = location,
+                fontFamily = popMid,
+                fontWeight = FontWeight.W300,
+                fontSize = 16.sp,
+                color = Color(102, 102, 102, 255)
+            )
+        }
+
+        Spacer(Modifier.height(12.dp))
+
+        // ── View Details button ──────────────────────────────
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(10.dp))
+                .border(
+                    width = 1.5.dp,
+                    brush = gradientBrush,
+                    shape = RoundedCornerShape(10.dp)
+                )
+                .clickable { onClick }
+                .padding(vertical = 10.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "view Details",
+                fontFamily = popMid,
+                fontSize = 14.sp,
+                style = TextStyle(brush = gradientBrush),
+                textAlign = TextAlign.Center
+            )
         }
     }
 }
 
-// ServiceRecordScreen.kt
+
 
 @Composable
 fun ServiceRecordScreen(
@@ -307,172 +516,4 @@ fun ServiceRecordRow(
             thickness = 1.dp
         )
     }
-}
-
-@Composable
-fun ServiceHistoryCard(
-    carName: String,
-    serviceName: String,
-    date: String,
-    location: String,
-    cost:String,
-    paymentMethod:String,
-    onClick: () -> Unit
-) {
-    val popSemi = FontFamily(Font(Res.font.poppins_semibold))
-    val popMid = FontFamily(Font(Res.font.poppins_medium))
-
-    val gradientBrush = Brush.linearGradient(
-        listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
-    )
-
-    Column(
-        modifier = m
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
-            .background(Color(210, 210, 210))
-            .padding(14.dp)
-    ) {
-
-        // ── Top row: car image + name/service + price/payment ──
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Car image
-            Box(
-                m.size(38.dp) // Set the size of the circle
-                    .clip(CircleShape) // This makes it a circle
-                    .border(1.dp, Color(30, 30, 30, 51), CircleShape)
-            ) {
-                Image(
-                    painter = painterResource(Res.drawable.audi),
-                    contentDescription = "Car Logo",
-                    modifier = m.size(32.dp) // Set the size of the circle
-                        .align(Alignment.Center)
-
-                )
-            } // car image
-
-            Spacer(m.width(10.dp))
-
-            // Car brand + service name
-            Column(modifier = m.weight(1f)) {
-                Text(
-                    text =carName,
-                    fontFamily = popMid,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.W300,
-                    color = Color(102, 102, 102, 255)
-                )
-                Text(
-                    text = serviceName,
-                    fontFamily = popSemi,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.W500,
-                    color = Color(102, 102, 102, 255)
-                )
-            }
-
-            // Price + payment method
-            Column(horizontalAlignment = Alignment.End) {
-                Text(
-                    text = cost,
-                    fontFamily = popSemi,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.W500,
-                    color = Color(102, 102, 102, 255)
-                )
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        painter = painterResource(Res.drawable.history_visa),
-                        // need to add condition
-                        contentDescription = null,
-                        tint = Color.Unspecified,
-                        modifier = Modifier.size(14.dp)
-                    )
-                    Spacer(Modifier.width(3.dp))
-                    Text(
-                        text =paymentMethod,
-                        fontFamily = popMid,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.W300,
-                        color = Color(102, 102, 102, 255)
-                    )
-                }
-            }
-        }
-
-        Spacer(Modifier.height(12.dp))
-
-        // ── Bottom row: date + location ──────────────────────
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                painter = painterResource(Res.drawable.history_date),
-                contentDescription = null,
-                tint = Color.Unspecified,
-                modifier = Modifier.size(15.dp)
-            )
-            Spacer(Modifier.width(6.dp))
-            Text(
-                text = date,
-                fontFamily = popMid,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.W300,
-                color = Color(102, 102, 102, 255)
-            )
-            Spacer(Modifier.width(16.dp))
-            Icon(
-                painter = painterResource(Res.drawable.history_location),
-                contentDescription = null,
-                tint = Color.Unspecified,
-                modifier = Modifier.size(15.dp)
-            )
-            Spacer(Modifier.width(4.dp))
-            Text(
-                text = location,
-                fontFamily = popMid,
-                fontWeight = FontWeight.W300,
-                fontSize = 16.sp,
-                color = Color(102, 102, 102, 255)
-            )
-        }
-
-        Spacer(Modifier.height(12.dp))
-
-        // ── View Details button ──────────────────────────────
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(10.dp))
-                .border(
-                    width = 1.5.dp,
-                    brush = gradientBrush,
-                    shape = RoundedCornerShape(10.dp)
-                )
-                .clickable { onClick }
-                .padding(vertical = 10.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "view Details",
-                fontFamily = popMid,
-                fontSize = 14.sp,
-                style = TextStyle(brush = gradientBrush),
-                textAlign = TextAlign.Center
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-fun ServiceRecordScreenPreview() {
-    ServiceRecordScreen(
-        navController = rememberNavController(),
-
-    )
 }
