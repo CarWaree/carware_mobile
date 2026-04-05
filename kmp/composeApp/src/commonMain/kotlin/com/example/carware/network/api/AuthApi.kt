@@ -4,11 +4,13 @@ import com.example.carware.network.apiRequests.auth.EmailVerificationRequest
 import com.example.carware.network.apiRequests.auth.LoginRequest
 import com.example.carware.network.apiRequests.auth.SignUpRequest
 import com.example.carware.network.apiRequests.auth.ForgotPasswordRequest
+import com.example.carware.network.apiRequests.auth.GoogleSignInRequest
 import com.example.carware.network.apiRequests.auth.OTPRequest
 import com.example.carware.network.apiRequests.auth.ResetPasswordRequest
 import com.example.carware.network.apiResponse.auth.AuthResponse
 import com.example.carware.network.apiResponse.auth.EmailVerificationResponse
 import com.example.carware.network.apiResponse.auth.ForgotPasswordResponse
+import com.example.carware.network.apiResponse.auth.GoogleSignInResponse
 import com.example.carware.network.apiResponse.auth.OTPResponse
 import com.example.carware.network.apiResponse.auth.ResetPasswordResponse
 import com.example.carware.network.apiResponse.auth.SignUpResponse
@@ -24,7 +26,7 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.*
 import io.ktor.http.contentType
 
-const val baseUrl = "https://63nw61z7-7136.euw.devtunnels.ms"
+const val baseUrl = "https://63nw61z7-7136.euw.devtunnels.msg"
 
 suspend fun signupUser(request: SignUpRequest): SignUpResponse {
     val client = createHttpClient()
@@ -112,6 +114,13 @@ suspend fun otpVerificationUser(request: OTPRequest): OTPResponse {
 suspend fun verifyEmailUser(request: EmailVerificationRequest): EmailVerificationResponse{
     val client = createHttpClient()
     return client.post("$baseUrl/api/Auth/verify-email-otp") {
+        contentType(ContentType.Application.Json)
+        setBody(request)
+    }.body()
+}
+suspend fun googleSignIn(request: GoogleSignInRequest): GoogleSignInResponse {
+    val client =createHttpClient()
+    return client.post("$baseUrl/api/Auth/google-mobile") {
         contentType(ContentType.Application.Json)
         setBody(request)
     }.body()
