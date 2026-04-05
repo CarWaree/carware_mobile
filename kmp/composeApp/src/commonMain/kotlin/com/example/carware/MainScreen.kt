@@ -29,6 +29,7 @@ import com.example.carware.navigation.LanguageSelectionScreen
 import com.example.carware.navigation.LoginScreen
 import com.example.carware.navigation.NewPasswordScreen
 import com.example.carware.navigation.OnboardingScreen
+import com.example.carware.navigation.ProfileScreen
 import com.example.carware.navigation.ResetPasswordScreen
 import com.example.carware.navigation.ScheduleScreen
 import com.example.carware.navigation.SettingsScreen
@@ -42,6 +43,7 @@ import com.example.carware.repository.VehicleRepository
 import com.example.carware.repository.auth.AuthRepository
 import com.example.carware.screens.AddCarScreen
 import com.example.carware.screens.BottomNavBar
+import com.example.carware.screens.ProfileScreen
 import com.example.carware.screens.onBoarding.OnBoardingScreen
 import com.example.carware.screens.SplashScreen
 import com.example.carware.screens.auth.EmailVerificationScreen
@@ -287,6 +289,9 @@ fun MainScreen(preferencesManager: PreferencesManager) {
                     )
                 )
 
+            }
+            composable<ProfileScreen> {
+                ProfileScreen(navController)
             }
         }
     }
