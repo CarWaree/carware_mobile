@@ -1,4 +1,4 @@
-package com.example.carware.screens
+package com.example.carware.screens.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -51,7 +51,7 @@ fun EditProfileScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
+            .background(Color(0xFFD9D9D9))
             .verticalScroll(rememberScrollState())
             .padding(bottom = 100.dp)
     ) {
@@ -237,7 +237,8 @@ fun EditProfileField(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
-                .background(Color(0xFFD9D9D9), RoundedCornerShape(12.dp)),
+                .background(Color(0xBFCCCCCC),
+                    RoundedCornerShape(12.dp)),
             leadingIcon = {
                 Icon(
                     painter = painterResource(icon),
