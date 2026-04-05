@@ -80,7 +80,7 @@ class ScheduleScreenViewModel(
         morningSlots.clear()
         morningSlots.addAll(
             listOf(
-                TimeSlot("10:00 AM", isAvailable = false    ),
+                TimeSlot("10:00 AM", isAvailable = false  ,),
                 TimeSlot("10:30 AM"),
                 TimeSlot("11:00 AM"),
                 TimeSlot("11:30 AM", isAvailable = false ),

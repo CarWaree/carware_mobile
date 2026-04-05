@@ -63,8 +63,8 @@ class EmailVerificationViewModel
                     ?: throw IllegalStateException("Token missing in response")
                 preferencesManager.saveToken(token)
 
-                val expToken=response.data.expiresOn
-                preferencesManager.saveExpiresOn(expToken)
+//                val expToken=response.data.expiresOn
+//                preferencesManager.saveExpiresOn(expToken)
                 preferencesManager.saveEmailVerified(true)
 
                 _state.update {
