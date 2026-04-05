@@ -74,6 +74,8 @@ fun HomeScreen(
     val _state by viewModel.state.collectAsState()
     val state = _state
 
+    val cachedVehicles by viewModel.cachedVehicles.collectAsState(initial = emptyList())
+
     val username = when (state) {
         is HomeScreenState.Success -> state.cars.firstOrNull()?.userName ?: "User"
         else -> "Guest"
@@ -159,8 +161,13 @@ fun HomeScreen(
                     }
 
                     is HomeScreenState.Success -> {
-                        //  Pass the whole list to the Pager content
-                        SuccessCarPagerContent(state.cars,navController)
+                        // Get cached vehicles for auto-update
+                        val cachedVehicles by viewModel.cachedVehicles.collectAsState(initial = emptyList())
+
+                        // Use cached if available, otherwise use state vehicles
+                        val vehiclesToDisplay = if (cachedVehicles.isNotEmpty()) cachedVehicles else state.cars
+
+                        SuccessCarPagerContent(vehiclesToDisplay, navController)
                     }
                 }
             }
