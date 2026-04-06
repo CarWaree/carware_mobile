@@ -38,8 +38,8 @@ fun SplashScreen(
         val destination = when {
             !preferencesManager.isLanguageSelected() -> LanguageSelectionScreen
             !preferencesManager.isOnboardingComplete() -> OnboardingScreen
-            preferencesManager.isEmailVerified() -> EmailVerificationScreen
-           !preferencesManager.hasAddedCar() -> AddCarScreen
+            !preferencesManager.isEmailVerified() -> EmailVerificationScreen
+            !preferencesManager.hasAddedCar() -> AddCarScreen
             !preferencesManager.isLoggedIn() -> SignUpScreen
             else -> HomeScreen
         }

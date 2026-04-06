@@ -148,19 +148,17 @@ fun LoginScreen(
 
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
-            navController.navigate(AddCarScreen) {
+            val destination = if (state.isCarAdded) {
+                HomeScreen
+            } else {
+                AddCarScreen
+            }
+
+            navController.navigate(destination) {
                 popUpTo(LoginScreen) { inclusive = true }
             }
         }
     }
-    LaunchedEffect(state.isSuccess) {
-        if (state.isSuccess) {
-            navController.navigate(HomeScreen) {
-                popUpTo(SignUpScreen) { inclusive = true }
-            }
-        }
-    }
-
 
     Column(
         m

@@ -22,6 +22,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.carware.navigation.AddCarScreen
+import com.example.carware.navigation.EditProfileScreen
 import com.example.carware.navigation.EmailVerificationScreen
 import com.example.carware.navigation.HistoryScreen
 import com.example.carware.navigation.HomeScreen
@@ -57,6 +58,7 @@ import com.example.carware.screens.mainScreens.HomeScreen
 import com.example.carware.screens.mainScreens.ScheduleScreen
 import com.example.carware.screens.mainScreens.SettingsScreen
 import com.example.carware.screens.onBoarding.LanguageSelectionScreen
+import com.example.carware.screens.profile.EditProfileScreen
 import com.example.carware.util.lang.AppLanguage
 import com.example.carware.util.lang.LocalizedStrings
 import com.example.carware.util.navBar.bottomTabs
@@ -105,7 +107,7 @@ fun MainScreen(preferencesManager: PreferencesManager) {
 
     val scheduleRepository = ServiceRepository()
 
-    val historyRepository= HistoryRepository(preferencesManager)
+    val historyRepository = HistoryRepository(preferencesManager)
 
 
 
@@ -116,7 +118,7 @@ fun MainScreen(preferencesManager: PreferencesManager) {
     ) {
         NavHost(
             navController = navController,
-            startDestination =ProfileScreen ,
+            startDestination = SplashScreen,
         )
         {
             composable<HomeScreen> {
@@ -159,7 +161,8 @@ fun MainScreen(preferencesManager: PreferencesManager) {
                             HistoryScreen::class -> HistoryScreen(
                                 navController,
                                 HistoryScreenViewModel(historyRepository)
-                                )
+                            )
+
                             SettingsScreen::class -> SettingsScreen(
                                 navController,
                                 preferencesManager,
@@ -184,8 +187,10 @@ fun MainScreen(preferencesManager: PreferencesManager) {
                     preferencesManager,
                     SignUpViewModel(
                         AuthRepository(preferencesManager),
-                        preferencesManager
-                    )
+                        vehicleRepository,
+                        preferencesManager,
+
+                        )
                 )
             }
             composable<LoginScreen> {
@@ -194,6 +199,7 @@ fun MainScreen(preferencesManager: PreferencesManager) {
                     preferencesManager,
                     LogInViewModel(
                         AuthRepository(preferencesManager),
+                        vehicleRepository,
                         preferencesManager
                     )
                 )
@@ -245,7 +251,8 @@ fun MainScreen(preferencesManager: PreferencesManager) {
                 )
             }
             composable<HistoryScreen> {
-                HistoryScreen(navController,
+                HistoryScreen(
+                    navController,
                     HistoryScreenViewModel(historyRepository)
                 )
             }
@@ -292,6 +299,9 @@ fun MainScreen(preferencesManager: PreferencesManager) {
             }
             composable<ProfileScreen> {
                 ProfileScreen(navController)
+            }
+            composable<EditProfileScreen> {
+                EditProfileScreen(navController)
             }
         }
     }

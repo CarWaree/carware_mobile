@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.carware.network.apiRequests.auth.GoogleSignInRequest
 import com.example.carware.network.apiRequests.auth.SignUpRequest
+import com.example.carware.repository.VehicleRepository
 import com.example.carware.repository.auth.AuthRepository
 import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +15,7 @@ import kotlinx.coroutines.launch
 
 class SignUpViewModel(
     private val repository: AuthRepository,
+    private val vehicleRepository: VehicleRepository,
     private val preferencesManager: PreferencesManager,
 ) : ViewModel() {
 
@@ -102,9 +104,13 @@ class SignUpViewModel(
 
                 val response = repository.signUpRepo(request)
 
+                val isEmailVerified = response.data?.isEmailVerified ?: false
+                preferencesManager.saveEmailVerified(isEmailVerified)
+
                 if (response.data?.isEmailVerified == true) {
                     _state.update { it.copy(isLoading = false, isSuccess = true) }
-                } else {
+                }
+                else {
                     // User created but needs email verification
                     _state.update { it.copy(isLoading = false, needsEmailVerification = true) }
                 }

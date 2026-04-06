@@ -51,4 +51,7 @@ object EmailVerificationScreen
 @Serializable
 object ProfileScreen
 
+@Serializable
+object EditProfileScreen
+
 

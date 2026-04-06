@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.carware.network.apiRequests.auth.GoogleSignInRequest
 import com.example.carware.network.apiRequests.auth.LoginRequest
+import com.example.carware.repository.VehicleRepository
 import com.example.carware.repository.auth.AuthRepository
 import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +15,7 @@ import kotlinx.coroutines.launch
 
 class LogInViewModel(
     private val repository: AuthRepository,
+    private val vehicleRepository: VehicleRepository,
     private val preferencesManager: PreferencesManager,
 ) : ViewModel() {
     private val _state = MutableStateFlow(LogInState())
@@ -71,10 +73,20 @@ class LogInViewModel(
                     ?: throw IllegalStateException("Token missing in response")
                 preferencesManager.performLogin(token)
 
-                _state.update {
-                    it.copy(isLoading = false, isSuccess = true)
+                val isEmailVerified = response.data?.isAuthenticated ?: false
+                preferencesManager.saveEmailVerified(isEmailVerified)
 
+                val vehicles = vehicleRepository.getVehiclesRepo()
+                val hasAddedCar = vehicles.isNotEmpty()
+                preferencesManager.setCarAdded(hasAddedCar)
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        isCarAdded = hasAddedCar,
+                        isSuccess = true
+                    )
                 }
+
 
             } catch (e: Exception) {
                 _state.update {

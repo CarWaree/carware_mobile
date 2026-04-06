@@ -54,6 +54,8 @@ fun EditProfileScreen(navController: NavController) {
             .background(Color(0xFFD9D9D9))
             .verticalScroll(rememberScrollState())
             .padding(bottom = 100.dp)
+            .padding(top = 32.dp)
+
     ) {
         // Top Bar
         Row(

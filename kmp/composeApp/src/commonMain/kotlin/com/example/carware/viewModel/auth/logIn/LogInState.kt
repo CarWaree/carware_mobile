@@ -8,6 +8,7 @@ data class LogInState(
 
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
+    val isCarAdded: Boolean = false,
     val errorMessage: String? = null,
 
 

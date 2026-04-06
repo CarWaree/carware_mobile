@@ -39,7 +39,11 @@ import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.*
 import com.example.carware.m
 import com.example.carware.navigation.AddCarScreen
+import com.example.carware.navigation.EditProfileScreen
+import com.example.carware.navigation.LoginScreen
+import com.example.carware.navigation.ProfileScreen
 import com.example.carware.screens.cardGradBack
+import com.example.carware.util.storage.PreferencesManager
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
@@ -54,7 +58,10 @@ fun Modifier.iconGradient(brush: Brush): Modifier = this
     }
 
 @Composable
-fun ProfileScreen(navController: NavController) {
+fun ProfileScreen(
+    navController: NavController,
+    preferencesManager: PreferencesManager
+) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
     val redWithAlpha = Color(0x80C20000) // #C2000080
@@ -67,6 +74,7 @@ fun ProfileScreen(navController: NavController) {
         modifier = m
             .fillMaxSize()
             .background(Color(0xFFD9D9D9))
+            .padding(top = 32.dp)
     ) {
         // Top Bar
         Row(
@@ -128,7 +136,9 @@ fun ProfileScreen(navController: NavController) {
                     modifier = Modifier
                         .size(34.dp)
                         .offset(x = (-4).dp, y = (-4).dp) // Adjust position slightly
-                        .clickable { /* Action */ }
+                        .clickable {
+                            navController.navigate(EditProfileScreen)
+                        }
                 )
             }
 
@@ -184,7 +194,7 @@ fun ProfileScreen(navController: NavController) {
                         Image(
                             painter = painterResource(Res.drawable.audi),
                             contentDescription = null,
-                            modifier = m.size(150.dp, 100.dp)
+                            modifier = m.size(150.dp, 110.dp)
 
                         ) //car image
                         Row(
@@ -270,10 +280,6 @@ fun ProfileScreen(navController: NavController) {
                     } //card content
                 }  // car card
             }
-
-
-
-
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -391,7 +397,7 @@ fun ProfileScreen(navController: NavController) {
 
             // Logout Button
             Button(
-                onClick = { },
+                onClick = {preferencesManager.performLogout() },
                 modifier = Modifier
                     .fillMaxWidth(0.65f)
                     .align(Alignment.CenterHorizontally)
@@ -486,8 +492,8 @@ fun Profile() {
 }
 
 
-@Preview
-@Composable
-fun ProfileScreenPreview() {
-    ProfileScreen(navController = rememberNavController())
-}
+//@Preview
+//@Composable
+//fun ProfileScreenPreview() {
+//    ProfileScreen(navController = rememberNavController())
+//}
