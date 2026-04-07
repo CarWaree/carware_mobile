@@ -79,6 +79,7 @@ class LogInViewModel(
                 val vehicles = vehicleRepository.getVehiclesRepo()
                 val hasAddedCar = vehicles.isNotEmpty()
                 preferencesManager.setCarAdded(hasAddedCar)
+
                 _state.update {
                     it.copy(
                         isLoading = false,
@@ -105,9 +106,22 @@ class LogInViewModel(
                 _state.update { it.copy(isLoading = true, errorMessage = null) }
                 val request = GoogleSignInRequest(idToken)
                 val response = repository.googleSignInRepo(request)
+
                 preferencesManager.performLogin(token = response.token)
                 preferencesManager.saveEmailVerified(true)
-                _state.update { it.copy(isLoading = false, isSuccess = true) } // ← missing
+
+                val vehicles = vehicleRepository.getVehiclesRepo()
+                val hasAddedCar = vehicles.isNotEmpty()
+                preferencesManager.setCarAdded(hasAddedCar)
+
+                // ADD THIS:
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        isCarAdded = hasAddedCar,  // ADD THIS LINE
+                        isSuccess = true
+                    )
+                }
             } catch (e: Exception) {
                 _state.update {
                     it.copy(
@@ -117,6 +131,5 @@ class LogInViewModel(
                 }
             }
         }
-    }
-}
+    }}
 

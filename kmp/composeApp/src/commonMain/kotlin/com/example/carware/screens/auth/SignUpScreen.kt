@@ -144,6 +144,14 @@ fun SignUpScreen(
             }
         }
     }
+    LaunchedEffect(state.isCarAdded) {
+        if (state.isCarAdded) {
+            navController.navigate(HomeScreen) {
+                popUpTo(SignUpScreen) { inclusive = true }
+            }
+        }
+    }
+
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
             navController.navigate(HomeScreen) {

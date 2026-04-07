@@ -96,6 +96,7 @@ import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
 import com.example.carware.viewModel.schedule.screen.TimeSlot
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDateTime
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
@@ -518,7 +519,8 @@ fun UpcomingMaintenance(
 
         Spacer(m.padding(horizontal = 2.dp))
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally) {
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             TimerUpcomingMaintenance("10")
             Text(
                 strings.get("DAY"),
@@ -540,7 +542,8 @@ fun UpcomingMaintenance(
         Spacer(m.padding(horizontal = 4.dp))
 
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally) {
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             TimerUpcomingMaintenance("25")
             Text(
                 strings.get("HOUR"),
@@ -562,7 +565,8 @@ fun UpcomingMaintenance(
         Spacer(m.padding(horizontal = 4.dp))
 
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally) {
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             TimerUpcomingMaintenance("50")
             Text(
                 strings.get("MINUTE"),
@@ -820,14 +824,16 @@ fun CalenderBox(
             )
             CalendarArrowButton(
                 isLeft = false,
-                onClick =  { viewModel.changeMonth(true) },
+                onClick = { viewModel.changeMonth(true) },
                 preferencesManager
             )
 
             // Year Control
-            CalendarArrowButton(isLeft = true,
+            CalendarArrowButton(
+                isLeft = true,
                 { viewModel.changeYear(false) },
-                preferencesManager)
+                preferencesManager
+            )
             Text(
                 state.currentYear.toString(),
                 color = Color.White,
@@ -904,14 +910,16 @@ fun CalendarArrowButton(
             .size(20.dp)
             .rotate(
                 if (isLeft)
-                180f
-            else
-                360f)
-                .clickable { onClick() }
-            .rotate(if (preferencesManager.getLanguageCode()=="ar")
-                180f
+                    180f
                 else
-                360f
+                    360f
+            )
+            .clickable { onClick() }
+            .rotate(
+                if (preferencesManager.getLanguageCode() == "ar")
+                    180f
+                else
+                    360f
 
             )
     )
@@ -1147,8 +1155,8 @@ fun TimeSlotItem(
 @Composable
 fun LoadingOverlay() {
     Box(
-        modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.2f))
-            , contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.2f)),
+        contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator(
             color = Color(0xFFC40000), modifier = Modifier.size(50.dp)
@@ -1221,7 +1229,8 @@ fun UsersCar(
 fun ServiceHistoryItem(
     carName: String,
     serviceName: String, // e.g., "oil changes"
-    date: String,        // e.g., "8/12/2025"
+    date: String,
+    status: String,
     onDeleteClick: () -> Unit,
 ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
@@ -1258,7 +1267,7 @@ fun ServiceHistoryItem(
                 carName,
                 fontFamily = popSemi,
                 fontSize = 14.sp,
-                fontWeight = FontWeight.W500,
+                fontWeight = FontWeight.W600,
                 color = Color(102, 102, 102, 255)
             )
         }
@@ -1271,22 +1280,39 @@ fun ServiceHistoryItem(
             fontWeight = FontWeight.W400,
             color = Color(102, 102, 102, 255)
         )
-        Spacer(m.padding(vertical = 2.dp))
-        Spacer(m.padding(vertical = 1.dp))
+//        Spacer(m.padding(vertical = 2.dp))
 
 
         Row(
             m
+                .padding(horizontal = 2.dp)
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
+
         ) {
+            val shortDate = LocalDateTime.parse(date)
+
             Text(
-                date,
+                "${shortDate.dayOfMonth}/${shortDate.monthNumber}/${shortDate.year}",
                 fontFamily = popSemi,
-                fontSize = 11.sp,
-                fontWeight = FontWeight.W300,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.W400,
                 color = Color(102, 102, 102, 255)
+            )
+            Box(
+                modifier = Modifier
+                    .size(10.dp)
+                    .background(color =if (status =="confirmed") {
+                        Color(4, 186, 0, 255)
+                    }
+                    else if(status=="pending")
+                    {
+                        Color(210, 194, 4, 255)
+                    }else{
+                        Color(194, 0, 0, 255)
+                    }
+                        , shape = CircleShape)
             )
             Image(
                 painter = painterResource(Res.drawable.recycle_bin),
@@ -1304,22 +1330,23 @@ fun ServiceHistoryItem(
 
 
 @Composable
-fun switchTest(){
-    Column(m
-        .background(Color(204, 204, 204, 191))
-        .fillMaxSize(),
+fun switchTest() {
+    Column(
+        m
+            .background(Color(204, 204, 204, 191))
+            .fillMaxSize(),
 
-        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center
+    ) {
         var isChecked: Boolean = true
 
 
     }
-    
+
 }
 
 @Preview
 @Composable
 fun prev() {
-  switchTest()
 }
 

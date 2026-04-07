@@ -107,12 +107,26 @@ class SignUpViewModel(
                 val isEmailVerified = response.data?.isEmailVerified ?: false
                 preferencesManager.saveEmailVerified(isEmailVerified)
 
+                val vehicles = vehicleRepository.getVehiclesRepo()
+                val hasAddedCar = vehicles.isNotEmpty()
+                preferencesManager.setCarAdded(hasAddedCar)
+
                 if (response.data?.isEmailVerified == true) {
-                    _state.update { it.copy(isLoading = false, isSuccess = true) }
-                }
-                else {
-                    // User created but needs email verification
-                    _state.update { it.copy(isLoading = false, needsEmailVerification = true) }
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            isSuccess = true,
+                            isCarAdded = hasAddedCar  // ADD THIS
+                        )
+                    }
+                } else {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            needsEmailVerification = true,
+                            isCarAdded = hasAddedCar  // ADD THIS
+                        )
+                    }
                 }
 
                 _state.update {
@@ -138,8 +152,14 @@ class SignUpViewModel(
                 _state.update { it.copy(isLoading = true, errorMessage = null) }
                 val request = GoogleSignInRequest(idToken)
                 val response = repository.googleSignInRepo(request)
+
                 preferencesManager.performLogin(token = response.token)
                 preferencesManager.saveEmailVerified(true)
+
+                val vehicles = vehicleRepository.getVehiclesRepo()
+                val hasAddedCar = vehicles.isNotEmpty()
+                preferencesManager.setCarAdded(hasAddedCar)
+
                 _state.update { it.copy(isLoading = false, isSuccess = true) } // ← missing
             } catch (e: Exception) {
                 _state.update {

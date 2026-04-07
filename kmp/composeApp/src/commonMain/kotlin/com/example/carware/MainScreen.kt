@@ -298,7 +298,7 @@ fun MainScreen(preferencesManager: PreferencesManager) {
 
             }
             composable<ProfileScreen> {
-                ProfileScreen(navController)
+                ProfileScreen(navController,preferencesManager)
             }
             composable<EditProfileScreen> {
                 EditProfileScreen(navController)

@@ -58,6 +58,7 @@ import com.example.carware.viewModel.home.HomeScreenState
 import com.example.carware.viewModel.home.HomeScreenViewModel
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
 @Composable
@@ -68,6 +69,7 @@ fun HomeScreen(
 ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
+
     val scrollState = rememberScrollState()
     val strings = LocalStrings.current
 
@@ -293,8 +295,10 @@ fun SuccessServicePagerContent(appointments: List<Appointments>) {
                 carName = appointment.vehicleName,
                 serviceName = appointment.serviceName,
                 date = appointment.date,
+                status = appointment.status,
                 onDeleteClick = { }
             )
         }
     }
 }
+

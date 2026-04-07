@@ -14,12 +14,12 @@ data class TimeSlot(
 data class ScheduleScreenState(
 // --- Service Selection ---
     val selectedService: String?=" ",
-    val selectedServiceId: Int? = null,      // ============ NEW: Add Int ID ============
+    val selectedServiceId: Int? = null,
 
     val selectedCenter: String? = " ",
-    val selectedCenterId: Int? = null,       // ============ NEW: Add Int ID ============
+    val selectedCenterId: Int? = null,
 
-    val selectedCarId: Int? = null,          // Already Int - good!
+    val selectedCarId: Int? = null,
     val selectedCarUserId: String? = null,
 
     // --- Available Data ---

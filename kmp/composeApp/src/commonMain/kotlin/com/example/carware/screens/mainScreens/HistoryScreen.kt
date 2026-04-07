@@ -51,6 +51,7 @@ import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.m
 import com.example.carware.viewModel.history.HistoryScreenState
 import com.example.carware.viewModel.history.HistoryScreenViewModel
+import kotlinx.datetime.LocalDateTime
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -289,8 +290,9 @@ fun ServiceHistoryCard(
                 modifier = Modifier.size(15.dp)
             )
             Spacer(Modifier.width(6.dp))
+            val shortDate = LocalDateTime.parse(date)
             Text(
-                text = date,
+                text =  "${shortDate.dayOfMonth}/${shortDate.monthNumber}/${shortDate.year}",
                 fontFamily = popMid,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.W300,
