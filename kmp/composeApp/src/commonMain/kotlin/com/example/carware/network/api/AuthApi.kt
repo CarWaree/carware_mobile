@@ -26,7 +26,7 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.*
 import io.ktor.http.contentType
 
-const val baseUrl = "https://ksnwgpmr-7136.uks1.devtunnels.ms"
+const val baseUrl = "https://92l9g4v0-7136.uks1.devtunnels.ms"
 
 suspend fun signupUser(request: SignUpRequest): SignUpResponse {
     val client = createHttpClient()

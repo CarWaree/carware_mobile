@@ -11,6 +11,7 @@ class PreferencesManager(
 
     companion object {
         private const val KEY_AUTH_TOKEN = "auth_token"
+
         private const val KEY_USER_ID = "user_id"
         private const val KEY_ONBOARDING = "onboarding_complete"
         private const val KEY_CAR_ADDED = "car_added_complete"

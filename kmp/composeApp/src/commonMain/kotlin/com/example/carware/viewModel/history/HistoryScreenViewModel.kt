@@ -29,6 +29,7 @@ class HistoryScreenViewModel(
              try {
 
                  val historyItems =repository.getHistoryItemRepo()
+
                  if (historyItems.isEmpty())
                      _state.value= HistoryScreenState.Error("No History Found")
                  else

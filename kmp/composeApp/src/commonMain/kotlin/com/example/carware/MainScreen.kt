@@ -39,6 +39,7 @@ import com.example.carware.navigation.SplashScreen
 import com.example.carware.navigation.TestScreen
 import com.example.carware.navigation.VerificationCodeScreen
 import com.example.carware.repository.HistoryRepository
+import com.example.carware.repository.ProfileRepository
 import com.example.carware.repository.ServiceRepository
 import com.example.carware.repository.VehicleRepository
 import com.example.carware.repository.auth.AuthRepository
@@ -71,6 +72,7 @@ import com.example.carware.viewModel.auth.newPassword.NewPasswordViewModel
 import com.example.carware.viewModel.auth.otpVerification.OTPViewModel
 import com.example.carware.viewModel.auth.signUp.SignUpViewModel
 import com.example.carware.viewModel.history.HistoryScreenViewModel
+import com.example.carware.viewModel.profile.ProfileScreenViewModel
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
 import com.mmk.kmpauth.google.GoogleAuthCredentials
 import com.mmk.kmpauth.google.GoogleAuthProvider
@@ -108,6 +110,7 @@ fun MainScreen(preferencesManager: PreferencesManager) {
     val scheduleRepository = ServiceRepository()
 
     val historyRepository = HistoryRepository(preferencesManager)
+    val profileRepository = ProfileRepository(preferencesManager)
 
 
 
@@ -298,10 +301,12 @@ fun MainScreen(preferencesManager: PreferencesManager) {
 
             }
             composable<ProfileScreen> {
-                ProfileScreen(navController,preferencesManager)
+                ProfileScreen(navController,
+                    ProfileScreenViewModel(vehicleRepository,profileRepository) ,
+                    preferencesManager)
             }
             composable<EditProfileScreen> {
-                EditProfileScreen(navController)
+                EditProfileScreen(navController, ProfileScreenViewModel(vehicleRepository,profileRepository))
             }
         }
     }
