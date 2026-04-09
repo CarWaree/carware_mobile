@@ -73,6 +73,9 @@ import com.example.carware.screens.appGradBack
 import com.example.carware.util.lang.AppLanguage
 import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.auth.logIn.LogInViewModel
+import com.mmk.kmpauth.google.GoogleAuthCredentials
+import com.mmk.kmpauth.google.GoogleAuthProvider
+import com.mmk.kmpauth.google.GoogleButtonUiContainer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -132,53 +135,70 @@ fun LoginScreen(
 
     )
 
+    var authReady by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        GoogleAuthProvider.create(
+            credentials = GoogleAuthCredentials(
+                serverId = "676917884316-co7m5je6ba8ck8ve0074a2apk8fnda4b.apps.googleusercontent.com"
+            )
+        )
+        authReady = true // ← THIS was missing!
 
-LaunchedEffect(state.isSuccess) {
-    if (state.isSuccess) {
-        navController.navigate(AddCarScreen) {
-            popUpTo(LoginScreen) { inclusive = true }
-        }
     }
-}
 
-    Column (m
-        .fillMaxSize()
-        .appGradBack()
-        .padding(64.dp)
-    ){
-            Column(
-                m
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                AnimatedVisibility(
-                    visible = state.errorMessage != null,
-                    enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
-                    exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
-                    modifier = Modifier
-                        .padding(top = 20.dp) // Gap from the very top of the phone
-                ) {
-                    state.errorMessage?.let { msg ->
-                        ToastMessage(message = msg, state = false)
-
-                        LaunchedEffect(msg) {
-                            delay(3000)
-                            viewModel.clearErrorMessage()
-                        }
-                    }
-                }
-
-                Icon(
-                    painter = painterResource(Res.drawable.new_logo),
-                    contentDescription = null,
-                    tint = Color(211, 203, 203, 255),
-                    modifier = m.scale(0.8f)
-                )
-
-
+    LaunchedEffect(state.isSuccess) {
+        if (state.isSuccess) {
+            val destination = if (state.isCarAdded) {
+                HomeScreen
+            } else {
+                AddCarScreen
             }
 
+            navController.navigate(destination) {
+                popUpTo(LoginScreen) { inclusive = true }
+            }
         }
+    }
+
+    Column(
+        m
+            .fillMaxSize()
+            .appGradBack()
+            .padding(64.dp)
+    ) {
+        Column(
+            m
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            AnimatedVisibility(
+                visible = state.errorMessage != null,
+                enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+                exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
+                modifier = Modifier
+                    .padding(top = 20.dp) // Gap from the very top of the phone
+            ) {
+                state.errorMessage?.let { msg ->
+                    ToastMessage(message = msg, state = false)
+
+                    LaunchedEffect(msg) {
+                        delay(3000)
+                        viewModel.clearErrorMessage()
+                    }
+                }
+            }
+
+            Icon(
+                painter = painterResource(Res.drawable.new_logo),
+                contentDescription = null,
+                tint = Color(211, 203, 203, 255),
+                modifier = m.scale(0.8f)
+            )
+
+
+        }
+
+    }
 
 
 
@@ -359,79 +379,92 @@ LaunchedEffect(state.isSuccess) {
 
                 Spacer(modifier = m.padding(vertical = 6.dp))
 
-                Card(
-                    onClick = { /*Google sign up code */ },
-                    modifier = m
-                        .size(width = 280.dp, height = 45.dp)
-                        .border(
-                            width = 1.dp,
-                            color = Color(30, 30, 30, 110),
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                        .clip(shape = RoundedCornerShape(8.dp)),
-                    colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                if (authReady) {
+                    GoogleButtonUiContainer(
+                        onGoogleSignInResult = { googleUser ->
+                            val idToken = googleUser?.idToken
+                            if (idToken != null) {
+                                viewModel.googleSignIn(idToken)  // ← pass it here
+                            }
+                        }
+                    ) {
+                        Card(
+                            onClick = { this.onClick() },
+                            modifier = m
+                                .size(width = 280.dp, height = 45.dp)
+                                .border(
+                                    width = 1.dp,
+                                    color = Color(30, 30, 30, 110),
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .clip(shape = RoundedCornerShape(8.dp)),
+                            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
 
-                    ) {
+                            ) {
+                            Row(
+                                modifier = m
+                                    .fillMaxSize(),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    painter = painterResource(Res.drawable.google_icon_logo_svgrepo_com),
+                                    contentDescription = null,
+                                    tint = Color.Unspecified,
+                                    modifier = m.size(16.dp)
+                                )
+                                Text(
+                                    strings.get("CONTINUE_GOOGLE"), fontFamily = popSemi,
+                                    fontSize = 16.sp,
+                                    color = Color(30, 30, 30, 163)
+                                )
+
+                            }
+
+
+                        } // google sign in button
+                    }
+                    Spacer(modifier = m.padding(vertical = 8.dp))
                     Row(
-                        modifier = m
-                            .fillMaxSize(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
+                        m
+
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
                     ) {
-                        Icon(
-                            painter = painterResource(Res.drawable.google_icon_logo_svgrepo_com),
-                            contentDescription = null,
-                            tint = Color.Unspecified,
-                            modifier = m.size(16.dp)
+                        Text(
+                            strings.get("DONT_HAVE_ACCOUNT"), fontFamily = popMid,
+                            fontSize = 12.sp,
+                            color = Color(30, 30, 30, 168)
                         )
                         Text(
-                            strings.get("CONTINUE_GOOGLE"), fontFamily = popSemi,
-                            fontSize = 16.sp,
-                            color = Color(30, 30, 30, 163)
+                            strings.get("SIGN_IN"), fontFamily = popMid,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(194, 0, 0, 255),
+                            modifier = m.clickable { navController.navigate(SignUpScreen) }
                         )
 
-                    }
-
-
-                } // google sign in button
-                Spacer(modifier = m.padding(vertical = 8.dp))
-                Row(
-                    m
-
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
+                    } // forget pass textbutton
+                    Spacer(m.padding(vertical = 4.dp))
                     Text(
-                        strings.get("DONT_HAVE_ACCOUNT"), fontFamily = popMid,
+                        strings.get("BY_LOGGING_IN"),
                         fontSize = 12.sp,
-                        color = Color(30, 30, 30, 168)
+                        fontFamily = popMid,
+                        color = Color(118, 118, 118, 255)
                     )
+                    // terms and conditions
                     Text(
-                        strings.get("SIGN_IN"), fontFamily = popMid,
+                        strings.get("TERMS_AND_CONDITIONS"),
                         fontSize = 12.sp,
+                        fontFamily = popMid,
                         fontWeight = FontWeight.Bold,
-                        color = Color(194, 0, 0, 255),
-                        modifier = m.clickable { navController.navigate(SignUpScreen) }
+                        color = Color(114, 114, 114, 255),
+                        modifier = m.clickable { /*privacy and terms page*/ }
                     )
 
-                } // forget pass textbutton
-                Spacer(m.padding(vertical = 4.dp))
-                Text(
-                    strings.get("BY_LOGGING_IN"),
-                    fontSize = 12.sp,
-                    fontFamily = popMid,
-                    color = Color(118, 118, 118, 255)
-                )
-                // terms and conditions
-                Text(
-                    strings.get("TERMS_AND_CONDITIONS"),
-                    fontSize = 12.sp,
-                    fontFamily = popMid,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(114, 114, 114, 255),
-                    modifier = m.clickable { /*privacy and terms page*/ }
-                )
+
+                }
 
 
             }
@@ -439,13 +472,11 @@ LaunchedEffect(state.isSuccess) {
 
         }
 
+        if (state.isLoading) {
+            LoadingOverlay()
+        }
 
     }
-
-    if (state.isLoading) {
-        LoadingOverlay()
-    }
-
 }
 
 

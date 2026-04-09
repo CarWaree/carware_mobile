@@ -35,6 +35,8 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.core.splashscreen)
             implementation("com.airbnb.android:lottie-compose:6.4.0")
+
+
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -51,11 +53,19 @@ kotlin {
             implementation("com.russhwolf:multiplatform-settings-no-arg:1.1.1")
             implementation("com.russhwolf:multiplatform-settings:1.1.1")
             implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
+            implementation(libs.kstore)
+            implementation(libs.kstore.file)
 
+
+
+            implementation("io.github.mirzemehdi:kmpauth-google:2.5.0-alpha01") //Google One Tap Sign-In
+            implementation("io.github.mirzemehdi:kmpauth-uihelper:2.5.0-alpha01")
         }
 
         nativeMain.dependencies {
             implementation(libs.ktor.client.darwin)
+
+
         }//ios
 
         commonTest.dependencies {
@@ -69,7 +79,7 @@ android {
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.example.careware"
+        applicationId = "com.careware.app"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1

@@ -2,7 +2,9 @@ package com.example.carware.viewModel.auth.logIn
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.carware.network.apiRequests.auth.GoogleSignInRequest
 import com.example.carware.network.apiRequests.auth.LoginRequest
+import com.example.carware.repository.VehicleRepository
 import com.example.carware.repository.auth.AuthRepository
 import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,6 +15,7 @@ import kotlinx.coroutines.launch
 
 class LogInViewModel(
     private val repository: AuthRepository,
+    private val vehicleRepository: VehicleRepository,
     private val preferencesManager: PreferencesManager,
 ) : ViewModel() {
     private val _state = MutableStateFlow(LogInState())
@@ -68,12 +71,23 @@ class LogInViewModel(
 
                 val token = response.data?.token
                     ?: throw IllegalStateException("Token missing in response")
-                preferencesManager.saveToken(token)
+                preferencesManager.performLogin(token)
+
+                val isEmailVerified = response.data?.isAuthenticated ?: false
+                preferencesManager.saveEmailVerified(isEmailVerified)
+
+                val vehicles = vehicleRepository.getVehiclesRepo()
+                val hasAddedCar = vehicles.isNotEmpty()
+                preferencesManager.setCarAdded(hasAddedCar)
 
                 _state.update {
-                    it.copy(isLoading = false, isSuccess = true)
-
+                    it.copy(
+                        isLoading = false,
+                        isCarAdded = hasAddedCar,
+                        isSuccess = true
+                    )
                 }
+
 
             } catch (e: Exception) {
                 _state.update {
@@ -85,5 +99,37 @@ class LogInViewModel(
             }
         }
     }
-}
+
+    fun googleSignIn(idToken: String) {
+        viewModelScope.launch {
+            try {
+                _state.update { it.copy(isLoading = true, errorMessage = null) }
+                val request = GoogleSignInRequest(idToken)
+                val response = repository.googleSignInRepo(request)
+
+                preferencesManager.performLogin(token = response.token)
+                preferencesManager.saveEmailVerified(true)
+
+                val vehicles = vehicleRepository.getVehiclesRepo()
+                val hasAddedCar = vehicles.isNotEmpty()
+                preferencesManager.setCarAdded(hasAddedCar)
+
+                // ADD THIS:
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        isCarAdded = hasAddedCar,  // ADD THIS LINE
+                        isSuccess = true
+                    )
+                }
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = e.message ?: "GoogleSignIn failed"
+                    )
+                }
+            }
+        }
+    }}
 

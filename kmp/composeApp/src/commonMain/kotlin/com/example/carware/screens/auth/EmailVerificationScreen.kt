@@ -47,6 +47,7 @@ import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.LocalStrings
 import com.example.carware.m
+import com.example.carware.navigation.AddCarScreen
 import com.example.carware.navigation.EmailVerificationScreen
 import com.example.carware.navigation.HomeScreen
 import com.example.carware.navigation.LoginScreen
@@ -125,7 +126,7 @@ fun EmailVerificationScreen(
 
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
-            navController.navigate(HomeScreen){
+            navController.navigate(AddCarScreen){
                 popUpTo(EmailVerificationScreen) { inclusive = true }
             }
         }
@@ -326,14 +327,14 @@ fun EmailVerificationScreen(
             }
 
         }
-        if (state.isLoading) {
-            LoadingOverlay()
-        }
+
 
 
     }
 
-
+    if (state.isLoading) {
+        LoadingOverlay()
+    }
 }
 
 

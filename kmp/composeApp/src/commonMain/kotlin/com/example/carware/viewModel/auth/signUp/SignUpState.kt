@@ -1,6 +1,6 @@
 package com.example.carware.viewModel.auth.signUp
 
-  data class SignUpState(
+data class SignUpState(
     val firstName: String = "",
     val lastName: String = "",
 
@@ -13,7 +13,8 @@ package com.example.carware.viewModel.auth.signUp
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
     val errorMessage: String? = null,
-    val needsEmailVerification: Boolean = false,  // Add this
+    val isCarAdded: Boolean = false,
+    val needsEmailVerification: Boolean = false,
 
 
     val userNameError: Boolean = false,

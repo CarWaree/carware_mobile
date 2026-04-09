@@ -39,11 +39,11 @@ import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.network.apiResponse.schedule.Service
 import com.example.carware.screens.CalenderBox
+import com.example.carware.screens.LoadingOverlay
 import com.example.carware.screens.SelectDateBox
 import com.example.carware.screens.SelectDropdown
 import com.example.carware.screens.UsersCar
 import com.example.carware.screens.appButtonBack
-import com.example.carware.util.lang.AppLanguage
 import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
 import org.jetbrains.compose.resources.Font
@@ -53,15 +53,16 @@ fun ScheduleScreen(
     navController: NavController,
     viewModel: ScheduleScreenViewModel,
     preferencesManager: PreferencesManager,
-) {
+
+    ) {
 
     val state by viewModel.state.collectAsState()
-    val strings = LocalStrings.current
-    val currentLang = AppLanguage.fromCode(preferencesManager.getLanguageCode())
+
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
     val pageScrollState = rememberScrollState()
     val selectCarScrollState = rememberScrollState()
+    val strings = LocalStrings.current
 
     if (state.isTimePickerVisible) {
         Column(m.fillMaxSize()) {
@@ -75,7 +76,7 @@ fun ScheduleScreen(
                 .background(Color(217, 217, 217, 255)),
         ) {
             Text(
-               strings.get("SCHEDULE_SERVICE"),
+                strings.get("SCHEDULE_SERVICE"),
                 fontFamily = popSemi,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
@@ -162,7 +163,7 @@ fun ScheduleScreen(
                                     it.name == selectedName
                                 }
                             // ============ CHANGE: Add it.id as second parameter ============
-                            serviceType?.let { viewModel.selectServiceType(it.name,it.id    ) }
+                            serviceType?.let { viewModel.selectServiceType(it.name, it.id) }
                         },
                     )
                 }
@@ -203,7 +204,10 @@ fun ScheduleScreen(
                 Spacer(m.height(18.dp))
 
                 // ============ CALENDAR SECTION ============
-                CalenderBox(viewModel)
+                CalenderBox(
+                    viewModel,
+                    preferencesManager = preferencesManager
+                )
 
                 Spacer(m.height(20.dp))
 
@@ -305,14 +309,14 @@ fun ScheduleScreen(
                     // Selected Service
                     state.selectedService?.let {
                         Text(
-                            text = strings.get("SERVICE") +"$it",
+                            text = strings.get("SERVICE") + "$it",
                             fontFamily = popMid,
                             fontSize = 12.sp,
                             color = Color.DarkGray
                         )
                     } ?: run {
                         Text(
-                            text =strings.get("SERVICE_NOT_SELECTED"),
+                            text = strings.get("SERVICE_NOT_SELECTED"),
                             fontFamily = popMid,
                             fontSize = 12.sp,
                             color = Color.Gray
@@ -324,14 +328,14 @@ fun ScheduleScreen(
                     // Selected Center
                     state.selectedCenter?.let {
                         Text(
-                            text = strings.get("PROVIDER") +"$it",
+                            text = strings.get("PROVIDER") + "$it",
                             fontFamily = popMid,
                             fontSize = 12.sp,
                             color = Color.DarkGray
                         )
                     } ?: run {
                         Text(
-                            text =strings.get("PROVIDER_NOT_SELECTED"),
+                            text = strings.get("PROVIDER_NOT_SELECTED"),
                             fontFamily = popMid,
                             fontSize = 12.sp,
                             color = Color.Gray
@@ -361,5 +365,9 @@ fun ScheduleScreen(
                 Spacer(m.height(120.dp))
             }
         }
+
+    }
+    if (state.isLoading) {
+        LoadingOverlay()
     }
 }

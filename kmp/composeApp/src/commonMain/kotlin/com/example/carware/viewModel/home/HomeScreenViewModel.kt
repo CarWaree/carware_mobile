@@ -2,16 +2,19 @@ package com.example.carware.viewModel.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.carware.cache.vehiclesStore
 import com.example.carware.repository.VehicleRepository
 import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 
 class HomeScreenViewModel(
-    val repository: VehicleRepository,
+    private val repository: VehicleRepository,
     private val preferencesManager: PreferencesManager
 
 ) : ViewModel() {
@@ -20,6 +23,9 @@ class HomeScreenViewModel(
     private val _state = MutableStateFlow<HomeScreenState>(HomeScreenState.Loading)
     val state: StateFlow<HomeScreenState> = _state.asStateFlow()
 
+    val cachedVehicles = vehiclesStore.updates
+        .filterNotNull()
+        .map { it.vehicles }
     init {
         loadVehicles()
     }

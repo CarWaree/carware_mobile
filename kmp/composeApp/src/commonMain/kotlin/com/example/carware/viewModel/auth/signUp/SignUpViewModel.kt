@@ -2,7 +2,9 @@ package com.example.carware.viewModel.auth.signUp
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.carware.network.apiRequests.auth.GoogleSignInRequest
 import com.example.carware.network.apiRequests.auth.SignUpRequest
+import com.example.carware.repository.VehicleRepository
 import com.example.carware.repository.auth.AuthRepository
 import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,6 +15,7 @@ import kotlinx.coroutines.launch
 
 class SignUpViewModel(
     private val repository: AuthRepository,
+    private val vehicleRepository: VehicleRepository,
     private val preferencesManager: PreferencesManager,
 ) : ViewModel() {
 
@@ -101,11 +104,29 @@ class SignUpViewModel(
 
                 val response = repository.signUpRepo(request)
 
+                val isEmailVerified = response.data?.isEmailVerified ?: false
+                preferencesManager.saveEmailVerified(isEmailVerified)
+
+                val vehicles = vehicleRepository.getVehiclesRepo()
+                val hasAddedCar = vehicles.isNotEmpty()
+                preferencesManager.setCarAdded(hasAddedCar)
+
                 if (response.data?.isEmailVerified == true) {
-                    _state.update { it.copy(isLoading = false, isSuccess = true) }
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            isSuccess = true,
+                            isCarAdded = hasAddedCar  // ADD THIS
+                        )
+                    }
                 } else {
-                    // User created but needs email verification
-                    _state.update { it.copy(isLoading = false, needsEmailVerification = true) }
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            needsEmailVerification = true,
+                            isCarAdded = hasAddedCar  // ADD THIS
+                        )
+                    }
                 }
 
                 _state.update {
@@ -118,6 +139,33 @@ class SignUpViewModel(
                     it.copy(
                         isLoading = false,
                         errorMessage = e.message ?: "An error occurred"
+                    )
+                }
+            }
+        }
+    }
+
+
+    fun googleSignIn(idToken: String) {
+        viewModelScope.launch {
+            try {
+                _state.update { it.copy(isLoading = true, errorMessage = null) }
+                val request = GoogleSignInRequest(idToken)
+                val response = repository.googleSignInRepo(request)
+
+                preferencesManager.performLogin(token = response.token)
+                preferencesManager.saveEmailVerified(true)
+
+                val vehicles = vehicleRepository.getVehiclesRepo()
+                val hasAddedCar = vehicles.isNotEmpty()
+                preferencesManager.setCarAdded(hasAddedCar)
+
+                _state.update { it.copy(isLoading = false, isSuccess = true) } // ← missing
+            } catch (e: Exception) {
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = e.message ?: "GoogleSignIn failed"
                     )
                 }
             }

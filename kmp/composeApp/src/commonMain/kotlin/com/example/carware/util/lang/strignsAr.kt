@@ -88,6 +88,7 @@ val StringsAr = mapOf(
 
     // Home
     "WELCOME_BACK_HOME" to " مرحباً بعودتك ",
+    "MORE_DETAILS" to " تفاصيل أكتر",
     // add car
     "ADD_CAR" to "أضف سيارتك",
     "SET_UP_CAR_PROFILE" to "قم بإعداد ملف تعريف سيارتك للحصول على \nتذكيرات ونصائح خدمة مخصصة.",
@@ -95,6 +96,9 @@ val StringsAr = mapOf(
     "CAR_MODEL" to "الموديل",
     "CAR_YEAR" to "سنة",
     "CAR_COLOR" to "اللون",
+    "HOUR" to "ساعه",
+    "DAY" to "يوم",
+    "MINUTE" to "دقيقه",
     //history
     "HISTORY" to "القديم",
     //settings
@@ -103,6 +107,7 @@ val StringsAr = mapOf(
     "LOADING_CAR_DATA" to "يتم تحميل بيانات السيارة",
     "SCHEDULED_SERVICES" to "الخدمات المحجوزه",
     "NO_UPCOMING_APPOINTMENTS" to "لا يوجد مواعيد قادمه",
+    "UP_COMING_MAINTENANCE" to "مواعيد قادمه ",
     // schedule screen
     "SCHEDULE_SERVICE" to "خدمه الحجز ",
     "SELECT_CAR" to "اختر سيارتك",

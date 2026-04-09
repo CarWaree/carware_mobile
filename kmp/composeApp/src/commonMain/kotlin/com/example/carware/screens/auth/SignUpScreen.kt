@@ -58,6 +58,7 @@ import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.navigation.EmailVerificationScreen
+import com.example.carware.navigation.HomeScreen
 import com.example.carware.navigation.LoginScreen
 import com.example.carware.navigation.SignUpScreen
 import com.example.carware.screens.LoadingOverlay
@@ -67,6 +68,9 @@ import com.example.carware.screens.appGradBack
 import com.example.carware.util.lang.AppLanguage
 import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.auth.signUp.SignUpViewModel
+import com.mmk.kmpauth.google.GoogleAuthCredentials
+import com.mmk.kmpauth.google.GoogleAuthProvider
+import com.mmk.kmpauth.google.GoogleButtonUiContainer
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
@@ -77,6 +81,16 @@ fun SignUpScreen(
     preferencesManager: PreferencesManager,
     viewModel: SignUpViewModel
 ) {
+    var authReady by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        GoogleAuthProvider.create(
+            credentials = GoogleAuthCredentials(
+                serverId = "676917884316-co7m5je6ba8ck8ve0074a2apk8fnda4b.apps.googleusercontent.com"
+            )
+        )
+        authReady = true // ← THIS was missing!
+
+    }
     val strings = LocalStrings.current
     val currentLang = AppLanguage.fromCode(preferencesManager.getLanguageCode())
 
@@ -130,6 +144,21 @@ fun SignUpScreen(
             }
         }
     }
+    LaunchedEffect(state.isCarAdded) {
+        if (state.isCarAdded) {
+            navController.navigate(HomeScreen) {
+                popUpTo(SignUpScreen) { inclusive = true }
+            }
+        }
+    }
+
+    LaunchedEffect(state.isSuccess) {
+        if (state.isSuccess) {
+            navController.navigate(HomeScreen) {
+                popUpTo(SignUpScreen) { inclusive = true }
+            }
+        }
+    }
 
 
 
@@ -150,7 +179,7 @@ fun SignUpScreen(
                 if (state.needsEmailVerification) {
                     ToastMessage(message = "Check your email to verify your account", state = true)
                 }
-                if (state.errorMessage!=null) {
+                if (state.errorMessage != null) {
                     AnimatedVisibility(
                         visible = state.errorMessage != null,
                         enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
@@ -167,7 +196,7 @@ fun SignUpScreen(
                             }
                         }
                     }
-                }else {
+                } else {
                     Icon(
                         painter = painterResource(Res.drawable.new_logo),
                         contentDescription = null,
@@ -502,76 +531,103 @@ fun SignUpScreen(
                         } //sign up button
 
                         Spacer(modifier = m.padding(vertical = 8.dp))
-
-                        Card(
-                            onClick = { /* handle click */ },
-                            modifier = m
-                                .size(width = 280.dp, height = 50.dp)
-                                .border(
-                                    width = 1.dp,
-                                    color = Color(30, 30, 30, 110),
-                                    shape = RoundedCornerShape(8.dp)
-                                )
-                                .clip(shape = RoundedCornerShape(8.dp)),
-                            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-
+                        if (authReady) {
+                            GoogleButtonUiContainer(
+                                onGoogleSignInResult = { googleUser ->
+                                    val idToken = googleUser?.idToken
+                                    if (idToken != null) {
+                                        viewModel.googleSignIn(idToken)  // ← pass it here
+                                    }
+                                }
                             ) {
-                            Row(
-                                modifier = m
-                                    .fillMaxSize(),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    painter = painterResource(Res.drawable.google_icon_logo_svgrepo_com),
-                                    contentDescription = null,
-                                    tint = Color.Unspecified,
-                                    modifier = m.size(16.dp)
+                                Card(
+                                    onClick = { this.onClick() },
+                                    modifier = m
+                                        .size(width = 280.dp, height = 50.dp)
+                                        .border(
+                                            width = 1.dp,
+                                            color = Color(30, 30, 30, 110),
+                                            shape = RoundedCornerShape(8.dp)
+                                        )
+                                        .clip(shape = RoundedCornerShape(8.dp)),
+                                    colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+
+                                    ) {
+                                    Row(
+                                        modifier = m
+                                            .fillMaxSize(),
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(Res.drawable.google_icon_logo_svgrepo_com),
+                                            contentDescription = null,
+                                            tint = Color.Unspecified,
+                                            modifier = m.size(16.dp)
+                                        )
+                                        Text(
+                                            strings.get("CONTINUE_GOOGLE"), fontFamily = popSemi,
+                                            fontSize = 16.sp,
+                                            color = Color(30, 30, 30, 163)
+                                        )
+
+                                    }
+                                }
+                            }
+                                //CONT with google text
+//                            if(authReady){
+//                                Box(modifier=m.fillMaxSize(),
+//                                    contentAlignment = Alignment.Center ){
+//                                    GoogleButtonUiContainer(
+//                                        onGoogleSignInResult = {googleUser->
+//                                            val tokenId=googleUser?.idToken
+//                                            println("TOKEN: $tokenId")
+//                                            println("User: ${googleUser?.displayName}")
+//
+//                                        }
+//                                    ){
+//                                        GoogleSignInButton(onClick={this.onClick()})
+//
+//                                    }
+//                                }
+//                            }
+
+
+                            } //google button
+                            Spacer(modifier = m.padding(vertical = 8.dp))
+                            Row() {
+                                Text(
+                                    strings.get("ALREADY_HAVE_ACCOUNT"), fontFamily = popMid,
+                                    fontSize = 12.sp,
+                                    color = Color(30, 30, 30, 168)
                                 )
                                 Text(
-                                    strings.get("CONTINUE_GOOGLE"), fontFamily = popSemi,
-                                    fontSize = 16.sp,
-                                    color = Color(30, 30, 30, 163)
-                                ) //CONT with google text
-
+                                    strings.get("LOGIN"), fontFamily = popMid,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(194, 0, 0, 255),
+                                    modifier = m.clickable { navController.navigate(LoginScreen) }
+                                )
                             }
+                            Spacer(Modifier.padding(vertical = 8.dp))
 
 
-                        } //google button
-                        Spacer(modifier = m.padding(vertical = 8.dp))
-                        Row() {
-                            Text(
-                                strings.get("ALREADY_HAVE_ACCOUNT"), fontFamily = popMid,
-                                fontSize = 12.sp,
-                                color = Color(30, 30, 30, 168)
-                            )
-                            Text(
-                                strings.get("LOGIN"), fontFamily = popMid,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(194, 0, 0, 255),
-                                modifier = m.clickable { navController.navigate(LoginScreen) }
-                            )
                         }
-                        Spacer(Modifier.padding(vertical = 8.dp))
 
 
                     }
 
-
                 }
 
+
             }
-
-
         }
-    }
 
-    if (state.isLoading) {
-        LoadingOverlay()
-    }
+        if (state.isLoading) {
+            LoadingOverlay()
+        }
 
-}
+    }
 
 
 

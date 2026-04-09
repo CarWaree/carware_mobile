@@ -8,6 +8,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,6 +22,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.carware.navigation.AddCarScreen
+import com.example.carware.navigation.EditProfileScreen
 import com.example.carware.navigation.EmailVerificationScreen
 import com.example.carware.navigation.HistoryScreen
 import com.example.carware.navigation.HomeScreen
@@ -28,6 +30,7 @@ import com.example.carware.navigation.LanguageSelectionScreen
 import com.example.carware.navigation.LoginScreen
 import com.example.carware.navigation.NewPasswordScreen
 import com.example.carware.navigation.OnboardingScreen
+import com.example.carware.navigation.ProfileScreen
 import com.example.carware.navigation.ResetPasswordScreen
 import com.example.carware.navigation.ScheduleScreen
 import com.example.carware.navigation.SettingsScreen
@@ -35,11 +38,14 @@ import com.example.carware.navigation.SignUpScreen
 import com.example.carware.navigation.SplashScreen
 import com.example.carware.navigation.TestScreen
 import com.example.carware.navigation.VerificationCodeScreen
+import com.example.carware.repository.HistoryRepository
+import com.example.carware.repository.ProfileRepository
 import com.example.carware.repository.ServiceRepository
 import com.example.carware.repository.VehicleRepository
 import com.example.carware.repository.auth.AuthRepository
 import com.example.carware.screens.AddCarScreen
 import com.example.carware.screens.BottomNavBar
+import com.example.carware.screens.profile.ProfileScreen
 import com.example.carware.screens.onBoarding.OnBoardingScreen
 import com.example.carware.screens.SplashScreen
 import com.example.carware.screens.auth.EmailVerificationScreen
@@ -53,6 +59,7 @@ import com.example.carware.screens.mainScreens.HomeScreen
 import com.example.carware.screens.mainScreens.ScheduleScreen
 import com.example.carware.screens.mainScreens.SettingsScreen
 import com.example.carware.screens.onBoarding.LanguageSelectionScreen
+import com.example.carware.screens.profile.EditProfileScreen
 import com.example.carware.util.lang.AppLanguage
 import com.example.carware.util.lang.LocalizedStrings
 import com.example.carware.util.navBar.bottomTabs
@@ -64,7 +71,11 @@ import com.example.carware.viewModel.auth.logIn.LogInViewModel
 import com.example.carware.viewModel.auth.newPassword.NewPasswordViewModel
 import com.example.carware.viewModel.auth.otpVerification.OTPViewModel
 import com.example.carware.viewModel.auth.signUp.SignUpViewModel
+import com.example.carware.viewModel.history.HistoryScreenViewModel
+import com.example.carware.viewModel.profile.ProfileScreenViewModel
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
+import com.mmk.kmpauth.google.GoogleAuthCredentials
+import com.mmk.kmpauth.google.GoogleAuthProvider
 
 val m = Modifier
 val LocalStrings = staticCompositionLocalOf<LocalizedStrings> {
@@ -98,6 +109,10 @@ fun MainScreen(preferencesManager: PreferencesManager) {
 
     val scheduleRepository = ServiceRepository()
 
+    val historyRepository = HistoryRepository(preferencesManager)
+    val profileRepository = ProfileRepository(preferencesManager)
+
+
 
 
     CompositionLocalProvider(
@@ -129,8 +144,10 @@ fun MainScreen(preferencesManager: PreferencesManager) {
                         when (currentTab.route) {
                             HomeScreen::class -> HomeScreen(
                                 navController, HomeScreenViewModel(
-                                    VehicleRepository(preferencesManager), preferencesManager
-                                )
+                                    VehicleRepository(preferencesManager),
+                                    preferencesManager
+                                ),
+                                preferencesManager
                             )
 
                             ScheduleScreen::class -> ScheduleScreen(
@@ -138,11 +155,17 @@ fun MainScreen(preferencesManager: PreferencesManager) {
                                 viewModel = ScheduleScreenViewModel(
                                     ServiceRepository(),
                                     VehicleRepository(preferencesManager),
-                                    preferencesManager =preferencesManager,
-                                ),
+                                    preferencesManager = preferencesManager,
+
+                                    ),
+                                preferencesManager
                             )
 
-                            HistoryScreen::class -> HistoryScreen(navController)
+                            HistoryScreen::class -> HistoryScreen(
+                                navController,
+                                HistoryScreenViewModel(historyRepository)
+                            )
+
                             SettingsScreen::class -> SettingsScreen(
                                 navController,
                                 preferencesManager,
@@ -165,35 +188,48 @@ fun MainScreen(preferencesManager: PreferencesManager) {
                 SignUpScreen(
                     navController,
                     preferencesManager,
-                    SignUpViewModel(AuthRepository(preferencesManager),
-                        preferencesManager)
+                    SignUpViewModel(
+                        AuthRepository(preferencesManager),
+                        vehicleRepository,
+                        preferencesManager,
+
+                        )
                 )
             }
             composable<LoginScreen> {
                 LoginScreen(
                     navController,
                     preferencesManager,
-                    LogInViewModel(AuthRepository(preferencesManager),
-                        preferencesManager)
+                    LogInViewModel(
+                        AuthRepository(preferencesManager),
+                        vehicleRepository,
+                        preferencesManager
                     )
+                )
             }
 
             composable<ResetPasswordScreen> {
                 ResetPasswordScreen(navController, preferencesManager)
             }
             composable<VerificationCodeScreen> {
-                VerificationCodeScreen(navController,
+                VerificationCodeScreen(
+                    navController,
                     preferencesManager,
-                    OTPViewModel(AuthRepository(preferencesManager),
-                        preferencesManager)
+                    OTPViewModel(
+                        AuthRepository(preferencesManager),
+                        preferencesManager
+                    )
                 )
             }
             composable<NewPasswordScreen> {
-                NewPasswordScreen(navController,
+                NewPasswordScreen(
+                    navController,
                     preferencesManager,
-                    NewPasswordViewModel(AuthRepository(preferencesManager),
-                        preferencesManager)
+                    NewPasswordViewModel(
+                        AuthRepository(preferencesManager),
+                        preferencesManager
                     )
+                )
             }
             composable<SettingsScreen> {
                 SettingsScreen(
@@ -212,12 +248,16 @@ fun MainScreen(preferencesManager: PreferencesManager) {
                         VehicleRepository(preferencesManager),
                         preferencesManager = preferencesManager
                     ),
+                    preferencesManager
 
 
                 )
             }
             composable<HistoryScreen> {
-                HistoryScreen(navController)
+                HistoryScreen(
+                    navController,
+                    HistoryScreenViewModel(historyRepository)
+                )
             }
             composable<AddCarScreen> {
                 AddCarScreen(
@@ -250,12 +290,23 @@ fun MainScreen(preferencesManager: PreferencesManager) {
 
             }
             composable<EmailVerificationScreen> {
-                EmailVerificationScreen(navController,
+                EmailVerificationScreen(
+                    navController,
                     preferencesManager,
-                    EmailVerificationViewModel(AuthRepository(preferencesManager),
-                        preferencesManager)
+                    EmailVerificationViewModel(
+                        AuthRepository(preferencesManager),
+                        preferencesManager
+                    )
                 )
 
+            }
+            composable<ProfileScreen> {
+                ProfileScreen(navController,
+                    ProfileScreenViewModel(vehicleRepository,profileRepository) ,
+                    preferencesManager)
+            }
+            composable<EditProfileScreen> {
+                EditProfileScreen(navController, ProfileScreenViewModel(vehicleRepository,profileRepository))
             }
         }
     }

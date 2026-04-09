@@ -68,7 +68,9 @@ suspend fun addVehicles(
 }
 
 suspend fun getVehicles(token: String): GetVehicleResponse {
+
     val client = createHttpClient()
+
     val response: HttpResponse = client.get {
         url("$baseUrl/api/Vehicle/my-vehicles")
         header("Authorization", "Bearer $token")

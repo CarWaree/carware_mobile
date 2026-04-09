@@ -12,5 +12,4 @@ val message: String
 @Serializable
 data class VerificationData(
     val token: String,
-    val expiresOn: String
 )

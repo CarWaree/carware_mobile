@@ -14,6 +14,8 @@ junit = "4.13.2"
 kotlin = "2.2.21"
 core-splashscreen="1.0.1"
 ktor = "3.3.2"
+kstore = "1.0.0"
+
 
 
 [libraries]
@@ -37,6 +39,12 @@ ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 
 core-splashscreen={group="androidx.core",name="core-splashscreen",version.ref="core-splashscreen"}
+
+kstore = { module = "io.github.xxfast:kstore", version.ref = "kstore" }
+kstore-file = { module = "io.github.xxfast:kstore-file", version.ref = "kstore" }
+kstore-storage = { module = "io.github.xxfast:kstore-storage", version.ref = "kstore" }
+
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

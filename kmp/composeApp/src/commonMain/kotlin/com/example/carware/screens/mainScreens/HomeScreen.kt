@@ -10,16 +10,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialogDefaults.shape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,6 +29,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.audi
+import carware.composeapp.generated.resources.home_line
 import carware.composeapp.generated.resources.notification
 import carware.composeapp.generated.resources.person
 import carware.composeapp.generated.resources.poppins_medium
@@ -51,29 +53,36 @@ import com.example.carware.screens.OBDCard
 import com.example.carware.screens.ServiceHistoryItem
 import com.example.carware.screens.UpcomingMaintenance
 import com.example.carware.screens.appGradBack
+import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.home.HomeScreenState
 import com.example.carware.viewModel.home.HomeScreenViewModel
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
-import com.example.carware.util.lang.AppLanguage
-import com.example.carware.util.storage.PreferencesManager
+import org.jetbrains.compose.ui.tooling.preview.Preview
+
 
 @Composable
-fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel,preferencesManager: PreferencesManager) {
+fun HomeScreen(
+    navController: NavController,
+    viewModel: HomeScreenViewModel,
+    preferencesManager: PreferencesManager
+) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
+
     val scrollState = rememberScrollState()
-    val horizontalScrollState = rememberScrollState()
     val strings = LocalStrings.current
-    val currentLang = AppLanguage.fromCode(preferencesManager.getLanguageCode())
 
     val _state by viewModel.state.collectAsState()
     val state = _state
+
+    val cachedVehicles by viewModel.cachedVehicles.collectAsState(initial = emptyList())
 
     val username = when (state) {
         is HomeScreenState.Success -> state.cars.firstOrNull()?.userName ?: "User"
         else -> "Guest"
     }
+
 
     Column(
         m
@@ -81,6 +90,21 @@ fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel,pref
             .appGradBack()
 
     ) {
+        Box(m.fillMaxWidth()
+        ){
+            Icon(
+                painter = painterResource(Res.drawable.home_line),
+                contentDescription = null,
+                tint = Color.Unspecified,
+                modifier = m
+                    .fillMaxWidth()
+                    .offset(x = 5.dp, y = 10.dp)
+                    .graphicsLayer(
+//                        transformOrigin = TransformOrigin(pivotFractionX = -0.8f, pivotFractionY = 0.5f),
+                        scaleX = 1f, // Stretches it to 250% width
+                        scaleY = 1.5f  // Flattens it to 80% height
+                    )
+            )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -97,7 +121,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel,pref
                 ) //profile icon
                 Spacer(modifier = m.padding(horizontal = 4.dp))
                 Text(
-                   text = strings.get("WELCOME_BACK_HOME") + " \n $username",
+                    text = strings.get("WELCOME_BACK_HOME") + " \n $username",
                     fontFamily = popSemi,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
@@ -114,6 +138,8 @@ fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel,pref
                     .size(25.dp)
 
             ) //notifications
+        }
+
 
 
         }
@@ -125,7 +151,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel,pref
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box {
-                when (val currentState = state) {
+                when (state) {
                     is HomeScreenState.Loading -> {
                         Spacer(modifier = m.padding(vertical = 50.dp))
                         Text(strings.get("LOADING_CAR_DATA"))
@@ -133,17 +159,22 @@ fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel,pref
 
                     is HomeScreenState.Error -> {
                         Spacer(modifier = m.padding(vertical = 50.dp))
-                        Text("Error: ${currentState.message}", color = Color.Red)
+                        Text("Error: ${state.message}", color = Color.Red)
                     }
 
                     is HomeScreenState.Success -> {
-                        //  Pass the whole list to the Pager content
-                        SuccessCarPagerContent(currentState.cars)
+                        // Get cached vehicles for auto-update
+                        val cachedVehicles by viewModel.cachedVehicles.collectAsState(initial = emptyList())
+
+                        // Use cached if available, otherwise use state vehicles
+                        val vehiclesToDisplay = if (cachedVehicles.isNotEmpty()) cachedVehicles else state.cars
+
+                        SuccessCarPagerContent(vehiclesToDisplay, navController)
                     }
                 }
             }
             Spacer(modifier = m.padding(vertical = 16.dp))
-            UpcomingMaintenance()
+            UpcomingMaintenance(preferencesManager)
             Spacer(modifier = m.padding(vertical = 12.dp))
             Text(
                 strings.get("SCHEDULED_SERVICES"),
@@ -158,17 +189,17 @@ fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel,pref
                         )
                     ),
                 ),
-                modifier =m
+                modifier = m
                     .padding(start = 8.dp)
                     .align(alignment = Alignment.Start)
             ) // Secluded Services
             Spacer(modifier = m.padding(vertical = 4.dp))
 
             Box {
-                when (val currentState = state) {
+                when (state) {
                     is HomeScreenState.Success -> {
-                        if (currentState.appointments.isNotEmpty()) {
-                            SuccessServicePagerContent(currentState.appointments)
+                        if (state.appointments.isNotEmpty()) {
+                            SuccessServicePagerContent(state.appointments)
 
                         } else {
                             Spacer(modifier = m.padding(vertical = 50.dp))
@@ -180,6 +211,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel,pref
                             )
                         }
                     }
+
                     else -> {
                         Spacer(modifier = m.padding(vertical = 16.dp))
                     }
@@ -189,7 +221,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel,pref
             Spacer(modifier = m.padding(vertical = 12.dp))
 
             Row(m.padding(horizontal = 12.dp))
-            { OBDCard(onClick = {/* more details logic*/ }) }
+            { OBDCard(onClick = {/* more details logic*/ },preferencesManager) }
 
             Spacer(modifier = m.padding(vertical = 64.dp))
 
@@ -199,7 +231,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeScreenViewModel,pref
 }
 
 @Composable
-fun SuccessCarPagerContent(cars: List<Vehicles>) {
+fun SuccessCarPagerContent(cars: List<Vehicles>,navController: NavController) {
     // Initialize pager state with the number of cars
     val pagerState = rememberPagerState(pageCount = { cars.size })
 
@@ -218,7 +250,9 @@ fun SuccessCarPagerContent(cars: List<Vehicles>) {
                     model = car.modelName,
                     modelYear = car.year.toString(),
                     color = car.color,
-                    image = Res.drawable.audi // Keeping your static image as requested
+                    image = Res.drawable.audi,
+                    navController = navController
+
                 )
             }
         }
@@ -243,6 +277,7 @@ fun SuccessCarPagerContent(cars: List<Vehicles>) {
         }
     }
 }
+
 @Composable
 fun SuccessServicePagerContent(appointments: List<Appointments>) {
     val scrollState = rememberScrollState()
@@ -259,9 +294,11 @@ fun SuccessServicePagerContent(appointments: List<Appointments>) {
             ServiceHistoryItem(
                 carName = appointment.vehicleName,
                 serviceName = appointment.serviceName,
-                date =appointment.date,
-                onDeleteClick = {  }
+                date = appointment.date,
+                status = appointment.status,
+                onDeleteClick = { }
             )
         }
     }
 }
+
