@@ -330,16 +330,17 @@ fun SettingsRowButton(
 
         trailingContent()
     }
-}
 
 
-//Row(verticalAlignment = Alignment.CenterVertically) {
-//    Text("العربية")
-//    Switch(
-//        checked = currentLang == AppLanguage.AR,
-//        onCheckedChange = { isAr ->
-//            val selected = if (isAr) AppLanguage.AR else AppLanguage.EN
-//            onLangChange(selected)
-//        }
-//    )
-//}
+
+Row(verticalAlignment = Alignment.CenterVertically) {
+    Text("العربية")
+    Switch(
+        checked = currentLang == AppLanguage.AR,
+        onCheckedChange = { isAr ->
+            val selected = if (isAr) AppLanguage.AR else AppLanguage.EN
+            onLangChange(selected)
+        }
+    )
+   }
+ }
