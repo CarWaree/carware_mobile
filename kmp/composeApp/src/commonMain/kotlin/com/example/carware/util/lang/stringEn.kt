@@ -126,5 +126,25 @@ val StringsEn = mapOf(
     "SERVICE"   to  "Service:",
     "PROVIDER" to "Provider:",
     "PROVIDER_NOT_SELECTED" to "Provider: Not selected",
-    "CAR_NOT_SELECTED"   to "Car: Not selected"
+    "CAR_NOT_SELECTED"   to "Car: Not selected",
+
+    // Service History / Record
+    "SERVICE_HISTORY" to "Service History",
+    "HISTORY_SUBTITLE" to "View and manage your maintenance records for all your vehicles.",
+    "SERVICE_RECORD" to "Service Record",
+    "DATE_LABEL" to "Date",
+    "COST_LABEL" to "Cost",
+    "PAYMENT_LABEL" to "Payment",
+    "SERVICE_DETAILS" to "Service Details",
+    "VIEW_DETAILS" to "View Details",
+    "SERVICE_LABEL" to "Service",
+    "PROVIDER_LABEL" to "Provider",
+    "ERROR" to "Error",
+
+    // Filter options
+    "FILTER_ALL" to "All",
+    "OIL_CHANGE" to "Oil Change",
+    "TIRES" to "Tires",
+    "MAINTENANCE" to "Maintenance",
+    "BRAKES" to "Brakes"
 )

@@ -121,6 +121,25 @@ val StringsAr = mapOf(
     "SERVICE" to "الخدمة:",
     "PROVIDER" to "المزوّد:",
     "PROVIDER_NOT_SELECTED" to "المزوّد: غير محدد",
-    "CAR_NOT_SELECTED" to "السيارة: غير محددة"
+    "CAR_NOT_SELECTED" to "السيارة: غير محددة",
 
+    // Service History / Record
+    "SERVICE_HISTORY" to "سجل الخدمة",
+    "HISTORY_SUBTITLE" to "عرض وإدارة سجلات الصيانة لجميع مركباتك.",
+    "SERVICE_RECORD" to "سجل الخدمة",
+    "DATE_LABEL" to "التاريخ",
+    "COST_LABEL" to "التكلفة",
+    "PAYMENT_LABEL" to "الدفع",
+    "SERVICE_DETAILS" to "تفاصيل الخدمة",
+    "VIEW_DETAILS" to "عرض التفاصيل",
+    "SERVICE_LABEL" to "الخدمة",
+    "PROVIDER_LABEL" to "المزوّد",
+    "ERROR" to "خطأ",
+
+    // Filter options
+    "FILTER_ALL" to "الكل",
+    "OIL_CHANGE" to "تغيير الزيت",
+    "TIRES" to "الإطارات",
+    "MAINTENANCE" to "الصيانة",
+    "BRAKES" to "الفرامل"
 )

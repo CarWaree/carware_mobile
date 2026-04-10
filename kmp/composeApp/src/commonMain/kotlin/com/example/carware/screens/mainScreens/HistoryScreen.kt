@@ -42,7 +42,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.arrow_1
 import carware.composeapp.generated.resources.audi
@@ -52,6 +51,7 @@ import carware.composeapp.generated.resources.history_location
 import carware.composeapp.generated.resources.history_visa
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
+import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.viewModel.history.HistoryScreenState
 import com.example.carware.viewModel.history.HistoryScreenViewModel
@@ -59,22 +59,30 @@ import kotlinx.coroutines.awaitCancellation
 import kotlinx.datetime.LocalDateTime
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun HistoryScreen(
     navController: NavController,
     viewModel: HistoryScreenViewModel,
 
+
     ) {
 
-    val filterOptions = listOf("All", "Oil Change", "Tires", "Maintenance", "Brakes")
+    val strings= LocalStrings.current
+    val filterOptions = listOf(
+        strings.get("FILTER_ALL"),
+        strings.get("OIL_CHANGE"),
+        strings.get("TIRES"),
+        strings.get("MAINTENANCE"),
+        strings.get("BRAKES")
+    )
 
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
 
     val pageScrollState = rememberScrollState()
     val selectCarScrollState = rememberScrollState()
+
 
     val _state by viewModel.state.collectAsState()
     val state = _state
@@ -101,7 +109,7 @@ fun HistoryScreen(
 
             // Centered text
             Text(
-                "Service History",
+                strings.get("SERVICE_HISTORY"),
                 fontFamily = popMid,
                 fontSize = 26.sp,
                 style = TextStyle(
@@ -125,7 +133,7 @@ fun HistoryScreen(
         Spacer(m.height(8.dp))
 
         Text(
-            "View and manage your maintenance records for all your vehicles.",
+            strings.get("HISTORY_SUBTITLE"),
             fontFamily = popMid,
             fontSize = 12.sp,
             color = Color(102, 102, 102, 204),
@@ -149,7 +157,7 @@ fun HistoryScreen(
             when (state) {
                 is HistoryScreenState.Loading -> {
                     Spacer(modifier = m.padding(vertical = 50.dp))
-                    Text("LOADING_CAR_DATA")
+                    Text(strings.get("LOADING_CAR_DATA"))
                 }
 
                 is HistoryScreenState.Error -> {
@@ -183,8 +191,8 @@ fun HistoryScreen(
             }
         }
     }
+
 }
-// ServiceRecordScreen.kt
 
 
 
@@ -200,6 +208,7 @@ fun ServiceHistoryCard(
 ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
+    val strings = LocalStrings.current
 
     val gradientBrush = Brush.linearGradient(
         listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
@@ -333,12 +342,12 @@ fun ServiceHistoryCard(
                     brush = gradientBrush,
                     shape = RoundedCornerShape(10.dp)
                 )
-                .clickable { onClick }
+                .clickable { onClick() }
                 .padding(vertical = 10.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "view Details",
+                text = strings.get("VIEW_DETAILS"),
                 fontFamily = popMid,
                 fontSize = 14.sp,
                 style = TextStyle(brush = gradientBrush),
@@ -358,6 +367,7 @@ fun ServiceRecordScreen(
 
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
+    val strings = LocalStrings.current
 
 
     val gradientBrush = Brush.linearGradient(
@@ -385,10 +395,11 @@ fun ServiceRecordScreen(
                     .rotate(180f)
                     .align(Alignment.CenterStart)
                     .size(24.dp)
+                    .clickable { navController.popBackStack() }
 
             )
             Text(
-                text = "Service Record",
+                text = strings.get("SERVICE_RECORD"),
                 fontFamily = popSemi,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.W500,
@@ -415,27 +426,27 @@ fun ServiceRecordScreen(
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
 
             ServiceRecordRow(
-                label = "Service",
+                label = strings.get("SERVICE_LABEL"),
                 value = "serviceType",
                 popMid = popMid
             )
             ServiceRecordRow(
-                label = "Date",
+                label = strings.get("DATE_LABEL"),
                 value = "date",
                 popMid = popMid
             )
             ServiceRecordRow(
-                label = "Provider",
+                label = strings.get("PROVIDER_LABEL"),
                 value = "provider",
                 popMid = popMid
             )
             ServiceRecordRow(
-                label = "Cost",
+                label = strings.get("COST_LABEL"),
                 value = "cost",
                 popMid = popMid
             )
             ServiceRecordRow(
-                label = "Payment",
+                label = strings.get("PAYMENT_LABEL"),
                 value = "paymentMethod",
                 popMid = popMid,
                 showPaymentIcon = true
@@ -447,7 +458,7 @@ fun ServiceRecordScreen(
         // ── Service Details ───────────────────────────────────
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
             Text(
-                text = "Service Details",
+                text = strings.get("SERVICE_DETAILS"),
                 fontFamily = popSemi,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.W400,

@@ -50,7 +50,6 @@ import carware.composeapp.generated.resources.settings_update
 import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.navigation.ProfileScreen
-import com.example.carware.navigation.SignUpScreen
 import com.example.carware.util.lang.AppLanguage
 import com.example.carware.util.storage.PreferencesManager
 import org.jetbrains.compose.resources.Font
@@ -58,8 +57,7 @@ import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun SettingsScreen(
-    navController: NavController,
-    preferencesManager: PreferencesManager,
+    navController: NavController, preferencesManager: PreferencesManager,
     onLangChange: (AppLanguage) -> Unit
 ) {
 
@@ -249,8 +247,7 @@ fun SettingsScreen(
             Spacer(m.height(32.dp))
 
             Card(
-                onClick = { preferencesManager.performLogout()
-                          navController.navigate(SignUpScreen)},
+                onClick = { preferencesManager.performLogout() },
                 modifier = m
                     .size(width = 240.dp, height = 55.dp)
                     .align(Alignment.CenterHorizontally)
