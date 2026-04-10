@@ -58,7 +58,6 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun NewPasswordScreen( 
     navController: NavController,
-    preferencesManager: PreferencesManager,
     viewModel: NewPasswordViewModel
 ) {
 

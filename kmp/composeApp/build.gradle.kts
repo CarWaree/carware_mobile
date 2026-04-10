@@ -35,6 +35,8 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
             implementation(libs.core.splashscreen)
             implementation("com.airbnb.android:lottie-compose:6.4.0")
+            implementation(libs.koin.android)
+            implementation(libs.koin.compose)
 
 
         }
@@ -56,6 +58,9 @@ kotlin {
             implementation(libs.kstore)
             implementation(libs.kstore.file)
 
+            implementation("io.insert-koin:koin-compose:4.0.0")
+            implementation("io.insert-koin:koin-compose-viewmodel:4.0.0")
+            implementation(libs.koin.core)
 
 
             implementation("io.github.mirzemehdi:kmpauth-google:2.5.0-alpha01") //Google One Tap Sign-In

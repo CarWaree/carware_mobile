@@ -4,6 +4,7 @@ import com.example.carware.network.apiRequests.profile.UpdateProfileRequest
 import com.example.carware.network.apiResponse.profile.GetProfileResponse
 import com.example.carware.network.apiResponse.profile.UpdateProfileResponse
 import com.example.carware.network.createHttpClient
+import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -16,11 +17,11 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 
-suspend fun getProfile(token: String): GetProfileResponse {
-    val client = createHttpClient()
+suspend fun getProfile(
+    client: HttpClient
+): GetProfileResponse {
     val response: HttpResponse = client.get {
         url("$baseUrl/api/Profile")
-        header("Authorization", "Bearer $token")
         contentType(ContentType.Application.Json)
     }
     println("--- RESPONSE DEBUG: Status: ${response.status.value}")
@@ -34,11 +35,9 @@ suspend fun getProfile(token: String): GetProfileResponse {
         throw Exception("API Error (${response.status.value}): $rawBody")
     }
 }
-suspend fun updateProfile(token: String, request: UpdateProfileRequest): UpdateProfileResponse {
-    val client = createHttpClient()
+suspend fun updateProfile( request: UpdateProfileRequest,client: HttpClient): UpdateProfileResponse {
     val response: HttpResponse = client.put { // Use .put for updates
         url("$baseUrl/api/Profile")
-        header("Authorization", "Bearer $token")
         contentType(ContentType.Application.Json)
         setBody(request)
     }

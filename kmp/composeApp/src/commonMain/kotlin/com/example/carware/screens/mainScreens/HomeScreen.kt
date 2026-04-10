@@ -22,6 +22,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -36,6 +37,10 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.audi
@@ -56,6 +61,7 @@ import com.example.carware.screens.appGradBack
 import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.home.HomeScreenState
 import com.example.carware.viewModel.home.HomeScreenViewModel
+import kotlinx.coroutines.awaitCancellation
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -65,7 +71,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 fun HomeScreen(
     navController: NavController,
     viewModel: HomeScreenViewModel,
-    preferencesManager: PreferencesManager
 ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
@@ -83,6 +88,11 @@ fun HomeScreen(
         else -> "Guest"
     }
 
+//    val lifecycleOwner = LocalLifecycleOwner.current
+//
+//    LaunchedEffect(Unit) {
+//        viewModel.loadVehicles()
+//    }
 
     Column(
         m
@@ -174,7 +184,7 @@ fun HomeScreen(
                 }
             }
             Spacer(modifier = m.padding(vertical = 16.dp))
-            UpcomingMaintenance(preferencesManager)
+            UpcomingMaintenance()
             Spacer(modifier = m.padding(vertical = 12.dp))
             Text(
                 strings.get("SCHEDULED_SERVICES"),
@@ -221,7 +231,7 @@ fun HomeScreen(
             Spacer(modifier = m.padding(vertical = 12.dp))
 
             Row(m.padding(horizontal = 12.dp))
-            { OBDCard(onClick = {/* more details logic*/ },preferencesManager) }
+            { OBDCard(onClick = {/* more details logic*/ }) }
 
             Spacer(modifier = m.padding(vertical = 64.dp))
 

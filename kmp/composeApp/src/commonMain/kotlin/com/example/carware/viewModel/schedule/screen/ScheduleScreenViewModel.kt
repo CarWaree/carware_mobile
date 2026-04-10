@@ -5,10 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.carware.network.apiRequests.schedule.SetAppointmentRequest
 import com.example.carware.network.apiResponse.schedule.Centers
-import com.example.carware.network.apiResponse.schedule.Service
 import com.example.carware.repository.ServiceRepository
 import com.example.carware.repository.VehicleRepository
-import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +21,6 @@ import kotlin.time.ExperimentalTime
 class ScheduleScreenViewModel(
     private val repository: ServiceRepository,
     private val vehicleRepository: VehicleRepository,
-    private val preferencesManager: PreferencesManager
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ScheduleScreenState())
@@ -46,7 +43,7 @@ class ScheduleScreenViewModel(
 
     // ============ DATA LOADING ============
 
-    private fun loadInitialData() {
+     fun loadInitialData() {
         _state.update { it.copy(isLoading = true, error = null) }
 
         viewModelScope.launch {
@@ -74,7 +71,7 @@ class ScheduleScreenViewModel(
         }
     }
 
-    private fun loadInitialTimeSlots() {
+    fun loadInitialTimeSlots() {
         _state.update { it.copy(isLoading = true, error = null) }
 
         morningSlots.clear()
@@ -262,11 +259,6 @@ class ScheduleScreenViewModel(
         }
     }
 
-    val isoDateTime = formatDateTimeToISO8601(
-        day = _state.value.selectedDay.orEmpty(),
-        time = _state.value.selectedTime.orEmpty()
-    )
-
     fun closeTimePicker() {
         _state.update {
             it.copy(isTimePickerVisible = false)
@@ -274,11 +266,12 @@ class ScheduleScreenViewModel(
     }
 
     // ============ APPOINTMENT CONFIRMATION ============
-    val token = preferencesManager.getToken()
-        ?: throw Exception("User not logged in")
 
     fun confirmAppointment() {
+
         val currentState = _state.value
+
+
 
         if (!isAppointmentValid()) {
             _state.update {
@@ -307,7 +300,7 @@ class ScheduleScreenViewModel(
 
         viewModelScope.launch {
             try {
-                val response = repository.setAppointmentRepo(request, token)
+                val response = repository.setAppointmentRepo(request)
 
                 if (response.statusCode == 200 || response.statusCode == 201) {
                     println("Appointment confirmed: ${response.message}")

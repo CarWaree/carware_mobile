@@ -1,12 +1,12 @@
 package com.example.carware.network.api
 
 import com.example.carware.network.apiRequests.auth.EmailVerificationRequest
-import com.example.carware.network.apiRequests.auth.LoginRequest
-import com.example.carware.network.apiRequests.auth.SignUpRequest
 import com.example.carware.network.apiRequests.auth.ForgotPasswordRequest
 import com.example.carware.network.apiRequests.auth.GoogleSignInRequest
+import com.example.carware.network.apiRequests.auth.LoginRequest
 import com.example.carware.network.apiRequests.auth.OTPRequest
 import com.example.carware.network.apiRequests.auth.ResetPasswordRequest
+import com.example.carware.network.apiRequests.auth.SignUpRequest
 import com.example.carware.network.apiResponse.auth.AuthResponse
 import com.example.carware.network.apiResponse.auth.EmailVerificationResponse
 import com.example.carware.network.apiResponse.auth.ForgotPasswordResponse
@@ -14,22 +14,19 @@ import com.example.carware.network.apiResponse.auth.GoogleSignInResponse
 import com.example.carware.network.apiResponse.auth.OTPResponse
 import com.example.carware.network.apiResponse.auth.ResetPasswordResponse
 import com.example.carware.network.apiResponse.auth.SignUpResponse
-import com.example.carware.network.createHttpClient
+import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.plugins.ClientRequestException
-import io.ktor.client.plugins.ResponseException
-import io.ktor.client.plugins.ServerResponseException
-import io.ktor.client.request.*
+import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
-import io.ktor.http.*
+import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import io.ktor.http.isSuccess
 
-const val baseUrl = "https://92l9g4v0-7136.uks1.devtunnels.ms"
+const val baseUrl = "https://mbr73kbz-7136.uks1.devtunnels.ms"
 
-suspend fun signupUser(request: SignUpRequest): SignUpResponse {
-    val client = createHttpClient()
+suspend fun signupUser(request: SignUpRequest,client: HttpClient): SignUpResponse {
 
     println("➡️ Signup request started")
     println("📤 Request body: $request")
@@ -57,8 +54,7 @@ suspend fun signupUser(request: SignUpRequest): SignUpResponse {
         throw Exception(e.message ?: "Signup failed")
     }
 }
-suspend fun loginUser(request: LoginRequest): AuthResponse {
-    val client = createHttpClient()
+suspend fun loginUser(request: LoginRequest,client: HttpClient): AuthResponse {
 
     println("➡️ login request started")
     println("📤 Request body: $request")
@@ -87,39 +83,34 @@ suspend fun loginUser(request: LoginRequest): AuthResponse {
     }
 }
 
-suspend fun forgotPasswordUser(request: ForgotPasswordRequest): ForgotPasswordResponse {
-    val client = createHttpClient()
+suspend fun forgotPasswordUser(request: ForgotPasswordRequest,client: HttpClient): ForgotPasswordResponse {
     return client.post("$baseUrl/api/Auth/forgot-password") {
         contentType(ContentType.Application.Json)
         setBody(request)
     }.body()
 }
 
-suspend fun otpVerificationUser(request: OTPRequest): OTPResponse {
-    val client = createHttpClient()
+suspend fun otpVerificationUser(request: OTPRequest,client: HttpClient): OTPResponse {
     return client.post("$baseUrl/api/Auth/Verify-Otp") {
         contentType(ContentType.Application.Json)
         setBody(request)
     }.body()
 }
 
-    suspend fun resetPasswordUser(request: ResetPasswordRequest): ResetPasswordResponse {
-    val client = createHttpClient()
+    suspend fun resetPasswordUser(request: ResetPasswordRequest,client: HttpClient): ResetPasswordResponse {
     return client.post("$baseUrl/api/Auth/reset-password") {
         contentType(ContentType.Application.Json)
         setBody(request)
     }.body()
 }
 
-suspend fun verifyEmailUser(request: EmailVerificationRequest): EmailVerificationResponse{
-    val client = createHttpClient()
+suspend fun verifyEmailUser(request: EmailVerificationRequest,client: HttpClient): EmailVerificationResponse{
     return client.post("$baseUrl/api/Auth/verify-email-otp") {
         contentType(ContentType.Application.Json)
         setBody(request)
     }.body()
 }
-suspend fun googleSignIn(request: GoogleSignInRequest): GoogleSignInResponse {
-    val client =createHttpClient()
+suspend fun googleSignIn(request: GoogleSignInRequest,client: HttpClient): GoogleSignInResponse {
     return client.post("$baseUrl/api/Auth/google-mobile") {
         contentType(ContentType.Application.Json)
         setBody(request)

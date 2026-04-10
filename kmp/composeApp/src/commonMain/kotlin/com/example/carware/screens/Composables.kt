@@ -399,7 +399,7 @@ fun CarCard(
 }
 
 @Composable
-fun OBDCard(onClick: () -> Unit, preferencesManager: PreferencesManager) {
+fun OBDCard(onClick: () -> Unit, ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
 
     val popMid = FontFamily(Font(Res.font.poppins_medium))
@@ -469,7 +469,6 @@ fun OBDCard(onClick: () -> Unit, preferencesManager: PreferencesManager) {
 
 @Composable
 fun UpcomingMaintenance(
-    preferencesManager: PreferencesManager,
 ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))

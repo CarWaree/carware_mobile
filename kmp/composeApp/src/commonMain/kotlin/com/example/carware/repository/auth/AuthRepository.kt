@@ -22,36 +22,39 @@ import com.example.carware.network.apiResponse.auth.OTPResponse
 import com.example.carware.network.apiResponse.auth.ResetPasswordResponse
 import com.example.carware.network.apiResponse.auth.SignUpResponse
 import com.example.carware.util.storage.PreferencesManager
+import io.ktor.client.HttpClient
 
-class AuthRepository(private val preferencesManager: PreferencesManager) {
+class AuthRepository(
+    private val client: HttpClient) {
 
     suspend fun signUpRepo(request: SignUpRequest): SignUpResponse {
 
-        return signupUser(request)  // Calls your API function directly
+        return signupUser(request,client)  // Calls your API function directly
     }
 
 
     suspend fun logInRepo(request: LoginRequest): AuthResponse {
-        return loginUser(request)
+
+        return loginUser(request,client)
     }
 
     suspend fun forgotPasswordRepo(request: ForgotPasswordRequest): ForgotPasswordResponse {
-        return forgotPasswordUser(request)
+        return forgotPasswordUser(request,client)
     }
 
     suspend fun otpVerificationRepo(request: OTPRequest): OTPResponse {
-        return otpVerificationUser(request)
+        return otpVerificationUser(request,client)
     }
 
     suspend fun resetPasswordRepo(request: ResetPasswordRequest): ResetPasswordResponse {
-        return resetPasswordUser(request)
+        return resetPasswordUser(request,client)
     }
     suspend fun verifyEmailRepo(request: EmailVerificationRequest): EmailVerificationResponse{
-        return verifyEmailUser(request)
+        return verifyEmailUser(request,client)
     }
 
     suspend fun googleSignInRepo(request: GoogleSignInRequest): GoogleSignInResponse {
-        return googleSignIn(request)
+        return googleSignIn(request,client)
     }
 
 }

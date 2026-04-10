@@ -26,12 +26,16 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.*
 import com.example.carware.viewModel.profile.ProfileScreenState
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
+import kotlinx.coroutines.awaitCancellation
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
@@ -54,9 +58,14 @@ fun EditProfileScreen(
     val state by viewModel.state.collectAsState()
     val editState by viewModel.editState.collectAsState()
 
-//    var fullName by remember { mutableStateOf("Alex Driver") }
-//    var email by remember { mutableStateOf("AlexDriver@example.com") }
-//    var phone by remember { mutableStateOf("(+20)01*********") }
+//    val lifecycleOwner = LocalLifecycleOwner.current
+//    LaunchedEffect(lifecycleOwner) {
+//        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+//            viewModel.loadProfile()
+//            awaitCancellation()    // 👈 stops the loop
+//
+//        }
+//    }
 
     when (state) {
         is ProfileScreenState.Loading -> {

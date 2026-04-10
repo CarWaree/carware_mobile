@@ -68,14 +68,12 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun EmailVerificationScreen(
     navController: NavController,
-    preferencesManager: PreferencesManager,
     viewModel: EmailVerificationViewModel
 ) {
 
     val state by viewModel.state.collectAsState()
 
     val strings = LocalStrings.current
-    val currentLang = AppLanguage.fromCode(preferencesManager.getLanguageCode())
     val popSemi = FontFamily(
         Font(Res.font.poppins_semibold) // name of your font file without extension
     )

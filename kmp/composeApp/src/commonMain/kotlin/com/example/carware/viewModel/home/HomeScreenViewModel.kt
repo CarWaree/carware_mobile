@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.carware.cache.vehiclesStore
 import com.example.carware.repository.VehicleRepository
 import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.viewModel.profile.ProfileScreenState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,9 +14,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 
+
 class HomeScreenViewModel(
     private val repository: VehicleRepository,
-    private val preferencesManager: PreferencesManager
 
 ) : ViewModel() {
 
@@ -26,27 +27,37 @@ class HomeScreenViewModel(
     val cachedVehicles = vehiclesStore.updates
         .filterNotNull()
         .map { it.vehicles }
+
     init {
         loadVehicles()
     }
 
-    // In ViewModel: loadVehicles()
 
-    // In HomeViewModel.kt
     fun loadVehicles() {
         viewModelScope.launch {
-            _state.value = HomeScreenState.Loading
+            if (_state.value !is HomeScreenState.Success) {
+                _state.value = HomeScreenState.Loading
+            }
             try {
                 val vehicleList = repository.getVehiclesRepo()
-                val appointmentsList=repository.getAppointmentsRepo()
+                val appointmentsList = repository.getAppointmentsRepo()
 
                 if (vehicleList.isEmpty()) {
                     _state.value = HomeScreenState.Error("No vehicles found.")
                 } else {
-                    _state.value = HomeScreenState.Success(vehicleList,appointmentsList)
+                    _state.value = HomeScreenState.Success(vehicleList, appointmentsList)
                 }
             } catch (e: Exception) {
-                _state.value = HomeScreenState.Error(e.message ?: "An error occurred")
+                // ✅ Try cache before showing error
+                val cached = vehiclesStore.get()
+                if (cached != null && cached.vehicles.isNotEmpty()) {
+                    _state.value = HomeScreenState.Success(
+                        cached.vehicles,
+                        emptyList() // no appointments cached
+                    )
+                } else {
+                    _state.value = HomeScreenState.Error("No internet connection")
+                }
             }
         }
     }

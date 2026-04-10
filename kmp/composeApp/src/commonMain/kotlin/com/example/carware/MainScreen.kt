@@ -8,7 +8,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,15 +37,8 @@ import com.example.carware.navigation.SignUpScreen
 import com.example.carware.navigation.SplashScreen
 import com.example.carware.navigation.TestScreen
 import com.example.carware.navigation.VerificationCodeScreen
-import com.example.carware.repository.HistoryRepository
-import com.example.carware.repository.ProfileRepository
-import com.example.carware.repository.ServiceRepository
-import com.example.carware.repository.VehicleRepository
-import com.example.carware.repository.auth.AuthRepository
 import com.example.carware.screens.AddCarScreen
 import com.example.carware.screens.BottomNavBar
-import com.example.carware.screens.profile.ProfileScreen
-import com.example.carware.screens.onBoarding.OnBoardingScreen
 import com.example.carware.screens.SplashScreen
 import com.example.carware.screens.auth.EmailVerificationScreen
 import com.example.carware.screens.auth.LoginScreen
@@ -59,23 +51,26 @@ import com.example.carware.screens.mainScreens.HomeScreen
 import com.example.carware.screens.mainScreens.ScheduleScreen
 import com.example.carware.screens.mainScreens.SettingsScreen
 import com.example.carware.screens.onBoarding.LanguageSelectionScreen
+import com.example.carware.screens.onBoarding.OnBoardingScreen
 import com.example.carware.screens.profile.EditProfileScreen
+import com.example.carware.screens.profile.ProfileScreen
 import com.example.carware.util.lang.AppLanguage
 import com.example.carware.util.lang.LocalizedStrings
 import com.example.carware.util.navBar.bottomTabs
 import com.example.carware.util.storage.PreferencesManager
-import com.example.carware.viewModel.home.HomeScreenViewModel
 import com.example.carware.viewModel.addcar.AddCarViewModel
 import com.example.carware.viewModel.auth.emailVerification.EmailVerificationViewModel
+import com.example.carware.viewModel.auth.forgotPassword.ForgotPasswordViewModel
 import com.example.carware.viewModel.auth.logIn.LogInViewModel
 import com.example.carware.viewModel.auth.newPassword.NewPasswordViewModel
 import com.example.carware.viewModel.auth.otpVerification.OTPViewModel
 import com.example.carware.viewModel.auth.signUp.SignUpViewModel
 import com.example.carware.viewModel.history.HistoryScreenViewModel
+import com.example.carware.viewModel.home.HomeScreenViewModel
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
-import com.mmk.kmpauth.google.GoogleAuthCredentials
-import com.mmk.kmpauth.google.GoogleAuthProvider
+import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 val m = Modifier
 val LocalStrings = staticCompositionLocalOf<LocalizedStrings> {
@@ -83,47 +78,39 @@ val LocalStrings = staticCompositionLocalOf<LocalizedStrings> {
 }
 
 @Composable
-fun MainScreen(preferencesManager: PreferencesManager) {
-    val navController = rememberNavController()
 
-    val pagerState = rememberPagerState(initialPage = bottomTabs.first().index) {
-        bottomTabs.size
-    }
-    // Coroutine Scope needed for the BottomNavBar to smoothly animate the Pager scroll
+fun MainScreen() {
+    val navController = rememberNavController()
+    val pagerState = rememberPagerState(initialPage = bottomTabs.first().index) { bottomTabs.size }
     val scope = rememberCoroutineScope()
+
+    val preferencesManager: PreferencesManager = koinInject()
 
     var currentLanguage by remember {
         mutableStateOf(AppLanguage.fromCode(preferencesManager.getLanguageCode()))
     }
+    val localizedStrings = remember(currentLanguage) { LocalizedStrings(preferencesManager) }
+    val layoutDirection = if (currentLanguage == AppLanguage.AR) LayoutDirection.Rtl else LayoutDirection.Ltr
 
-    val localizedStrings = remember(currentLanguage) {
-        LocalizedStrings(preferencesManager)
-    }
-
-    val layoutDirection = if (currentLanguage == AppLanguage.AR) {
-        LayoutDirection.Rtl
-    } else {
-        LayoutDirection.Ltr
-    }
-    val vehicleRepository = VehicleRepository(preferencesManager)
-
-    val scheduleRepository = ServiceRepository()
-
-    val historyRepository = HistoryRepository(preferencesManager)
-    val profileRepository = ProfileRepository(preferencesManager)
-
-
-
+    // ✅ Get all ViewModels from Koin once
+    val homeViewModel: HomeScreenViewModel = koinViewModel()
+    val signUpViewModel: SignUpViewModel = koinViewModel()
+    val loginViewModel: LogInViewModel = koinViewModel()
+    val otpViewModel: OTPViewModel =koinViewModel()
+    val newPasswordViewModel: NewPasswordViewModel = koinViewModel()
+    val emailVerificationViewModel: EmailVerificationViewModel = koinViewModel()
+    val historyViewModel: HistoryScreenViewModel = koinViewModel()
+    val scheduleViewModel: ScheduleScreenViewModel =koinViewModel()
+    val addCarViewModel: AddCarViewModel =koinViewModel()
+    val forgetPasswordViewModel: ForgotPasswordViewModel =koinViewModel()
+    val profileViewModel: ProfileScreenViewModel = koinViewModel()
 
     CompositionLocalProvider(
         LocalStrings provides localizedStrings,
-        LocalLayoutDirection provides layoutDirection // This line flips the UI
+        LocalLayoutDirection provides layoutDirection
     ) {
-        NavHost(
-            navController = navController,
-            startDestination = SplashScreen,
-        )
-        {
+        NavHost(navController = navController, startDestination = SplashScreen) {
+
             composable<HomeScreen> {
                 Scaffold(
                     bottomBar = {
@@ -134,47 +121,23 @@ fun MainScreen(preferencesManager: PreferencesManager) {
                             modifier = Modifier.navigationBarsPadding()
                         )
                     }
-                ) { innerPadding ->
+                ) { _ ->
                     HorizontalPager(
                         state = pagerState,
                         modifier = Modifier.fillMaxSize(),
                         userScrollEnabled = true
                     ) { page ->
-                        val currentTab = bottomTabs[page]
-                        when (currentTab.route) {
-                            HomeScreen::class -> HomeScreen(
-                                navController, HomeScreenViewModel(
-                                    VehicleRepository(preferencesManager),
-                                    preferencesManager
-                                ),
-                                preferencesManager
-                            )
-
-                            ScheduleScreen::class -> ScheduleScreen(
-                                navController,
-                                viewModel = ScheduleScreenViewModel(
-                                    ServiceRepository(),
-                                    VehicleRepository(preferencesManager),
-                                    preferencesManager = preferencesManager,
-
-                                    ),
-                                preferencesManager
-                            )
-
-                            HistoryScreen::class -> HistoryScreen(
-                                navController,
-                                HistoryScreenViewModel(historyRepository)
-                            )
-
+                        when (bottomTabs[page].route) {
+                            HomeScreen::class -> HomeScreen(navController,homeViewModel)
+                            ScheduleScreen::class -> ScheduleScreen(navController, scheduleViewModel, preferencesManager)
+                            HistoryScreen::class -> HistoryScreen(navController, historyViewModel)
                             SettingsScreen::class -> SettingsScreen(
-                                navController,
-                                preferencesManager,
-                                onLangChange = { newLang ->
-                                    preferencesManager.saveLanguageCode(newLang.isoCode)
-                                    currentLanguage = newLang // This is the magic that flips the UI
+                                navController, preferencesManager,
+                                onLangChange = {
+                                    preferencesManager.saveLanguageCode(it.isoCode)
+                                    currentLanguage = it
                                 }
                             )
-
                             else -> Box(Modifier.fillMaxSize())
                         }
                     }
@@ -184,129 +147,73 @@ fun MainScreen(preferencesManager: PreferencesManager) {
             composable<OnboardingScreen> {
                 OnBoardingScreen(navController, preferencesManager)
             }
-            composable<SignUpScreen> {
-                SignUpScreen(
-                    navController,
-                    preferencesManager,
-                    SignUpViewModel(
-                        AuthRepository(preferencesManager),
-                        vehicleRepository,
-                        preferencesManager,
 
-                        )
-                )
+            composable<SignUpScreen> {
+                SignUpScreen(navController, signUpViewModel)
             }
+
             composable<LoginScreen> {
-                LoginScreen(
-                    navController,
-                    preferencesManager,
-                    LogInViewModel(
-                        AuthRepository(preferencesManager),
-                        vehicleRepository,
-                        preferencesManager
-                    )
-                )
+                LoginScreen(navController,  loginViewModel)
             }
 
             composable<ResetPasswordScreen> {
-                ResetPasswordScreen(navController, preferencesManager)
+                ResetPasswordScreen(navController, forgetPasswordViewModel)
             }
+
             composable<VerificationCodeScreen> {
-                VerificationCodeScreen(
-                    navController,
-                    preferencesManager,
-                    OTPViewModel(
-                        AuthRepository(preferencesManager),
-                        preferencesManager
-                    )
-                )
+                VerificationCodeScreen(navController, otpViewModel)
             }
+
             composable<NewPasswordScreen> {
-                NewPasswordScreen(
-                    navController,
-                    preferencesManager,
-                    NewPasswordViewModel(
-                        AuthRepository(preferencesManager),
-                        preferencesManager
-                    )
-                )
+                NewPasswordScreen(navController, newPasswordViewModel)
             }
+
             composable<SettingsScreen> {
-                SettingsScreen(
-                    navController,
-                    preferencesManager,
-                    onLangChange = { newLang ->
-                        preferencesManager.saveLanguageCode(newLang.isoCode)
-                        currentLanguage = newLang // This is the magic that flips the UI
-                    })
+                SettingsScreen(navController, preferencesManager, onLangChange = {
+                    preferencesManager.saveLanguageCode(it.isoCode)
+                    currentLanguage = it
+                })
             }
+
             composable<ScheduleScreen> {
-                ScheduleScreen(
-                    navController,
-                    viewModel = ScheduleScreenViewModel(
-                        ServiceRepository(),
-                        VehicleRepository(preferencesManager),
-                        preferencesManager = preferencesManager
-                    ),
-                    preferencesManager
-
-
-                )
+                ScheduleScreen(navController, scheduleViewModel, preferencesManager)
             }
+
             composable<HistoryScreen> {
-                HistoryScreen(
-                    navController,
-                    HistoryScreenViewModel(historyRepository)
-                )
+                HistoryScreen(navController, historyViewModel)
             }
+
             composable<AddCarScreen> {
-                AddCarScreen(
-                    navController,
-                    viewModel = AddCarViewModel(vehicleRepository, preferencesManager)
-                )
+                AddCarScreen(navController, addCarViewModel)
             }
+
             composable<SplashScreen> {
-                SplashScreen(
-                    preferencesManager
-                ) { destination ->
-                    navController.navigate(destination) {
-                        popUpTo(SplashScreen) { inclusive = true }
-                    }
+                SplashScreen(preferencesManager) { destination ->
+                    navController.navigate(destination) { popUpTo(SplashScreen) { inclusive = true } }
                 }
             }
+
             composable<LanguageSelectionScreen> {
-                LanguageSelectionScreen(
-                    navController,
-                    preferencesManager,
-                    onLangChange = { newLang ->
-                        preferencesManager.saveLanguageCode(newLang.isoCode)
-                        currentLanguage = newLang // This triggers the RTL/LTR flip
-                    }
-                )
+                LanguageSelectionScreen(navController, preferencesManager, onLangChange = {
+                    preferencesManager.saveLanguageCode(it.isoCode)
+                    currentLanguage = it
+                })
             }
 
             composable<TestScreen> {
                 com.example.carware.screens.TestScreen(navController, preferencesManager)
-
             }
+
             composable<EmailVerificationScreen> {
-                EmailVerificationScreen(
-                    navController,
-                    preferencesManager,
-                    EmailVerificationViewModel(
-                        AuthRepository(preferencesManager),
-                        preferencesManager
-                    )
-                )
+                EmailVerificationScreen(navController, emailVerificationViewModel)
+            }
 
-            }
             composable<ProfileScreen> {
-                ProfileScreen(navController,
-                    ProfileScreenViewModel(vehicleRepository,profileRepository) ,
-                    preferencesManager)
+                ProfileScreen(navController, profileViewModel, preferencesManager)
             }
+
             composable<EditProfileScreen> {
-                EditProfileScreen(navController, ProfileScreenViewModel(vehicleRepository,profileRepository))
+                EditProfileScreen(navController, profileViewModel)
             }
         }
     }

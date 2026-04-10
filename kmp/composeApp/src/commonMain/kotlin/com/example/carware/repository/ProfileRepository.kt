@@ -6,16 +6,18 @@ import com.example.carware.network.apiRequests.profile.UpdateProfileRequest
 import com.example.carware.network.apiResponse.profile.GetProfileResponse
 import com.example.carware.network.apiResponse.profile.UpdateProfileResponse
 import com.example.carware.util.storage.PreferencesManager
+import io.ktor.client.HttpClient
 
-class ProfileRepository(private val prefs: PreferencesManager) {
+class ProfileRepository(
+    private val client: HttpClient) {
 
     suspend fun getProfileRepo(): GetProfileResponse {
-        val token = prefs.getToken() ?: throw Exception("Token not found")
-        return getProfile(token)
+
+        return getProfile(
+            client)
     }
 
     suspend fun updateProfileRepo(request: UpdateProfileRequest): UpdateProfileResponse {
-        val token = prefs.getToken() ?: throw Exception("Token not found")
-        return updateProfile(token, request)
+        return updateProfile( request,client)
     }
 }

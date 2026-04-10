@@ -107,7 +107,11 @@ class PreferencesManager(
 
     fun performLogout() {
         clearToken()
-        settings.remove(KEY_USER_ID)
+            settings.remove(KEY_AUTH_TOKEN)
+            settings.remove(KEY_USER_ID)
+            settings.remove(KEY_EXPIRES_ON)
+            settings.remove(KEY_EMAIL_VERIFIED)
+            // Add any other user-specific keys here
     }
 
     /* ------------------language ---------------*/

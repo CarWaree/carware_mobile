@@ -89,7 +89,6 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun LoginScreen(
     navController: NavController,
-    preferencesManager: PreferencesManager,
     viewModel: LogInViewModel
 ) {
     val state by viewModel.state.collectAsState()

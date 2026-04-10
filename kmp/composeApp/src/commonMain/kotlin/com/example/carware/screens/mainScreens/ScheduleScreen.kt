@@ -19,6 +19,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -31,6 +32,9 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.poppins_medium
@@ -46,6 +50,7 @@ import com.example.carware.screens.UsersCar
 import com.example.carware.screens.appButtonBack
 import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
+import kotlinx.coroutines.awaitCancellation
 import org.jetbrains.compose.resources.Font
 
 @Composable
@@ -63,6 +68,12 @@ fun ScheduleScreen(
     val pageScrollState = rememberScrollState()
     val selectCarScrollState = rememberScrollState()
     val strings = LocalStrings.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+//    LaunchedEffect(Unit) {
+//        viewModel.loadInitialData()
+//        viewModel.loadInitialTimeSlots()
+//    }
 
     if (state.isTimePickerVisible) {
         Column(m.fillMaxSize()) {

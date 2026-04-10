@@ -7,6 +7,7 @@ import com.example.carware.network.apiResponse.schedule.ServiceTypesResponse
 import com.example.carware.network.apiResponse.appointment.AppointmentResponse
 import com.example.carware.network.apiResponse.vehicle.GetVehicleResponse
 import com.example.carware.network.createHttpClient
+import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -20,15 +21,13 @@ import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import kotlinx.serialization.json.Json
 
-suspend fun getServiceType(): List<Service> {
-    val client = createHttpClient()
+suspend fun getServiceType(client: HttpClient): List<Service> {
     return client.get("$baseUrl/api/Service") {
         contentType(ContentType.Application.Json)
     }.body<ServiceTypesResponse>().data
 }
 
-suspend fun getServiceCenters(): List<Centers> {
-    val client = createHttpClient()
+suspend fun getServiceCenters(client: HttpClient): List<Centers> {
 
     return client.get("$baseUrl/api/ServiceCenters") {
         contentType(ContentType.Application.Json)
@@ -36,11 +35,9 @@ suspend fun getServiceCenters(): List<Centers> {
 }
 
 
-suspend fun getAppointments(token: String): AppointmentResponse {
-    val client = createHttpClient()
+suspend fun getAppointments( client: HttpClient): AppointmentResponse {
     val response: HttpResponse = client.get {
         url("$baseUrl/api/Appointments/my")
-        header("Authorization", "Bearer $token")
         contentType(ContentType.Application.Json)
     }
     println("--- RESPONSE DEBUG: Status: ${response.status.value}")
@@ -57,17 +54,15 @@ suspend fun getAppointments(token: String): AppointmentResponse {
         throw Exception("API Error (${response.status.value}): $errorBody")
     }
 }
+
 suspend fun setAppointment(
     request: SetAppointmentRequest,
-    token: String
+    client: HttpClient
 ): AppointmentResponse {
-    val client = createHttpClient()
 
     return try {
         val response = client.post("$baseUrl/api/Appointments") {
             contentType(ContentType.Application.Json)
-            header("Authorization", "Bearer $token")
-
             setBody(request)
         }
 

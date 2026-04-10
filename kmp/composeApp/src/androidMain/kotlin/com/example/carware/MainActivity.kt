@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
         androidAppContext = this.applicationContext
 
         setContent {
-            MainScreen(preferencesManager = CarwareApplication.preferences)
+            MainScreen()
         }
     }
 }

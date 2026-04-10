@@ -2,6 +2,7 @@ package com.example.carware.network.api
 
 import com.example.carware.network.apiResponse.history.GetHistoryResponse
 import com.example.carware.network.createHttpClient
+import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -35,11 +36,9 @@ import io.ktor.http.isSuccess
 //        throw Exception("API Error (${response.status.value}): $errorBody")
 //    }
 
-suspend fun getHistory(token: String): List<GetHistoryResponse> {
-    val client = createHttpClient()
+suspend fun getHistory(client: HttpClient): List<GetHistoryResponse> {
     val response: HttpResponse = client.get {
         url("$baseUrl/api/history")
-        header("Authorization", "Bearer $token")
         contentType(ContentType.Application.Json)
     }
     println("--- RESPONSE DEBUG: Status: ${response.status.value}")

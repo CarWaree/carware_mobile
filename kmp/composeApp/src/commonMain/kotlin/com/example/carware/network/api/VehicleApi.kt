@@ -8,6 +8,7 @@ import com.example.carware.network.apiResponse.vehicle.Model
 import com.example.carware.network.apiResponse.vehicle.ModelResponse
 import com.example.carware.network.apiResponse.vehicle.VehicleResponse
 import com.example.carware.network.createHttpClient
+import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -22,10 +23,11 @@ import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 
 suspend fun getBrands(
+
     page: Int=1,
-    pageSize: Int=100
+    pageSize: Int=100,
+    client: HttpClient
 ): List<Brand> {
-    val client = createHttpClient()
     return client.get("$baseUrl/api/Vehicle/brands") {
         parameter("page", page)
         parameter("pageSize", pageSize)
@@ -33,8 +35,7 @@ suspend fun getBrands(
     }.body<BrandResponse>().data
 }
 
-suspend fun getModels(brandId: Int?): List<Model> {
-    val client = createHttpClient()
+suspend fun getModels(brandId: Int?,client: HttpClient): List<Model> {
     return client.get("$baseUrl/api/Vehicle/models") {
         parameter("brandId", brandId)
     }.body<ModelResponse>().data
@@ -42,17 +43,14 @@ suspend fun getModels(brandId: Int?): List<Model> {
 
 suspend fun addVehicles(
     request: VehicleRequest,
-    token: String
+    client: HttpClient
 ): VehicleResponse {
-    val client = createHttpClient()
 
     val response: HttpResponse = client.post { // Store the full HttpResponse
         url("$baseUrl/api/Vehicle")
         contentType(ContentType.Application.Json)
-        header("Authorization", "Bearer $token")
         setBody(request)
     }
-    println("Sending token: Bearer $token")
 
 
     // Check if the API call was successful (HTTP 2xx status)
@@ -67,13 +65,9 @@ suspend fun addVehicles(
     }
 }
 
-suspend fun getVehicles(token: String): GetVehicleResponse {
-
-    val client = createHttpClient()
-
+suspend fun getVehicles(client: HttpClient): GetVehicleResponse {
     val response: HttpResponse = client.get {
         url("$baseUrl/api/Vehicle/my-vehicles")
-        header("Authorization", "Bearer $token")
         contentType(ContentType.Application.Json)
     }
     println("--- RESPONSE DEBUG: Status: ${response.status.value}")

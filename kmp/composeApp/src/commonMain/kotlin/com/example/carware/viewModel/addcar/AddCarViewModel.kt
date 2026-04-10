@@ -141,7 +141,7 @@ class AddCarViewModel( private val repository: VehicleRepository,
                     ?: throw Exception("User not logged in")
 
                 // Call repository with token
-                val response = repository.addVehicleRepo(request, token)
+                val response = repository.addVehicleRepo(request)
 
                 // Mark car as added
                 preferencesManager.setCarAdded(true)

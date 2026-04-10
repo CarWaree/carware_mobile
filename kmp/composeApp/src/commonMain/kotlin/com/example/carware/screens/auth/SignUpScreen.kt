@@ -78,7 +78,6 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun SignUpScreen(
     navController: NavController,
-    preferencesManager: PreferencesManager,
     viewModel: SignUpViewModel
 ) {
     var authReady by remember { mutableStateOf(false) }
@@ -92,7 +91,6 @@ fun SignUpScreen(
 
     }
     val strings = LocalStrings.current
-    val currentLang = AppLanguage.fromCode(preferencesManager.getLanguageCode())
 
     val state by viewModel.state.collectAsState()
 
@@ -136,30 +134,6 @@ fun SignUpScreen(
 
 
     )
-
-    LaunchedEffect(state.needsEmailVerification) {
-        if (state.needsEmailVerification) {
-            navController.navigate(EmailVerificationScreen) {  // Create this screen
-                popUpTo(SignUpScreen) { inclusive = true }
-            }
-        }
-    }
-    LaunchedEffect(state.isCarAdded) {
-        if (state.isCarAdded) {
-            navController.navigate(HomeScreen) {
-                popUpTo(SignUpScreen) { inclusive = true }
-            }
-        }
-    }
-
-    LaunchedEffect(state.isSuccess) {
-        if (state.isSuccess) {
-            navController.navigate(HomeScreen) {
-                popUpTo(SignUpScreen) { inclusive = true }
-            }
-        }
-    }
-
 
 
     Column(modifier = m.verticalScroll(scrollState)) {

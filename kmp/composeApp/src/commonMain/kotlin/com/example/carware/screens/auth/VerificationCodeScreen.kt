@@ -63,14 +63,12 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun VerificationCodeScreen(
     navController: NavController,
-    preferencesManager: PreferencesManager,
     viewModel: OTPViewModel
 ) {
 
     val state by viewModel.state.collectAsState()
 
     val strings = LocalStrings.current
-    val currentLang = AppLanguage.fromCode(preferencesManager.getLanguageCode())
     val popSemi = FontFamily(
         Font(Res.font.poppins_semibold) // name of your font file without extension
     )

@@ -23,6 +23,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -37,6 +38,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import carware.composeapp.generated.resources.Res
@@ -51,6 +55,7 @@ import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.m
 import com.example.carware.viewModel.history.HistoryScreenState
 import com.example.carware.viewModel.history.HistoryScreenViewModel
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.datetime.LocalDateTime
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
@@ -73,6 +78,7 @@ fun HistoryScreen(
 
     val _state by viewModel.state.collectAsState()
     val state = _state
+
 
     Column(
         m

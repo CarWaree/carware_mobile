@@ -4,7 +4,18 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,14 +29,13 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -36,24 +46,33 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import carware.composeapp.generated.resources.Res
-import carware.composeapp.generated.resources.*
+import carware.composeapp.generated.resources.add_new
+import carware.composeapp.generated.resources.arrow_left
+import carware.composeapp.generated.resources.audi
+import carware.composeapp.generated.resources.car
+import carware.composeapp.generated.resources.check_onboard
+import carware.composeapp.generated.resources.color
+import carware.composeapp.generated.resources.edit
+import carware.composeapp.generated.resources.keyboard_arrow_right
+import carware.composeapp.generated.resources.modelyear
+import carware.composeapp.generated.resources.poppins_medium
+import carware.composeapp.generated.resources.poppins_semibold
+import carware.composeapp.generated.resources.pp
+import carware.composeapp.generated.resources.settings_logout
+import carware.composeapp.generated.resources.visa
 import com.example.carware.m
-import com.example.carware.navigation.AddCarScreen
 import com.example.carware.navigation.EditProfileScreen
-import com.example.carware.navigation.LoginScreen
-import com.example.carware.navigation.ProfileScreen
-import com.example.carware.screens.cardGradBack
 import com.example.carware.util.storage.PreferencesManager
-import com.example.carware.viewModel.home.HomeScreenViewModel
 import com.example.carware.viewModel.profile.ProfileScreenState
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
-import org.jetbrains.compose.resources.DrawableResource
+import kotlinx.coroutines.awaitCancellation
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 // Helper modifier to apply gradient to icons
 fun Modifier.iconGradient(brush: Brush): Modifier = this
@@ -74,6 +93,12 @@ fun ProfileScreen(
     val redWithAlpha = Color(0x80C20000) // #C2000080
 
     val state by viewModel.state.collectAsState()
+
+//    val lifecycleOwner = LocalLifecycleOwner.current
+//
+//    LaunchedEffect(Unit) {
+//        viewModel.loadProfile()
+//    }
 
     val primaryGradientBrush = Brush.linearGradient(
         listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))

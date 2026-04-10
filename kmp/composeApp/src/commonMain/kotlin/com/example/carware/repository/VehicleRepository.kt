@@ -14,20 +14,26 @@ import com.example.carware.network.apiResponse.vehicle.VehicleResponse
 import com.example.carware.network.apiResponse.vehicle.Vehicles
 import com.example.carware.network.cache.VehiclesCacheData
 import com.example.carware.util.storage.PreferencesManager
+import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.Flow
 
-class VehicleRepository(private val prefs: PreferencesManager) {
+class VehicleRepository(
+    private val client: HttpClient
+) {
 
     suspend fun getBrandsRepo(): List<Brand> {
-        return getBrands() // your existing top-level function
+        return try {
+            getBrands(client = client)
+        } catch (e: Exception) {
+            emptyList() // ✅ don't crash, return empty
+        }
     }
 
     suspend fun getVehiclesRepo(): List<Vehicles> {
-        val token = prefs.getToken() ?: ""
-        if (token.isEmpty()) return emptyList()
+
 
         return try {
-            val response = getVehicles(token)
+            val response = getVehicles(client)
             val vehicles = response.data ?: emptyList()
 
             // NEW: Save to cache using set()
@@ -46,24 +52,28 @@ class VehicleRepository(private val prefs: PreferencesManager) {
     }
 
     suspend fun getModelsRepo(brandId: Int): List<Model> {
-        return getModels(brandId) // your existing top-level function
+        return try {
+            getModels(brandId, client)
+        } catch (e: Exception) {
+            emptyList() // ✅ don't crash, return empty
+        }
     }
 
     suspend fun addVehicleRepo(
         vehicleRequest: VehicleRequest,
-        token: String  // Add token parameter
-    ): VehicleResponse = addVehicles(vehicleRequest, token)
+    ): VehicleResponse {
+        return addVehicles(vehicleRequest, client)
+
+    }
 
 
     suspend fun getAppointmentsRepo(): List<Appointments> {
         // 1. Get token from SharedPrefs
-        val token = prefs.getToken() ?: ""
 
-        if (token.isEmpty()) return emptyList()
 
         return try {
             // 2. Call API
-            val response = getAppointments(token)
+            val response = getAppointments(client)
 
             // 3. Return only the list of data
             response.data ?: emptyList()

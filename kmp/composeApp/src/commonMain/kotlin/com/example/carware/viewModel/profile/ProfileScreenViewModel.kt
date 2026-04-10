@@ -68,13 +68,13 @@ class ProfileScreenViewModel(
                 )
             }
         }
-    }    init {
-        loadProfile()
     }
 
     fun loadProfile() {
         viewModelScope.launch {
-            _state.value = ProfileScreenState.Loading
+            if (_state.value !is ProfileScreenState.Success) {
+                _state.value = ProfileScreenState.Loading
+            }
             try {
                 val profile = repository.getProfileRepo()
                 val profileDetails = profile.data
