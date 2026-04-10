@@ -33,6 +33,7 @@ import com.example.carware.navigation.OnboardingScreen
 import com.example.carware.navigation.ProfileScreen
 import com.example.carware.navigation.ResetPasswordScreen
 import com.example.carware.navigation.ScheduleScreen
+import com.example.carware.navigation.SelectLanguageScreen
 import com.example.carware.navigation.SettingsScreen
 import com.example.carware.navigation.SignUpScreen
 import com.example.carware.navigation.SplashScreen
@@ -45,6 +46,7 @@ import com.example.carware.repository.VehicleRepository
 import com.example.carware.repository.auth.AuthRepository
 import com.example.carware.screens.AddCarScreen
 import com.example.carware.screens.BottomNavBar
+import com.example.carware.screens.SelectLanguageScreen
 import com.example.carware.screens.profile.ProfileScreen
 import com.example.carware.screens.onBoarding.OnBoardingScreen
 import com.example.carware.screens.SplashScreen
@@ -121,7 +123,7 @@ fun MainScreen(preferencesManager: PreferencesManager) {
     ) {
         NavHost(
             navController = navController,
-            startDestination = HistoryScreen,
+            startDestination = SplashScreen,
         )
         {
             composable<HomeScreen> {
@@ -168,11 +170,7 @@ fun MainScreen(preferencesManager: PreferencesManager) {
 
                             SettingsScreen::class -> SettingsScreen(
                                 navController,
-                                preferencesManager,
-                                onLangChange = { newLang ->
-                                    preferencesManager.saveLanguageCode(newLang.isoCode)
-                                    currentLanguage = newLang // This is the magic that flips the UI
-                                }
+                                preferencesManager
                             )
 
                             else -> Box(Modifier.fillMaxSize())
@@ -234,11 +232,8 @@ fun MainScreen(preferencesManager: PreferencesManager) {
             composable<SettingsScreen> {
                 SettingsScreen(
                     navController,
-                    preferencesManager,
-                    onLangChange = { newLang ->
-                        preferencesManager.saveLanguageCode(newLang.isoCode)
-                        currentLanguage = newLang // This is the magic that flips the UI
-                    })
+                    preferencesManager,)
+
             }
             composable<ScheduleScreen> {
                 ScheduleScreen(
@@ -307,6 +302,16 @@ fun MainScreen(preferencesManager: PreferencesManager) {
             }
             composable<EditProfileScreen> {
                 EditProfileScreen(navController, ProfileScreenViewModel(vehicleRepository,profileRepository))
+            }
+            composable<SelectLanguageScreen> {
+                SelectLanguageScreen(
+                    navController,
+                    preferencesManager,
+                    onLangChange = { newLang ->
+                        preferencesManager.saveLanguageCode(newLang.isoCode)
+                        currentLanguage = newLang // This triggers the RTL/LTR flip
+                    }
+                )
             }
         }
     }

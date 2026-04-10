@@ -55,3 +55,5 @@ object ProfileScreen
 object EditProfileScreen
 
 
+@Serializable
+object SelectLanguageScreen

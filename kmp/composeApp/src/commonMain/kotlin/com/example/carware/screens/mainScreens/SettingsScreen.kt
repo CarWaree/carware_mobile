@@ -50,6 +50,7 @@ import carware.composeapp.generated.resources.settings_update
 import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.navigation.ProfileScreen
+import com.example.carware.navigation.SelectLanguageScreen
 import com.example.carware.util.lang.AppLanguage
 import com.example.carware.util.storage.PreferencesManager
 import org.jetbrains.compose.resources.Font
@@ -57,12 +58,11 @@ import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun SettingsScreen(
-    navController: NavController, preferencesManager: PreferencesManager,
-    onLangChange: (AppLanguage) -> Unit
+    navController: NavController,
+    preferencesManager: PreferencesManager,
 ) {
 
-    val strings = LocalStrings.current
-    val currentLang = AppLanguage.fromCode(preferencesManager.getLanguageCode())
+
     val popMid = FontFamily(Font(Res.font.poppins_medium))
     val scrollState = rememberScrollState()
     Column(
@@ -160,7 +160,9 @@ fun SettingsScreen(
                                 .size(16.dp) // Set your fixed size here
                                 .background(
                                     // We manually color it to match your Green/Red logic
-                                    color = if (isReminderEnabled) Color(0xFF008000) else Color(0xFFB00000),
+                                    color = if (isReminderEnabled) Color(0xFF008000) else Color(
+                                        0xFFB00000
+                                    ),
                                     shape = CircleShape
                                 )
                         )
@@ -194,7 +196,9 @@ fun SettingsScreen(
                                 .size(16.dp) // Set your fixed size here
                                 .background(
                                     // We manually color it to match your Green/Red logic
-                                    color = if (isUpdateEnabled) Color(0xFF008000) else Color(0xFFB00000),
+                                    color = if (isUpdateEnabled) Color(0xFF008000) else Color(
+                                        0xFFB00000
+                                    ),
                                     shape = CircleShape
                                 )
                         )
@@ -225,7 +229,7 @@ fun SettingsScreen(
             SettingsRowButton(
                 painterResource(Res.drawable.settings_lang),
                 "Change Language",
-                onClick = { }
+                onClick = { navController.navigate(SelectLanguageScreen)}
             )
             Spacer(m.height(22.dp))
             Box(
@@ -287,6 +291,8 @@ fun SettingsScreen(
 
 }
 
+
+
 @Composable
 fun SettingsRowButton(
     icon: Painter,
@@ -329,18 +335,8 @@ fun SettingsRowButton(
         Spacer(m.weight(1f))  // ← cleaner than fillMaxWidth(0.9f)
 
         trailingContent()
+
     }
+}
 
 
-
-Row(verticalAlignment = Alignment.CenterVertically) {
-    Text("العربية")
-    Switch(
-        checked = currentLang == AppLanguage.AR,
-        onCheckedChange = { isAr ->
-            val selected = if (isAr) AppLanguage.AR else AppLanguage.EN
-            onLangChange(selected)
-        }
-    )
-   }
- }
