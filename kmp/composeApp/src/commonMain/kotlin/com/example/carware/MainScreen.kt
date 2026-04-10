@@ -32,6 +32,7 @@ import com.example.carware.navigation.OnboardingScreen
 import com.example.carware.navigation.ProfileScreen
 import com.example.carware.navigation.ResetPasswordScreen
 import com.example.carware.navigation.ScheduleScreen
+import com.example.carware.navigation.SelectLanguageScreen
 import com.example.carware.navigation.SettingsScreen
 import com.example.carware.navigation.SignUpScreen
 import com.example.carware.navigation.SplashScreen
@@ -39,6 +40,7 @@ import com.example.carware.navigation.TestScreen
 import com.example.carware.navigation.VerificationCodeScreen
 import com.example.carware.screens.AddCarScreen
 import com.example.carware.screens.BottomNavBar
+import com.example.carware.screens.SelectLanguageScreen
 import com.example.carware.screens.SplashScreen
 import com.example.carware.screens.auth.EmailVerificationScreen
 import com.example.carware.screens.auth.LoginScreen
@@ -132,11 +134,7 @@ fun MainScreen() {
                             ScheduleScreen::class -> ScheduleScreen(navController, scheduleViewModel, preferencesManager)
                             HistoryScreen::class -> HistoryScreen(navController, historyViewModel)
                             SettingsScreen::class -> SettingsScreen(
-                                navController, preferencesManager,
-                                onLangChange = {
-                                    preferencesManager.saveLanguageCode(it.isoCode)
-                                    currentLanguage = it
-                                }
+                                navController, preferencesManager
                             )
                             else -> Box(Modifier.fillMaxSize())
                         }
@@ -169,10 +167,7 @@ fun MainScreen() {
             }
 
             composable<SettingsScreen> {
-                SettingsScreen(navController, preferencesManager, onLangChange = {
-                    preferencesManager.saveLanguageCode(it.isoCode)
-                    currentLanguage = it
-                })
+                SettingsScreen(navController, preferencesManager)
             }
 
             composable<ScheduleScreen> {
@@ -214,6 +209,14 @@ fun MainScreen() {
 
             composable<EditProfileScreen> {
                 EditProfileScreen(navController, profileViewModel)
+            }
+            composable<SelectLanguageScreen> {
+                SelectLanguageScreen(
+                    navController, preferencesManager,
+                    onLangChange = {
+                        preferencesManager.saveLanguageCode(it.isoCode)
+                        currentLanguage = it
+                    })
             }
         }
     }
