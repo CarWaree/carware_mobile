@@ -31,9 +31,9 @@ fun createHttpClient(preferencesManager: PreferencesManager): HttpClient {
             level = LogLevel.ALL
         }
         install(HttpTimeout) {
-            requestTimeoutMillis = 30_00  // 10 seconds
-            connectTimeoutMillis = 30_00
-            socketTimeoutMillis = 30_00
+            requestTimeoutMillis = 100_00  // 10 seconds
+            connectTimeoutMillis = 100_00
+            socketTimeoutMillis = 100_00
         }
 
         install(Auth) {

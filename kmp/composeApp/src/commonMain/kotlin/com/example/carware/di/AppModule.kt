@@ -1,12 +1,5 @@
 package com.example.carware.di
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.lifecycle.viewmodel.compose.viewModel
-import carware.composeapp.generated.resources.Res
-import carware.composeapp.generated.resources.poppins_medium
-import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.network.createHttpClient
 import com.example.carware.repository.HistoryRepository
 import com.example.carware.repository.ProfileRepository

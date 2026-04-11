@@ -92,20 +92,21 @@ fun MainScreen() {
         mutableStateOf(AppLanguage.fromCode(preferencesManager.getLanguageCode()))
     }
     val localizedStrings = remember(currentLanguage) { LocalizedStrings(preferencesManager) }
-    val layoutDirection = if (currentLanguage == AppLanguage.AR) LayoutDirection.Rtl else LayoutDirection.Ltr
+    val layoutDirection =
+        if (currentLanguage == AppLanguage.AR) LayoutDirection.Rtl else LayoutDirection.Ltr
 
-    // ✅ Get all ViewModels from Koin once
-    val homeViewModel: HomeScreenViewModel = koinViewModel()
-    val signUpViewModel: SignUpViewModel = koinViewModel()
-    val loginViewModel: LogInViewModel = koinViewModel()
-    val otpViewModel: OTPViewModel =koinViewModel()
-    val newPasswordViewModel: NewPasswordViewModel = koinViewModel()
-    val emailVerificationViewModel: EmailVerificationViewModel = koinViewModel()
-    val historyViewModel: HistoryScreenViewModel = koinViewModel()
-    val scheduleViewModel: ScheduleScreenViewModel =koinViewModel()
-    val addCarViewModel: AddCarViewModel =koinViewModel()
-    val forgetPasswordViewModel: ForgotPasswordViewModel =koinViewModel()
-    val profileViewModel: ProfileScreenViewModel = koinViewModel()
+//    // ✅ Get all ViewModels from Koin once
+//    val homeViewModel: HomeScreenViewModel = koinViewModel()
+//    val signUpViewModel: SignUpViewModel = koinViewModel()
+//    val loginViewModel: LogInViewModel = koinViewModel()
+//    val otpViewModel: OTPViewModel =koinViewModel()
+//    val newPasswordViewModel: NewPasswordViewModel = koinViewModel()
+//    val emailVerificationViewModel: EmailVerificationViewModel = koinViewModel()
+//    val historyViewModel: HistoryScreenViewModel = koinViewModel()
+//    val scheduleViewModel: ScheduleScreenViewModel =koinViewModel()
+//    val addCarViewModel: AddCarViewModel =koinViewModel()
+//    val forgetPasswordViewModel: ForgotPasswordViewModel =koinViewModel()
+//    val profileViewModel: ProfileScreenViewModel = koinViewModel()
 
     CompositionLocalProvider(
         LocalStrings provides localizedStrings,
@@ -130,14 +131,28 @@ fun MainScreen() {
                         userScrollEnabled = true
                     ) { page ->
                         when (bottomTabs[page].route) {
-                            HomeScreen::class -> HomeScreen(navController,homeViewModel)
-                            ScheduleScreen::class -> ScheduleScreen(navController, scheduleViewModel, preferencesManager)
-                            HistoryScreen::class -> HistoryScreen(navController, historyViewModel)
-                            SettingsScreen::class -> SettingsScreen(
-                                navController, preferencesManager
-                            )
+                            HomeScreen::class -> {
+                                val homeViewModel: HomeScreenViewModel = koinViewModel()
+                                HomeScreen(navController, homeViewModel)
+                            }
+
+                            ScheduleScreen::class -> {
+                                val scheduleViewModel: ScheduleScreenViewModel = koinViewModel()
+                                ScheduleScreen(navController, scheduleViewModel, preferencesManager)
+                            }
+
+                            HistoryScreen::class -> {
+                                val historyViewModel: HistoryScreenViewModel = koinViewModel()
+                                HistoryScreen(navController, historyViewModel)
+                            }
+
+                            SettingsScreen::class -> {
+                                SettingsScreen(navController, preferencesManager)
+                            }
+
                             else -> Box(Modifier.fillMaxSize())
                         }
+                    
                     }
                 }
             }
@@ -146,23 +161,38 @@ fun MainScreen() {
                 OnBoardingScreen(navController, preferencesManager)
             }
 
-            composable<SignUpScreen> {
+            composable<SignUpScreen> { backStackEntry ->
+                val signUpViewModel: SignUpViewModel = koinViewModel(
+                    viewModelStoreOwner = backStackEntry
+                )
                 SignUpScreen(navController, signUpViewModel)
             }
 
-            composable<LoginScreen> {
-                LoginScreen(navController,  loginViewModel)
+            composable<LoginScreen> { backStackEntry ->
+                val logInViewModel: LogInViewModel = koinViewModel(
+                    viewModelStoreOwner = backStackEntry
+                )
+                LoginScreen(navController, logInViewModel)
             }
 
-            composable<ResetPasswordScreen> {
+            composable<ResetPasswordScreen> { backStackEntry ->
+                val forgetPasswordViewModel: ForgotPasswordViewModel = koinViewModel(
+                    viewModelStoreOwner = backStackEntry
+                )
                 ResetPasswordScreen(navController, forgetPasswordViewModel)
             }
 
-            composable<VerificationCodeScreen> {
+            composable<VerificationCodeScreen> { backStackEntry ->
+                val otpViewModel: OTPViewModel = koinViewModel(
+                    viewModelStoreOwner = backStackEntry
+                )
                 VerificationCodeScreen(navController, otpViewModel)
             }
 
-            composable<NewPasswordScreen> {
+            composable<NewPasswordScreen> { backStackEntry ->
+                val newPasswordViewModel: NewPasswordViewModel = koinViewModel(
+                    viewModelStoreOwner = backStackEntry
+                )
                 NewPasswordScreen(navController, newPasswordViewModel)
             }
 
@@ -170,21 +200,34 @@ fun MainScreen() {
                 SettingsScreen(navController, preferencesManager)
             }
 
-            composable<ScheduleScreen> {
+            composable<ScheduleScreen> { backStackEntry ->
+                val scheduleViewModel: ScheduleScreenViewModel = koinViewModel(
+                    viewModelStoreOwner = backStackEntry
+                )
                 ScheduleScreen(navController, scheduleViewModel, preferencesManager)
             }
 
-            composable<HistoryScreen> {
+            composable<HistoryScreen> { backStackEntry ->
+                val historyViewModel: HistoryScreenViewModel = koinViewModel(
+                    viewModelStoreOwner = backStackEntry
+                )
                 HistoryScreen(navController, historyViewModel)
             }
 
-            composable<AddCarScreen> {
+            composable<AddCarScreen> { backStackEntry ->
+                val addCarViewModel: AddCarViewModel = koinViewModel(
+                    viewModelStoreOwner = backStackEntry
+                )
                 AddCarScreen(navController, addCarViewModel)
             }
 
             composable<SplashScreen> {
                 SplashScreen(preferencesManager) { destination ->
-                    navController.navigate(destination) { popUpTo(SplashScreen) { inclusive = true } }
+                    navController.navigate(destination) {
+                        popUpTo(SplashScreen) {
+                            inclusive = true
+                        }
+                    }
                 }
             }
 
@@ -199,15 +242,24 @@ fun MainScreen() {
                 com.example.carware.screens.TestScreen(navController, preferencesManager)
             }
 
-            composable<EmailVerificationScreen> {
+            composable<EmailVerificationScreen> { backStackEntry ->
+                val emailVerificationViewModel: EmailVerificationViewModel = koinViewModel(
+                    viewModelStoreOwner = backStackEntry
+                )
                 EmailVerificationScreen(navController, emailVerificationViewModel)
             }
 
-            composable<ProfileScreen> {
+            composable<ProfileScreen> { backStackEntry ->
+                val profileViewModel: ProfileScreenViewModel = koinViewModel(
+                    viewModelStoreOwner = backStackEntry
+                )
                 ProfileScreen(navController, profileViewModel, preferencesManager)
             }
+            composable<EditProfileScreen> { backStackEntry ->
+                val profileViewModel: ProfileScreenViewModel = koinViewModel(
+                    viewModelStoreOwner = backStackEntry
 
-            composable<EditProfileScreen> {
+                )
                 EditProfileScreen(navController, profileViewModel)
             }
             composable<SelectLanguageScreen> {
