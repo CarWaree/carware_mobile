@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -153,6 +154,13 @@ fun HomeScreen(
 
 
         }
+        val isRefreshing = state is HomeScreenState.Loading
+
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = { viewModel.loadVehicles() } // ✅ user pulls → fresh data
+        ) {
+
         Column(
             m.fillMaxSize()
                 .clip(RoundedCornerShape(70.dp, 70.dp, 0.dp, 0.dp))
@@ -237,6 +245,7 @@ fun HomeScreen(
 
 
         }
+    }
     }
 }
 

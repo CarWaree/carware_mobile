@@ -7,6 +7,9 @@ val StringsAr = mapOf(
     "ARABIC" to "العربية",
     "CONTINUE" to "متابعة",
     "CHANGE_LANG" to "يمكنك تغيير ذلك لاحقًا من الإعدادات",
+    "HEADER_TITLE"  to "لغه التطبيق",
+    "SAVE_CHANGES"  to "احفظ التغيرات ",
+
 
 
     // Onboarding

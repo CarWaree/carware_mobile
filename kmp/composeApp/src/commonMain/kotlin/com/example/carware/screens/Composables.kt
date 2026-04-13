@@ -39,8 +39,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -76,9 +74,6 @@ import carware.composeapp.generated.resources.clander_right_arrow
 import carware.composeapp.generated.resources.color
 import carware.composeapp.generated.resources.cuate
 import carware.composeapp.generated.resources.failed
-import carware.composeapp.generated.resources.history_date
-import carware.composeapp.generated.resources.history_location
-import carware.composeapp.generated.resources.history_visa
 import carware.composeapp.generated.resources.keyboard_arrow_down
 import carware.composeapp.generated.resources.keyboard_arrow_up
 import carware.composeapp.generated.resources.modelyear
@@ -141,6 +136,11 @@ fun Modifier.cardGradBack(): Modifier = this.then(
                 Color(0xFF949697), Color(0xFFC9CDCF)
             )
         )
+    )
+)
+
+    fun Modifier.backgroundColor(): Modifier = this.then(
+    background(Color(217, 217, 217, 255)
     )
 )
 

@@ -10,6 +10,8 @@ val StringsEn = mapOf(
     "ARABIC" to "Arabic",
     "CONTINUE" to "Continue",
     "CHANGE_LANG" to " you can change this later in settings",
+    "HEADER_TITLE"  to "App Language",
+    "SAVE_CHANGES"  to "Save Changes",
 
 
     // Onboarding
@@ -147,4 +149,6 @@ val StringsEn = mapOf(
     "TIRES" to "Tires",
     "MAINTENANCE" to "Maintenance",
     "BRAKES" to "Brakes"
+
+
 )
