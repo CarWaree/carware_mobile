@@ -47,6 +47,7 @@ import carware.composeapp.generated.resources.settings_lock
 import carware.composeapp.generated.resources.settings_logout
 import carware.composeapp.generated.resources.settings_profile
 import carware.composeapp.generated.resources.settings_update
+import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.navigation.ProfileScreen
 import com.example.carware.navigation.SelectLanguageScreen
@@ -59,7 +60,7 @@ fun SettingsScreen(
     navController: NavController,
     preferencesManager: PreferencesManager
 ) {
-
+    val strings = LocalStrings.current
     val popMid = FontFamily(Font(Res.font.poppins_medium))
     val scrollState = rememberScrollState()
     Column(
@@ -74,7 +75,7 @@ fun SettingsScreen(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Settings",
+                text = strings.get("SETTINGS"),
                 fontFamily = popMid,
                 fontSize = 26.sp,
                 fontWeight = FontWeight.W500,
@@ -101,7 +102,7 @@ fun SettingsScreen(
 
             Spacer(m.height(18.dp))
             Text(
-                text = "Account",
+                text = strings.get("ACCOUNT"),
                 fontFamily = popMid,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.W500,
@@ -115,20 +116,20 @@ fun SettingsScreen(
 
             SettingsRowButton(
                 icon = painterResource(Res.drawable.settings_profile),
-                label = "Edit Profile",
+                label = strings.get("EDIT_PROFILE"),
                 onClick = { navController.navigate(ProfileScreen) },
             )
             Spacer(m.height(28.dp))
 
             SettingsRowButton(
                 painterResource(Res.drawable.settings_lock),
-                "Change Password",
+                strings.get("CHANGE_PASSWORD"),
                 {}
             )
             Spacer(m.height(42.dp))
 
             Text(
-                text = "Notifications",
+                text = strings.get("NOTIFICATIONS"),
                 fontFamily = popMid,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.W500,
@@ -142,7 +143,7 @@ fun SettingsScreen(
             var isReminderEnabled = true
             SettingsRowButton(
                 painterResource(Res.drawable.settings_clock),
-                "Service Reminder",
+                strings.get("SERVICE_REMINDER"),
                 onClick = { isReminderEnabled = !isReminderEnabled }  // or leave it empty {}
 
 
@@ -176,7 +177,7 @@ fun SettingsScreen(
             var isUpdateEnabled = true
             SettingsRowButton(
                 painterResource(Res.drawable.settings_update),
-                "App Update",
+                strings.get("APP_UPDATE"),
                 onClick = { isUpdateEnabled = !isUpdateEnabled }  // or leave it empty {}
 
 
@@ -208,7 +209,7 @@ fun SettingsScreen(
             }
             Spacer(m.height(42.dp))
             Text(
-                text = "Preferences",
+                text = strings.get("PREFERENCES"),
                 fontFamily = popMid,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.W500,
@@ -221,7 +222,7 @@ fun SettingsScreen(
             Spacer(m.height(2.dp))
             SettingsRowButton(
                 painterResource(Res.drawable.settings_lang),
-                "Change Language",
+                strings.get("CHANGE_LANGUAGE"),
                 onClick = {navController.navigate(SelectLanguageScreen) }
             )
             Spacer(m.height(22.dp))
@@ -230,7 +231,7 @@ fun SettingsScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Help & Support",
+                    text = strings.get("HELP_SUPPORT"),
                     fontFamily = popMid,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.W400,
@@ -269,7 +270,7 @@ fun SettingsScreen(
                     )
                     Spacer(m.width(8.dp))
                     Text(
-                        "Log Out",
+                        strings.get("LOG_OUT"),
                         fontFamily = popMid,
                         fontWeight = FontWeight.W500,
                         fontSize = 21.sp,
@@ -328,5 +329,3 @@ fun SettingsRowButton(
         trailingContent()
     }
 }
-
-

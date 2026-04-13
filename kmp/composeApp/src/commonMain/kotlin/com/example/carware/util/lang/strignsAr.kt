@@ -141,5 +141,17 @@ val StringsAr = mapOf(
     "OIL_CHANGE" to "تغيير الزيت",
     "TIRES" to "الإطارات",
     "MAINTENANCE" to "الصيانة",
-    "BRAKES" to "الفرامل"
+    "BRAKES" to "الفرامل",
+
+    // Settings
+    "ACCOUNT" to "الحساب",
+    "EDIT_PROFILE" to "تعديل الملف الشخصي",
+    "CHANGE_PASSWORD" to "تغيير كلمة المرور",
+    "NOTIFICATIONS" to "الإشعارات",
+    "SERVICE_REMINDER" to "تذكير الخدمة",
+    "APP_UPDATE" to "تحديث التطبيق",
+    "PREFERENCES" to "التفضيلات",
+    "CHANGE_LANGUAGE" to "تغيير اللغة",
+    "HELP_SUPPORT" to "المساعدة والدعم",
+    "LOG_OUT" to "تسجيل الخروج"
 )
