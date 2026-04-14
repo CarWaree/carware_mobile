@@ -36,6 +36,7 @@ class ScheduleScreenViewModel(
     )
 
     init {
+        _state.update { it.copy(isInitialLoading = true) }
         loadInitialTimeSlots()
         loadInitialData()
 
@@ -57,13 +58,15 @@ class ScheduleScreenViewModel(
                         availableServicesTypes = services,
                         availableCenters = centers,
                         availableCars = cars,
-                        isLoading = false
+                        isLoading = false,
+                        isInitialLoading = false
                     )
                 }
             } catch (e: Exception) {
                 _state.update {
                     it.copy(
                         isLoading = false,
+                        isInitialLoading = false,
                         error = "Failed to load data: ${e.message}"
                     )
                 }

@@ -35,6 +35,7 @@ data class ScheduleScreenState(
     var isTimePickerVisible: Boolean = false,
 
     // --- Loading & Error States ---
+    val isInitialLoading: Boolean = false,
     val isLoading: Boolean = false,
     val error: String? = null,
 )

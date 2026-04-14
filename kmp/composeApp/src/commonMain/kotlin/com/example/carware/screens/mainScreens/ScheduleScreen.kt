@@ -46,6 +46,7 @@ import com.example.carware.screens.CalenderBox
 import com.example.carware.screens.LoadingOverlay
 import com.example.carware.screens.SelectDateBox
 import com.example.carware.screens.SelectDropdown
+import com.example.carware.screens.ShimmerScheduleScreen
 import com.example.carware.screens.UsersCar
 import com.example.carware.screens.appButtonBack
 import com.example.carware.util.storage.PreferencesManager
@@ -79,6 +80,8 @@ fun ScheduleScreen(
         Column(m.fillMaxSize()) {
             SelectDateBox(viewModel = viewModel)
         }
+    } else if (state.isInitialLoading) {
+        ShimmerScheduleScreen()
     } else {
         Column(
             m

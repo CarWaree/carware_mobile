@@ -23,7 +23,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -38,12 +37,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
-import carware.composeapp.generated.resources.arrow_1
 import carware.composeapp.generated.resources.audi
 import carware.composeapp.generated.resources.history_date
 import carware.composeapp.generated.resources.history_filter
@@ -51,11 +46,12 @@ import carware.composeapp.generated.resources.history_location
 import carware.composeapp.generated.resources.history_visa
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
+import carware.composeapp.generated.resources.arrow_1
 import com.example.carware.LocalStrings
 import com.example.carware.m
+import com.example.carware.screens.ShimmerHistoryCard
 import com.example.carware.viewModel.history.HistoryScreenState
 import com.example.carware.viewModel.history.HistoryScreenViewModel
-import kotlinx.coroutines.awaitCancellation
 import kotlinx.datetime.LocalDateTime
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
@@ -64,39 +60,21 @@ import org.jetbrains.compose.resources.painterResource
 fun HistoryScreen(
     navController: NavController,
     viewModel: HistoryScreenViewModel,
-
-
-    ) {
-
-    val strings= LocalStrings.current
-    val filterOptions = listOf(
-        strings.get("FILTER_ALL"),
-        strings.get("OIL_CHANGE"),
-        strings.get("TIRES"),
-        strings.get("MAINTENANCE"),
-        strings.get("BRAKES")
-    )
-
+) {
+    val strings = LocalStrings.current
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
 
     val pageScrollState = rememberScrollState()
-    val selectCarScrollState = rememberScrollState()
-
-
     val _state by viewModel.state.collectAsState()
     val state = _state
 
-
     Column(
-        m
-            .fillMaxSize()
+        m.fillMaxSize()
             .verticalScroll(pageScrollState)
             .background(Color(217, 217, 217, 255)),
         horizontalAlignment = Alignment.CenterHorizontally
-    )
-    {
-//        Spacer(m.height(35.dp))
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -104,10 +82,6 @@ fun HistoryScreen(
                 .padding(horizontal = 28.dp)
                 .padding(top = 36.dp)
         ) {
-            // Back icon at the start
-
-
-            // Centered text
             Text(
                 strings.get("SERVICE_HISTORY"),
                 fontFamily = popMid,
@@ -146,23 +120,26 @@ fun HistoryScreen(
             thickness = 1.dp
         )
 
-
-
         Spacer(m.height(32.dp))
-        Column(
-            m
-                .fillMaxSize()
-        )
-        {
+        
+        Column(m.fillMaxSize()) {
             when (state) {
                 is HistoryScreenState.Loading -> {
-                    Spacer(modifier = m.padding(vertical = 50.dp))
-                    Text(strings.get("LOADING_CAR_DATA"))
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        repeat(5) {
+                            ShimmerHistoryCard()
+                        }
+                    }
                 }
 
                 is HistoryScreenState.Error -> {
                     Spacer(modifier = m.padding(vertical = 50.dp))
-                    Text("Error: ${state.message}", color = Color.Red)
+                    Text("Error: ${state.message}", color = Color.Red, modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
 
                 is HistoryScreenState.Success -> {
@@ -177,7 +154,7 @@ fun HistoryScreen(
                                 carName = item.carName,
                                 serviceName = item.providerName,
                                 date = item.date,
-                                location = "BNU", // ⚠️ no location in model, using providerName as placeholder
+                                location = "BNU",
                                 cost = item.totalPrice,
                                 paymentMethod = item.paymentMethod,
                                 onClick = {
@@ -187,14 +164,10 @@ fun HistoryScreen(
                         }
                     }
                 }
-
             }
         }
     }
-
 }
-
-
 
 @Composable
 fun ServiceHistoryCard(
@@ -221,30 +194,25 @@ fun ServiceHistoryCard(
             .background(Color(210, 210, 210))
             .padding(14.dp)
     ) {
-
-        // ── Top row: car image + name/service + price/payment ──
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Car image
             Box(
-                m.size(38.dp) // Set the size of the circle
-                    .clip(CircleShape) // This makes it a circle
+                m.size(38.dp)
+                    .clip(CircleShape)
                     .border(1.dp, Color(30, 30, 30, 51), CircleShape)
             ) {
                 Image(
                     painter = painterResource(Res.drawable.audi),
                     contentDescription = "Car Logo",
-                    modifier = m.size(32.dp) // Set the size of the circle
+                    modifier = m.size(32.dp)
                         .align(Alignment.Center)
-
                 )
-            } // car image
+            }
 
             Spacer(m.width(10.dp))
 
-            // Car brand + service name
             Column(modifier = m.weight(1f)) {
                 Text(
                     text = carName,
@@ -262,7 +230,6 @@ fun ServiceHistoryCard(
                 )
             }
 
-            // Price + payment method
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     text = cost,
@@ -274,7 +241,6 @@ fun ServiceHistoryCard(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         painter = painterResource(Res.drawable.history_visa),
-                        // need to add condition
                         contentDescription = null,
                         tint = Color.Unspecified,
                         modifier = Modifier.size(14.dp)
@@ -293,7 +259,6 @@ fun ServiceHistoryCard(
 
         Spacer(Modifier.height(12.dp))
 
-        // ── Bottom row: date + location ──────────────────────
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -307,7 +272,7 @@ fun ServiceHistoryCard(
             Spacer(Modifier.width(6.dp))
             val shortDate = LocalDateTime.parse(date)
             Text(
-                text =  "${shortDate.dayOfMonth}/${shortDate.monthNumber}/${shortDate.year}",
+                text = "${shortDate.dayOfMonth}/${shortDate.monthNumber}/${shortDate.year}",
                 fontFamily = popMid,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.W300,
@@ -332,7 +297,6 @@ fun ServiceHistoryCard(
 
         Spacer(Modifier.height(12.dp))
 
-        // ── View Details button ──────────────────────────────
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -357,18 +321,13 @@ fun ServiceHistoryCard(
     }
 }
 
-
-
 @Composable
 fun ServiceRecordScreen(
     navController: NavController,
 ) {
-
-
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
     val strings = LocalStrings.current
-
 
     val gradientBrush = Brush.linearGradient(
         listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
@@ -380,8 +339,6 @@ fun ServiceRecordScreen(
             .background(Color(217, 217, 217, 255))
             .verticalScroll(rememberScrollState())
     ) {
-
-        // ── Top Bar ──────────────────────────────────────────
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -390,13 +347,12 @@ fun ServiceRecordScreen(
             Icon(
                 painter = painterResource(Res.drawable.arrow_1),
                 contentDescription = "Back",
-                tint = Color.Red, // need to be gradient
+                tint = Color.Red,
                 modifier = Modifier
                     .rotate(180f)
                     .align(Alignment.CenterStart)
                     .size(24.dp)
                     .clickable { navController.popBackStack() }
-
             )
             Text(
                 text = strings.get("SERVICE_RECORD"),
@@ -410,7 +366,6 @@ fun ServiceRecordScreen(
 
         Spacer(Modifier.height(24.dp))
 
-        // ── Car Name ─────────────────────────────────────────
         Text(
             text = "carName",
             fontFamily = popSemi,
@@ -422,9 +377,7 @@ fun ServiceRecordScreen(
 
         Spacer(Modifier.height(16.dp))
 
-        // ── Info Rows ─────────────────────────────────────────
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-
             ServiceRecordRow(
                 label = strings.get("SERVICE_LABEL"),
                 value = "serviceType",
@@ -455,7 +408,6 @@ fun ServiceRecordScreen(
 
         Spacer(Modifier.height(24.dp))
 
-        // ── Service Details ───────────────────────────────────
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
             Text(
                 text = strings.get("SERVICE_DETAILS"),
@@ -488,7 +440,6 @@ fun ServiceRecordScreen(
     }
 }
 
-// ── Reusable Row ──────────────────────────────────────────────────
 @Composable
 fun ServiceRecordRow(
     label: String,
@@ -519,7 +470,7 @@ fun ServiceRecordRow(
                     modifier = Modifier
                         .size(20.dp)
                         .padding(end = 4.dp)
-                ) // need to add condition to see whether visa or cash
+                )
             }
             Text(
                 text = value,
@@ -529,7 +480,6 @@ fun ServiceRecordRow(
                 color = Color(102, 102, 102, 255)
             )
         }
-        // Divider
         HorizontalDivider(
             color = Color(102, 102, 102, 128),
             thickness = 1.dp
