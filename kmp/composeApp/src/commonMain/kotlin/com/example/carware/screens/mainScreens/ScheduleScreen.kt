@@ -243,16 +243,16 @@ fun ScheduleScreen(
                         )
                     }
 
-                    // Display loading state
-                    if (state.isLoading) {
-                        Text(
-                            text = strings.get("PROCESSING"),
-                            fontFamily = popSemi,
-                            fontSize = 14.sp,
-                            color = Color(194, 0, 0, 255)
-                        )
-                        Spacer(m.height(8.dp))
-                    }
+//                    // Display loading state
+//                    if (state.isLoading) {
+//                        Text(
+//                            text = strings.get("PROCESSING"),
+//                            fontFamily = popSemi,
+//                            fontSize = 14.sp,
+//                            color = Color(194, 0, 0, 255)
+//                        )
+//                        Spacer(m.height(8.dp))
+//                    }
 
                     // Confirm Button
                     Card(

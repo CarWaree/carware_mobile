@@ -112,7 +112,7 @@ fun MainScreen() {
         LocalStrings provides localizedStrings,
         LocalLayoutDirection provides layoutDirection
     ) {
-        NavHost(navController = navController, startDestination = ScheduleScreen) {
+        NavHost(navController = navController, startDestination = SplashScreen) {
 
             composable<HomeScreen> {
                 Scaffold(
