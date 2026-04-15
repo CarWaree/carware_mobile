@@ -1279,7 +1279,7 @@ fun ServiceHistoryItem(
             fontWeight = FontWeight.W400,
             color = Color(102, 102, 102, 255)
         )
-//        Spacer(m.padding(vertical = 2.dp))
+        Spacer(m.padding(vertical = 2.dp))
 
 
         Row(
@@ -1302,10 +1302,10 @@ fun ServiceHistoryItem(
             Box(
                 modifier = Modifier
                     .size(10.dp)
-                    .background(color =if (status =="confirmed") {
+                    .background(color =if (status =="Confirmed") {
                         Color(4, 186, 0, 255)
                     }
-                    else if(status=="pending")
+                    else if(status=="Pending")
                     {
                         Color(210, 194, 4, 255)
                     }else{

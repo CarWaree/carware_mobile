@@ -110,16 +110,18 @@ fun ProfileScreen(
                 CircularProgressIndicator()
             }
         }
+
         is ProfileScreenState.Error -> {
             val message = (state as ProfileScreenState.Error).message
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(text = message)
             }
         }
+
         is ProfileScreenState.Success -> {
             val profile = (state as ProfileScreenState.Success).profile
-            val cars=(state as ProfileScreenState.Success).cars
-            val car=cars[0]
+            val cars = (state as ProfileScreenState.Success).cars
+            val car = cars[0]
             Column(
                 modifier = m
                     .fillMaxSize()
@@ -193,15 +195,15 @@ fun ProfileScreen(
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
-                        Text(
-                            text = profile.fullName,
-                            fontFamily = popSemi,
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.W500,
-                            style = TextStyle(
-                                brush = primaryGradientBrush
-                            )
+                    Text(
+                        text = profile.fullName,
+                        fontFamily = popSemi,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.W500,
+                        style = TextStyle(
+                            brush = primaryGradientBrush
                         )
+                    )
 
                     Text(
                         text = "Member since July 2025",
@@ -229,107 +231,13 @@ fun ProfileScreen(
 
                         // Primary Vehicle Card
 
-
-                        Card(
-                            colors = CardDefaults.cardColors(containerColor = Color(204, 204, 204, 204)),
-                            modifier = m
-                                .fillMaxWidth()
-//                        .padding(vertical = 20.dp)
-                                .clip(shape = RoundedCornerShape(8.dp)),
-                        ) {
-                            Column(
-                                modifier = m.padding(horizontal = 20.dp, vertical = 18.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
-
-                            ) {
-                                Image(
-                                    painter = painterResource(Res.drawable.audi),
-                                    contentDescription = null,
-                                    modifier = m.size(150.dp, 110.dp)
-
-                                ) //car image
-                                Row(
-                                    modifier = m.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.Start
-                                ) {
-                                    Text(
-                                        car.brandName,
-                                        fontFamily = popSemi,
-                                        fontSize = 24.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color(102, 102, 102, 255)
-                                    )
-                                } //car brand
-                                Spacer(modifier = m.padding(vertical = 2.dp))
-                                Row(
-                                    modifier = m.fillMaxWidth(),
-                                    //                                .padding(horizontal = 20.dp),
-                                    horizontalArrangement = Arrangement.SpaceEvenly,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically
-
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(Res.drawable.car),
-                                            contentDescription = null,
-                                            tint = Color.Unspecified,
-                                            modifier = m.size(18.dp)
-
-                                        ) //car icon
-                                        Spacer(modifier = m.padding(horizontal = 2.dp))
-                                        Text(
-                                            car.modelName,
-                                            fontFamily = popSemi,
-                                            fontSize = 14.sp,
-                                            color = Color(102, 102, 102, 255)
-                                        )
-                                    }
-                                    Spacer(modifier = m.padding(horizontal = 4.dp))
-                                    Row(
-                                        modifier = m
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(Res.drawable.modelyear),
-                                            contentDescription = null,
-                                            tint = Color.Unspecified,
-                                            modifier = m.size(20.dp)
-
-                                        ) //model year icon
-                                        Spacer(modifier = m.padding(horizontal = 2.dp))
-                                        Text(
-                                            car.modelName,
-                                            fontFamily = popSemi,
-                                            fontSize = 14.sp,
-                                            color = Color(102, 102, 102, 255)
-                                        ) //model year
-
-                                    }
-                                    Spacer(modifier = m.padding(horizontal = 4.dp))
-                                    Row(
-                                        modifier = m
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(Res.drawable.color),
-                                            contentDescription = null,
-                                            tint = Color.Unspecified,
-                                            modifier = m.size(20.dp)
-
-                                        ) //color icon
-                                        Spacer(modifier = m.padding(horizontal = 2.dp))
-                                        Text(
-                                            car.color,
-                                            fontFamily = popSemi,
-                                            fontSize = 14.sp,
-                                            color = Color(102, 102, 102, 255)
-                                        ) //color
-
-                                    }
-
-                                } //car details
-                            } //card content
-                        }  // car card
+                        CarCard(
+                            car.modelName,
+                            car.brandName,
+                            car.brandName,
+                            car.color,
+                        )
+                        // car card
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -448,7 +356,7 @@ fun ProfileScreen(
 
                     // Logout Button
                     Button(
-                        onClick = {preferencesManager.performLogout() },
+                        onClick = { preferencesManager.performLogout() },
                         modifier = Modifier
                             .fillMaxWidth(0.65f)
                             .align(Alignment.CenterHorizontally)
@@ -457,20 +365,142 @@ fun ProfileScreen(
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(painterResource(Res.drawable.settings_logout), null, Modifier.size(24.dp))
+                            Icon(
+                                painterResource(Res.drawable.settings_logout),
+                                null,
+                                Modifier.size(24.dp)
+                            )
                             Spacer(modifier = Modifier.width(12.dp))
-                            Text("log out", fontFamily = popSemi, fontSize = 20.sp, color = Color.White)
+                            Text(
+                                "log out",
+                                fontFamily = popSemi,
+                                fontSize = 20.sp,
+                                color = Color.White
+                            )
                         }
                     }
                     Spacer(modifier = m.height(100.dp))
 
                 }
 
-            }        }
+            }
+        }
     }
 
 
+}
 
+@Composable
+fun CarCard(
+    modelName: String,
+    brandName: String,
+    modelYear: String,
+    color: String
+
+
+) {
+    val popSemi = FontFamily(Font(Res.font.poppins_semibold))
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Color(204, 204, 204, 204)),
+        modifier = m
+            .fillMaxWidth()
+//                        .padding(vertical = 20.dp)
+            .clip(shape = RoundedCornerShape(8.dp)),
+    ) {
+        Column(
+            modifier = m.padding(horizontal = 20.dp, vertical = 18.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+
+        ) {
+            Image(
+                painter = painterResource(Res.drawable.audi),
+                contentDescription = null,
+                modifier = m.size(150.dp, 110.dp)
+
+            ) //car image
+            Row(
+                modifier = m.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start
+            ) {
+                Text(
+                    brandName,
+                    fontFamily = popSemi,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(102, 102, 102, 255)
+                )
+            } //car brand
+            Spacer(modifier = m.padding(vertical = 2.dp))
+            Row(
+                modifier = m.fillMaxWidth(),
+                //                                .padding(horizontal = 20.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+
+                ) {
+                    Icon(
+                        painter = painterResource(Res.drawable.car),
+                        contentDescription = null,
+                        tint = Color.Unspecified,
+                        modifier = m.size(18.dp)
+
+                    ) //car icon
+                    Spacer(modifier = m.padding(horizontal = 2.dp))
+                    Text(
+                        modelName,
+                        fontFamily = popSemi,
+                        fontSize = 14.sp,
+                        color = Color(102, 102, 102, 255)
+                    )
+                }
+                Spacer(modifier = m.padding(horizontal = 4.dp))
+                Row(
+                    modifier = m
+                ) {
+                    Icon(
+                        painter = painterResource(Res.drawable.modelyear),
+                        contentDescription = null,
+                        tint = Color.Unspecified,
+                        modifier = m.size(20.dp)
+
+                    ) //model year icon
+                    Spacer(modifier = m.padding(horizontal = 2.dp))
+                    Text(
+                        modelYear,
+                        fontFamily = popSemi,
+                        fontSize = 14.sp,
+                        color = Color(102, 102, 102, 255)
+                    ) //model year
+
+                }
+                Spacer(modifier = m.padding(horizontal = 4.dp))
+                Row(
+                    modifier = m
+                ) {
+                    Icon(
+                        painter = painterResource(Res.drawable.color),
+                        contentDescription = null,
+                        tint = Color.Unspecified,
+                        modifier = m.size(20.dp)
+
+                    ) //color icon
+                    Spacer(modifier = m.padding(horizontal = 2.dp))
+                    Text(
+                        color,
+                        fontFamily = popSemi,
+                        fontSize = 14.sp,
+                        color = Color(102, 102, 102, 255)
+                    ) //color
+
+                }
+
+            } //car details
+        } //card content
+    }
 }
 
 
