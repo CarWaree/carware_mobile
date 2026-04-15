@@ -10,9 +10,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -57,8 +59,11 @@ import com.example.carware.network.apiResponse.vehicle.Vehicles
 import com.example.carware.screens.CarCard
 import com.example.carware.screens.OBDCard
 import com.example.carware.screens.ServiceHistoryItem
+import com.example.carware.screens.ShimmerCarCard
+import com.example.carware.screens.ShimmerMaintenance
 import com.example.carware.screens.UpcomingMaintenance
 import com.example.carware.screens.appGradBack
+import com.example.carware.screens.shimmerEffect
 import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.home.HomeScreenState
 import com.example.carware.viewModel.home.HomeScreenViewModel
@@ -171,8 +176,10 @@ fun HomeScreen(
             Box {
                 when (state) {
                     is HomeScreenState.Loading -> {
-                        Spacer(modifier = m.padding(vertical = 50.dp))
-                        Text(strings.get("LOADING_CAR_DATA"))
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Spacer(modifier = m.padding(vertical = 16.dp))
+                            ShimmerCarCard()
+                        }
                     }
 
                     is HomeScreenState.Error -> {
@@ -192,7 +199,13 @@ fun HomeScreen(
                 }
             }
             Spacer(modifier = m.padding(vertical = 16.dp))
-            UpcomingMaintenance()
+            if (state is HomeScreenState.Loading) {
+                Box(modifier = m.padding(horizontal = 12.dp)) {
+                    ShimmerMaintenance()
+                }
+            } else {
+                UpcomingMaintenance()
+            }
             Spacer(modifier = m.padding(vertical = 12.dp))
             Text(
                 strings.get("SCHEDULED_SERVICES"),
@@ -229,6 +242,23 @@ fun HomeScreen(
                             )
                         }
                     }
+                    is HomeScreenState.Loading -> {
+                        Row(
+                            modifier = m
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp, horizontal = 4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            repeat(3) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(120.dp, 80.dp)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .shimmerEffect()
+                                )
+                            }
+                        }
+                    }
 
                     else -> {
                         Spacer(modifier = m.padding(vertical = 16.dp))
@@ -239,7 +269,9 @@ fun HomeScreen(
             Spacer(modifier = m.padding(vertical = 12.dp))
 
             Row(m.padding(horizontal = 12.dp))
-            { OBDCard(onClick = {/* more details logic*/ }) }
+            { 
+                OBDCard(onClick = {/* more details logic*/ }) 
+            }
 
             Spacer(modifier = m.padding(vertical = 64.dp))
 
