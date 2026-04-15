@@ -72,6 +72,8 @@ class LogInViewModel(
                 val token = response.data?.token
                     ?: throw IllegalStateException("Token missing in response")
                 preferencesManager.performLogin(token)
+                val expireToken=response.data.refreshTokenExpiration
+                preferencesManager.saveExpiresOn(expireToken)
 
                 val isEmailVerified = response.data?.isAuthenticated ?: false
                 preferencesManager.saveEmailVerified(isEmailVerified)

@@ -231,7 +231,7 @@ fun ProfileScreen(
 
                         // Primary Vehicle Card
 
-                        CarCard(
+                        PrimaryCarCard(
                             car.modelName,
                             car.brandName,
                             car.brandName,
@@ -391,7 +391,7 @@ fun ProfileScreen(
 }
 
 @Composable
-fun CarCard(
+fun PrimaryCarCard(
     modelName: String,
     brandName: String,
     modelYear: String,

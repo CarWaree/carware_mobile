@@ -11,6 +11,7 @@ class PreferencesManager(
 
     companion object {
         private const val KEY_AUTH_TOKEN = "auth_token"
+        private const val KEY_REFRESH_TOKEN = "refresh_token"
 
         private const val KEY_USER_ID = "user_id"
         private const val KEY_ONBOARDING = "onboarding_complete"
@@ -51,7 +52,12 @@ class PreferencesManager(
             settings.remove(KEY_AUTH_TOKEN)
         }
     }
+    fun saveRefreshToken(token: String?) {
+        if (token != null) settings[KEY_REFRESH_TOKEN] = token
+        else settings.remove(KEY_REFRESH_TOKEN)
+    }
 
+    fun getRefreshToken(): String? = settings.getStringOrNull(KEY_REFRESH_TOKEN)
     fun getToken(): String? {
         return settings.getStringOrNull(KEY_AUTH_TOKEN)
     }
