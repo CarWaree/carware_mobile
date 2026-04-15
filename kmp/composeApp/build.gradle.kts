@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlin.serialization)
+    id("com.google.gms.google-services") // Apply the plugin here
 
 
 }
@@ -37,6 +38,9 @@ kotlin {
             implementation("com.airbnb.android:lottie-compose:6.4.0")
             implementation(libs.koin.android)
             implementation(libs.koin.compose)
+            implementation(project.dependencies.platform("com.google.firebase:firebase-bom:33.10.0"))
+            implementation("com.google.firebase:firebase-messaging")
+
 
 
         }

@@ -53,6 +53,7 @@ import carware.composeapp.generated.resources.person
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.LocalStrings
+import com.example.carware.Notification.RequestNotificationPermission
 import com.example.carware.m
 import com.example.carware.network.apiResponse.appointment.Appointments
 import com.example.carware.network.apiResponse.vehicle.Vehicles
@@ -67,16 +68,20 @@ import com.example.carware.screens.shimmerEffect
 import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.home.HomeScreenState
 import com.example.carware.viewModel.home.HomeScreenViewModel
+import com.example.carware.viewModel.notification.NotificationViewModel
 import kotlinx.coroutines.awaitCancellation
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.viewmodel.koinViewModel
 
 
 @Composable
 fun HomeScreen(
     navController: NavController,
     viewModel: HomeScreenViewModel,
+    notificationViewModel: NotificationViewModel
+
 ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
@@ -92,6 +97,9 @@ fun HomeScreen(
     val username = when (state) {
         is HomeScreenState.Success -> state.cars.firstOrNull()?.userName ?: "User"
         else -> "Guest"
+    }
+    RequestNotificationPermission { granted ->
+        notificationViewModel.onPermissionResult(granted)
     }
 
 //    val lifecycleOwner = LocalLifecycleOwner.current

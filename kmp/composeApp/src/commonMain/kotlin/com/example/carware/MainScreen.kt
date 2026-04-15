@@ -69,6 +69,7 @@ import com.example.carware.viewModel.auth.otpVerification.OTPViewModel
 import com.example.carware.viewModel.auth.signUp.SignUpViewModel
 import com.example.carware.viewModel.history.HistoryScreenViewModel
 import com.example.carware.viewModel.home.HomeScreenViewModel
+import com.example.carware.viewModel.notification.NotificationViewModel
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
 import org.koin.compose.koinInject
@@ -133,7 +134,8 @@ fun MainScreen() {
                         when (bottomTabs[page].route) {
                             HomeScreen::class -> {
                                 val homeViewModel: HomeScreenViewModel = koinViewModel()
-                                HomeScreen(navController, homeViewModel)
+                                val notificationViewModel: NotificationViewModel = koinViewModel()
+                                HomeScreen(navController, homeViewModel, notificationViewModel)
                             }
 
                             ScheduleScreen::class -> {
@@ -152,7 +154,7 @@ fun MainScreen() {
 
                             else -> Box(Modifier.fillMaxSize())
                         }
-                    
+
                     }
                 }
             }
