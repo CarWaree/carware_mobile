@@ -37,6 +37,7 @@ kotlin {
             implementation("com.airbnb.android:lottie-compose:6.4.0")
             implementation(libs.koin.android)
             implementation(libs.koin.compose)
+            implementation("io.insert-koin:koin-compose-viewmodel:4.0.0")
 
 
         }
@@ -59,7 +60,6 @@ kotlin {
             implementation(libs.kstore.file)
 
             implementation("io.insert-koin:koin-compose:4.0.0")
-            implementation("io.insert-koin:koin-compose-viewmodel:4.0.0")
             implementation(libs.koin.core)
 
 

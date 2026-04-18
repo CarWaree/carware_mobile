@@ -69,7 +69,7 @@ class LogInViewModel(
                 )
                 val response = repository.logInRepo(request)
 
-                val token = response.data?.token
+                val token = response.data?.accessToken
                     ?: throw IllegalStateException("Token missing in response")
                 preferencesManager.performLogin(token)
                 val expireToken=response.data.refreshTokenExpiration
