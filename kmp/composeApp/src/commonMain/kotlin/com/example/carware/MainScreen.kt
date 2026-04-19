@@ -69,11 +69,9 @@ import com.example.carware.viewModel.auth.otpVerification.OTPViewModel
 import com.example.carware.viewModel.auth.signUp.SignUpViewModel
 import com.example.carware.viewModel.history.HistoryScreenViewModel
 import com.example.carware.viewModel.home.HomeScreenViewModel
-import com.example.carware.viewModel.notification.NotificationViewModel
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
 import org.koin.compose.koinInject
-import org.koin.compose.viewmodel.koinViewModel
 
 val m = Modifier
 val LocalStrings = staticCompositionLocalOf<LocalizedStrings> {
@@ -96,18 +94,18 @@ fun MainScreen() {
     val layoutDirection =
         if (currentLanguage == AppLanguage.AR) LayoutDirection.Rtl else LayoutDirection.Ltr
 
-//    // ✅ Get all ViewModels from Koin once
-//    val homeViewModel: HomeScreenViewModel = koinViewModel()
-//    val signUpViewModel: SignUpViewModel = koinViewModel()
-//    val loginViewModel: LogInViewModel = koinViewModel()
-//    val otpViewModel: OTPViewModel =koinViewModel()
-//    val newPasswordViewModel: NewPasswordViewModel = koinViewModel()
-//    val emailVerificationViewModel: EmailVerificationViewModel = koinViewModel()
-//    val historyViewModel: HistoryScreenViewModel = koinViewModel()
-//    val scheduleViewModel: ScheduleScreenViewModel =koinViewModel()
-//    val addCarViewModel: AddCarViewModel =koinViewModel()
-//    val forgetPasswordViewModel: ForgotPasswordViewModel =koinViewModel()
-//    val profileViewModel: ProfileScreenViewModel = koinViewModel()
+    // ✅ Get all ViewModels from Koin once
+    val homeViewModel: HomeScreenViewModel = koinInject()
+    val signUpViewModel: SignUpViewModel = koinInject()
+    val loginViewModel: LogInViewModel = koinInject()
+    val otpViewModel: OTPViewModel =koinInject()
+    val newPasswordViewModel: NewPasswordViewModel = koinInject()
+    val emailVerificationViewModel: EmailVerificationViewModel = koinInject()
+    val historyViewModel: HistoryScreenViewModel = koinInject()
+    val scheduleViewModel: ScheduleScreenViewModel =koinInject()
+    val addCarViewModel: AddCarViewModel =koinInject()
+    val forgetPasswordViewModel: ForgotPasswordViewModel =koinInject()
+    val profileViewModel: ProfileScreenViewModel = koinInject()
 
     CompositionLocalProvider(
         LocalStrings provides localizedStrings,
@@ -133,18 +131,14 @@ fun MainScreen() {
                     ) { page ->
                         when (bottomTabs[page].route) {
                             HomeScreen::class -> {
-                                val homeViewModel: HomeScreenViewModel = koinViewModel()
-                                val notificationViewModel: NotificationViewModel = koinViewModel()
-                                HomeScreen(navController, homeViewModel, notificationViewModel)
+                                HomeScreen(navController, homeViewModel)
                             }
 
                             ScheduleScreen::class -> {
-                                val scheduleViewModel: ScheduleScreenViewModel = koinViewModel()
                                 ScheduleScreen(navController, scheduleViewModel, preferencesManager)
                             }
 
                             HistoryScreen::class -> {
-                                val historyViewModel: HistoryScreenViewModel = koinViewModel()
                                 HistoryScreen(navController, historyViewModel)
                             }
 
@@ -154,7 +148,7 @@ fun MainScreen() {
 
                             else -> Box(Modifier.fillMaxSize())
                         }
-
+                    
                     }
                 }
             }
@@ -163,38 +157,23 @@ fun MainScreen() {
                 OnBoardingScreen(navController, preferencesManager)
             }
 
-            composable<SignUpScreen> { backStackEntry ->
-                val signUpViewModel: SignUpViewModel = koinViewModel(
-                    viewModelStoreOwner = backStackEntry
-                )
+            composable<SignUpScreen> {
                 SignUpScreen(navController, signUpViewModel)
             }
 
-            composable<LoginScreen> { backStackEntry ->
-                val logInViewModel: LogInViewModel = koinViewModel(
-                    viewModelStoreOwner = backStackEntry
-                )
-                LoginScreen(navController, logInViewModel)
+            composable<LoginScreen> {
+                LoginScreen(navController, loginViewModel)
             }
 
-            composable<ResetPasswordScreen> { backStackEntry ->
-                val forgetPasswordViewModel: ForgotPasswordViewModel = koinViewModel(
-                    viewModelStoreOwner = backStackEntry
-                )
+            composable<ResetPasswordScreen> {
                 ResetPasswordScreen(navController, forgetPasswordViewModel)
             }
 
-            composable<VerificationCodeScreen> { backStackEntry ->
-                val otpViewModel: OTPViewModel = koinViewModel(
-                    viewModelStoreOwner = backStackEntry
-                )
+            composable<VerificationCodeScreen> {
                 VerificationCodeScreen(navController, otpViewModel)
             }
 
-            composable<NewPasswordScreen> { backStackEntry ->
-                val newPasswordViewModel: NewPasswordViewModel = koinViewModel(
-                    viewModelStoreOwner = backStackEntry
-                )
+            composable<NewPasswordScreen> {
                 NewPasswordScreen(navController, newPasswordViewModel)
             }
 
@@ -202,24 +181,15 @@ fun MainScreen() {
                 SettingsScreen(navController, preferencesManager)
             }
 
-            composable<ScheduleScreen> { backStackEntry ->
-                val scheduleViewModel: ScheduleScreenViewModel = koinViewModel(
-                    viewModelStoreOwner = backStackEntry
-                )
+            composable<ScheduleScreen> {
                 ScheduleScreen(navController, scheduleViewModel, preferencesManager)
             }
 
-            composable<HistoryScreen> { backStackEntry ->
-                val historyViewModel: HistoryScreenViewModel = koinViewModel(
-                    viewModelStoreOwner = backStackEntry
-                )
+            composable<HistoryScreen> {
                 HistoryScreen(navController, historyViewModel)
             }
 
-            composable<AddCarScreen> { backStackEntry ->
-                val addCarViewModel: AddCarViewModel = koinViewModel(
-                    viewModelStoreOwner = backStackEntry
-                )
+            composable<AddCarScreen> {
                 AddCarScreen(navController, addCarViewModel)
             }
 
@@ -244,24 +214,14 @@ fun MainScreen() {
                 com.example.carware.screens.TestScreen(navController, preferencesManager)
             }
 
-            composable<EmailVerificationScreen> { backStackEntry ->
-                val emailVerificationViewModel: EmailVerificationViewModel = koinViewModel(
-                    viewModelStoreOwner = backStackEntry
-                )
+            composable<EmailVerificationScreen> {
                 EmailVerificationScreen(navController, emailVerificationViewModel)
             }
 
-            composable<ProfileScreen> { backStackEntry ->
-                val profileViewModel: ProfileScreenViewModel = koinViewModel(
-                    viewModelStoreOwner = backStackEntry
-                )
+            composable<ProfileScreen> {
                 ProfileScreen(navController, profileViewModel, preferencesManager)
             }
-            composable<EditProfileScreen> { backStackEntry ->
-                val profileViewModel: ProfileScreenViewModel = koinViewModel(
-                    viewModelStoreOwner = backStackEntry
-
-                )
+            composable<EditProfileScreen> {
                 EditProfileScreen(navController, profileViewModel)
             }
             composable<SelectLanguageScreen> {

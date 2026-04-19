@@ -16,6 +16,7 @@ data class UserData(
     val username: String,
     val email: String,
     val roles: List<String>,
-    val token: String,
+    val accessToken: String,
+    val refreshToken: String,
     val refreshTokenExpiration: String
 )
