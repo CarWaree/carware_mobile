@@ -73,8 +73,6 @@ import kotlinx.coroutines.awaitCancellation
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.koin.compose.viewmodel.koinViewModel
-
 
 @Composable
 fun HomeScreen(

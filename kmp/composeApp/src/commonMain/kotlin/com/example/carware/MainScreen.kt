@@ -69,6 +69,7 @@ import com.example.carware.viewModel.auth.otpVerification.OTPViewModel
 import com.example.carware.viewModel.auth.signUp.SignUpViewModel
 import com.example.carware.viewModel.history.HistoryScreenViewModel
 import com.example.carware.viewModel.home.HomeScreenViewModel
+import com.example.carware.viewModel.notification.NotificationViewModel
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
 import org.koin.compose.koinInject
@@ -98,15 +99,15 @@ fun MainScreen() {
     val homeViewModel: HomeScreenViewModel = koinInject()
     val signUpViewModel: SignUpViewModel = koinInject()
     val loginViewModel: LogInViewModel = koinInject()
-    val otpViewModel: OTPViewModel =koinInject()
+    val otpViewModel: OTPViewModel = koinInject()
     val newPasswordViewModel: NewPasswordViewModel = koinInject()
     val emailVerificationViewModel: EmailVerificationViewModel = koinInject()
     val historyViewModel: HistoryScreenViewModel = koinInject()
-    val scheduleViewModel: ScheduleScreenViewModel =koinInject()
-    val addCarViewModel: AddCarViewModel =koinInject()
-    val forgetPasswordViewModel: ForgotPasswordViewModel =koinInject()
+    val scheduleViewModel: ScheduleScreenViewModel = koinInject()
+    val addCarViewModel: AddCarViewModel = koinInject()
+    val forgetPasswordViewModel: ForgotPasswordViewModel = koinInject()
     val profileViewModel: ProfileScreenViewModel = koinInject()
-
+    val notificationViewModel: NotificationViewModel = koinInject()
     CompositionLocalProvider(
         LocalStrings provides localizedStrings,
         LocalLayoutDirection provides layoutDirection
@@ -131,7 +132,7 @@ fun MainScreen() {
                     ) { page ->
                         when (bottomTabs[page].route) {
                             HomeScreen::class -> {
-                                HomeScreen(navController, homeViewModel)
+                                HomeScreen(navController, homeViewModel,notificationViewModel)
                             }
 
                             ScheduleScreen::class -> {
@@ -148,7 +149,7 @@ fun MainScreen() {
 
                             else -> Box(Modifier.fillMaxSize())
                         }
-                    
+
                     }
                 }
             }

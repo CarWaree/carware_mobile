@@ -40,6 +40,7 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(project.dependencies.platform("com.google.firebase:firebase-bom:33.10.0"))
             implementation("com.google.firebase:firebase-messaging")
+            implementation("io.insert-koin:koin-compose-viewmodel:4.0.0")
 
 
 
@@ -63,7 +64,6 @@ kotlin {
             implementation(libs.kstore.file)
 
             implementation("io.insert-koin:koin-compose:4.0.0")
-            implementation("io.insert-koin:koin-compose-viewmodel:4.0.0")
             implementation(libs.koin.core)
 
 

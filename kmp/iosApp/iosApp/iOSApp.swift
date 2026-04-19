@@ -1,6 +1,8 @@
 import SwiftUI
 import GoogleSignIn
-
+import FirebaseCore
+import Firebase
+    
 @main
 struct iOSApp: App {
     
@@ -15,23 +17,42 @@ struct iOSApp: App {
     }
 }
 
-class AppDelegate: NSObject, UIApplicationDelegate {
+class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate, MessagingDelegate {
 
     func application(
-      _ app: UIApplication,
-      open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
-      var handled: Bool
-
-    // Let Google Sign-In handle the URL if it's related to Google Sign-In
-      handled = GIDSignIn.sharedInstance.handle(url)
-      if handled {
+        FirebaseApp.configure()
+        
+        // FCM setup
+        Messaging.messaging().delegate = self
+        UNUserNotificationCenter.current().delegate = self
+        
         return true
-      }
+    }
 
-      // Handle other custom URL types.
+    // Called when FCM token is generated or refreshed
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        guard let token = fcmToken else { return }
+        print("FCM Token: \(token)")
+        // will send to backend here
+    }
 
-      // If not handled by this app, return false.
-      return false
+    // Called when notification is received in foreground
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        completionHandler([.banner, .sound, .badge])
+    }
+
+    func application(
+        _ app: UIApplication,
+        open url: URL,
+        options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+    ) -> Bool {
+        return GIDSignIn.sharedInstance.handle(url)
     }
 }
