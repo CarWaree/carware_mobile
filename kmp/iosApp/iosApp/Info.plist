@@ -7,15 +7,14 @@
 	<key>GIDClientID</key>
 	<string>676917884316-89v6lcaidfgikfjjqt1e5h42a49oqeqg.apps.googleusercontent.com</string>
 	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.googleusercontent.apps.676917884316-89v6lcaidfgikfjjqt1e5h42a49oqeqg
-</string>
-			</array>
-		</dict>
-	</array>
+<array>
+    <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+            <string>com.googleusercontent.apps.676917884316-89v6lcaidfgikfjjqt1e5h42a49oqeqg</string>
+        </array>
+    </dict>
+</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 </dict>
