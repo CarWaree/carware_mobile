@@ -13,42 +13,20 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 
-//suspend fun getHistory(token: String): GetHistoryResponse{
-//    val client = createHttpClient()
-//    val response: HttpResponse = client.get {
-//        url("$baseUrl/api/history")
-//        header("Authorization", "Bearer $token")
-//        contentType(ContentType.Application.Json)
-//    }
-//    println("--- RESPONSE DEBUG: Status: ${response.status.value}")
-//    println("--- RAW BODY: ${response.bodyAsText()}")
-//
-//    if (response.status.isSuccess())
-//    {
-//        return  response.body<GetHistoryResponse>()
-//    }else {
-//        val errorBody = try {
-//            response.bodyAsText()
-//        } catch (e: Exception) {
-//            "Could not read error body."
-//        }
-//        println("--- ERROR DETAILS: $errorBody")
-//        throw Exception("API Error (${response.status.value}): $errorBody")
-//    }
 
 suspend fun getHistory(client: HttpClient): List<GetHistoryResponse> {
     val response: HttpResponse = client.get {
         url("$baseUrl/api/history")
         contentType(ContentType.Application.Json)
     }
-    println("--- RESPONSE DEBUG: Status: ${response.status.value}")
+    println("--- RESPONSE DEBUG HISTORY: Status: ${response.status.value}")
     val rawBody = response.bodyAsText()
-    println("--- RAW BODY: $rawBody")
+    println("--- RAW BODY HISTORY: $rawBody")
 
     if (response.status.isSuccess()) {
         return response.body<List<GetHistoryResponse>>()
     } else {
-        println("--- ERROR DETAILS: $rawBody")
-        throw Exception("API Error (${response.status.value}): $rawBody")
+        println("--- ERROR DETAILS HISTORY: $rawBody")
+        throw Exception("API Error HISTORY(${response.status.value}): $rawBody")
     }
 }

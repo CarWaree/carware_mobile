@@ -3,7 +3,6 @@ package com.example.carware.util.storage
 
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
-import com.russhwolf.settings.get
 
 class PreferencesManager(
     private val settings: Settings = Settings()
@@ -52,6 +51,7 @@ class PreferencesManager(
             settings.remove(KEY_AUTH_TOKEN)
         }
     }
+
     fun saveRefreshToken(token: String?) {
         if (token != null) settings[KEY_REFRESH_TOKEN] = token
         else settings.remove(KEY_REFRESH_TOKEN)
@@ -113,11 +113,12 @@ class PreferencesManager(
 
     fun performLogout() {
         clearToken()
-            settings.remove(KEY_AUTH_TOKEN)
-            settings.remove(KEY_USER_ID)
-            settings.remove(KEY_EXPIRES_ON)
-            settings.remove(KEY_EMAIL_VERIFIED)
-            // Add any other user-specific keys here
+        settings.remove(KEY_AUTH_TOKEN)
+        settings.remove(KEY_USER_ID)
+        settings.remove(KEY_EXPIRES_ON)
+        settings.remove(KEY_EMAIL_VERIFIED)
+        settings.remove(KEY_CAR_ADDED)
+        // Add any other user-specific keys here
     }
 
     /* ------------------language ---------------*/
@@ -140,7 +141,4 @@ class PreferencesManager(
         settings.putString(LANG_KEY, code)
     }
 
-    fun clearAll() {
-        settings.clear()
-    }
 }

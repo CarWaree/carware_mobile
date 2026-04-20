@@ -3,7 +3,7 @@ package com.example.carware.network.apiResponse.auth
 import kotlinx.serialization.Serializable
 
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class RefreshTokenResponse(
     val data: RefreshTokenData,
     val statusCode: Int,

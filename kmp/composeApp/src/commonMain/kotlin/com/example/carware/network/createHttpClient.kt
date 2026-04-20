@@ -15,21 +15,28 @@ import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-fun createHttpClient(preferencesManager: PreferencesManager): HttpClient {
+fun createHttpClient(preferencesManager: PreferencesManager): HttpClient
+{
     return HttpClient(getHttpClientEngine()) {
         install(ContentNegotiation) {
             json(Json {
                 ignoreUnknownKeys = true
                 isLenient = true
                 allowSpecialFloatingPointValues = true
-            } ,contentType = ContentType.Any)
+            }, contentType = ContentType.Any)
         }
-     
+
         install(Logging) {
             logger = Logger.DEFAULT
             level = LogLevel.ALL
@@ -51,23 +58,40 @@ fun createHttpClient(preferencesManager: PreferencesManager): HttpClient {
                         )
                     } else null
                 }
-
                 refreshTokens {
                     try {
-                        val response = client.post("$baseUrl/api/auth/refresh-token") {
-                            markAsRefreshTokenRequest()
-                        }.body<RefreshTokenResponse>()
+                        // ✅ separate client with no auth
+                        val refreshClient = HttpClient(getHttpClientEngine()) {
+                            install(ContentNegotiation) {
+                                json(Json {
+                                    ignoreUnknownKeys = true
+                                    isLenient = true
+                                })
+                            }
+                        }
+
+                        val rawResponse = refreshClient.get("$baseUrl/api/auth/refresh-token") {
+                            contentType(ContentType.Application.Json)
+                        }
+
+                        println("KMP_AUTH: Raw response: ${rawResponse.bodyAsText()}")
+                        println("KMP_AUTH: Status: ${rawResponse.status}")
+
+                        val response = rawResponse.body<RefreshTokenResponse>()
 
                         val data = response.data
                         preferencesManager.saveToken(data.accessToken)
                         preferencesManager.saveRefreshToken(data.refreshToken)
                         preferencesManager.saveExpiresOn(data.accessTokenExpiration)
 
+                        refreshClient.close()
+
                         BearerTokens(
                             accessToken = data.accessToken,
                             refreshToken = data.refreshToken
                         )
                     } catch (e: Exception) {
+                        println("KMP_AUTH: Refresh failed: ${e.message}")
                         preferencesManager.performLogout()
                         null
                     }
@@ -76,4 +100,3 @@ fun createHttpClient(preferencesManager: PreferencesManager): HttpClient {
         }
     }
 }
-

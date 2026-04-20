@@ -40,7 +40,7 @@ suspend fun getAppointments( client: HttpClient): AppointmentResponse {
         url("$baseUrl/api/Appointments/my")
         contentType(ContentType.Application.Json)
     }
-    println("--- RESPONSE DEBUG: Status: ${response.status.value}")
+    println("--- RESPONSE DEBUG get Appointments : Status: ${response.status.value}")
 
     if (response.status.isSuccess()) {
         return response.body<AppointmentResponse>()
@@ -50,7 +50,7 @@ suspend fun getAppointments( client: HttpClient): AppointmentResponse {
         } catch (e: Exception) {
             "Could not read error body."
         }
-        println("--- ERROR DETAILS: $errorBody")
+        println("--- ERROR DETAILS get Appointments: $errorBody")
         throw Exception("API Error (${response.status.value}): $errorBody")
     }
 }
@@ -68,14 +68,14 @@ suspend fun setAppointment(
 
         // Get raw response
         val rawBody = response.bodyAsText()
-        println("Raw Response: $rawBody")
+        println("Raw Response: set Appointments $rawBody")
 
         // Try to parse it
         try {
             Json.decodeFromString<AppointmentResponse>(rawBody)
         } catch (e: Exception) {
             // If parsing fails, create a default success response
-            println("Parse error: ${e.message}")
+            println("Parse error set Appointments: ${e.message}")
             AppointmentResponse(
                 data = emptyList(),
                 statusCode = response.status.value,

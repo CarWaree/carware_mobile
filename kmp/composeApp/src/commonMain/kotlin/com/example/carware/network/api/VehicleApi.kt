@@ -60,7 +60,6 @@ suspend fun addVehicles(
     } else {
         // If it failed, throw an exception with the server's error message
         val errorBody = response.bodyAsText() // Get the raw error response
-        // You could parse this 'errorBody' into a specific error data class if you have one
         throw Exception("API Error (${response.status}): $errorBody")
     }
 }
@@ -70,7 +69,7 @@ suspend fun getVehicles(client: HttpClient): GetVehicleResponse {
         url("$baseUrl/api/Vehicle/my-vehicles")
         contentType(ContentType.Application.Json)
     }
-    println("--- RESPONSE DEBUG: Status: ${response.status.value}")
+    println("--- RESPONSE DEBUG getVehicles: Status: ${response.status.value}")
 
     if (response.status.isSuccess()) {
         return response.body<GetVehicleResponse>()
@@ -80,7 +79,7 @@ suspend fun getVehicles(client: HttpClient): GetVehicleResponse {
         } catch (e: Exception) {
             "Could not read error body."
         }
-        println("--- ERROR DETAILS: $errorBody")
+        println("--- ERROR DETAILS getVehicles: $errorBody")
         throw Exception("API Error (${response.status.value}): $errorBody")
     }
 }

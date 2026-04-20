@@ -27,7 +27,7 @@ suspend fun registerFCMToken( request: RegisterTokenRequest,client: HttpClient):
     }
     println("--- RESPONSE DEBUG notification: Status: ${response.status.value}")
     val rawBody = response.bodyAsText()
-    println("--- RAW BODY: $rawBody")
+    println("--- RAW BODY notification : $rawBody")
     if (response.status.isSuccess()) {
         return response.body()
     } else {

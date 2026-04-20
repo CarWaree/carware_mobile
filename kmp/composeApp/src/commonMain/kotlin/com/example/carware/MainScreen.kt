@@ -96,18 +96,7 @@ fun MainScreen() {
         if (currentLanguage == AppLanguage.AR) LayoutDirection.Rtl else LayoutDirection.Ltr
 
     // ✅ Get all ViewModels from Koin once
-    val homeViewModel: HomeScreenViewModel = koinInject()
-    val signUpViewModel: SignUpViewModel = koinInject()
-    val loginViewModel: LogInViewModel = koinInject()
-    val otpViewModel: OTPViewModel = koinInject()
-    val newPasswordViewModel: NewPasswordViewModel = koinInject()
-    val emailVerificationViewModel: EmailVerificationViewModel = koinInject()
-    val historyViewModel: HistoryScreenViewModel = koinInject()
-    val scheduleViewModel: ScheduleScreenViewModel = koinInject()
-    val addCarViewModel: AddCarViewModel = koinInject()
-    val forgetPasswordViewModel: ForgotPasswordViewModel = koinInject()
-    val profileViewModel: ProfileScreenViewModel = koinInject()
-    val notificationViewModel: NotificationViewModel = koinInject()
+
     CompositionLocalProvider(
         LocalStrings provides localizedStrings,
         LocalLayoutDirection provides layoutDirection
@@ -132,14 +121,20 @@ fun MainScreen() {
                     ) { page ->
                         when (bottomTabs[page].route) {
                             HomeScreen::class -> {
-                                HomeScreen(navController, homeViewModel,notificationViewModel)
+                                val notificationViewModel: NotificationViewModel = koinInject()
+                                val homeViewModel: HomeScreenViewModel = koinInject()
+                                HomeScreen(navController, homeViewModel, notificationViewModel)
                             }
 
                             ScheduleScreen::class -> {
+                                val scheduleViewModel: ScheduleScreenViewModel = koinInject()
+
                                 ScheduleScreen(navController, scheduleViewModel, preferencesManager)
                             }
 
                             HistoryScreen::class -> {
+                                val historyViewModel: HistoryScreenViewModel = koinInject()
+
                                 HistoryScreen(navController, historyViewModel)
                             }
 
@@ -159,22 +154,31 @@ fun MainScreen() {
             }
 
             composable<SignUpScreen> {
+                val signUpViewModel: SignUpViewModel = koinInject()
+
                 SignUpScreen(navController, signUpViewModel)
             }
 
             composable<LoginScreen> {
+                val loginViewModel: LogInViewModel = koinInject()
+
                 LoginScreen(navController, loginViewModel)
             }
 
             composable<ResetPasswordScreen> {
+                val forgetPasswordViewModel: ForgotPasswordViewModel = koinInject()
                 ResetPasswordScreen(navController, forgetPasswordViewModel)
             }
 
             composable<VerificationCodeScreen> {
+                val otpViewModel: OTPViewModel = koinInject()
+
                 VerificationCodeScreen(navController, otpViewModel)
             }
 
             composable<NewPasswordScreen> {
+                val newPasswordViewModel: NewPasswordViewModel = koinInject()
+
                 NewPasswordScreen(navController, newPasswordViewModel)
             }
 
@@ -183,14 +187,20 @@ fun MainScreen() {
             }
 
             composable<ScheduleScreen> {
+                val scheduleViewModel: ScheduleScreenViewModel = koinInject()
+
                 ScheduleScreen(navController, scheduleViewModel, preferencesManager)
             }
 
             composable<HistoryScreen> {
+                val historyViewModel: HistoryScreenViewModel = koinInject()
+
                 HistoryScreen(navController, historyViewModel)
             }
 
             composable<AddCarScreen> {
+                val addCarViewModel: AddCarViewModel = koinInject()
+
                 AddCarScreen(navController, addCarViewModel)
             }
 
@@ -216,13 +226,17 @@ fun MainScreen() {
             }
 
             composable<EmailVerificationScreen> {
+                val emailVerificationViewModel: EmailVerificationViewModel = koinInject()
+
                 EmailVerificationScreen(navController, emailVerificationViewModel)
             }
 
             composable<ProfileScreen> {
+                val profileViewModel: ProfileScreenViewModel = koinInject()
                 ProfileScreen(navController, profileViewModel, preferencesManager)
             }
             composable<EditProfileScreen> {
+                val profileViewModel: ProfileScreenViewModel = koinInject()
                 EditProfileScreen(navController, profileViewModel)
             }
             composable<SelectLanguageScreen> {

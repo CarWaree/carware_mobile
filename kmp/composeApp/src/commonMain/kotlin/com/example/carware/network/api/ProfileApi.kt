@@ -24,15 +24,15 @@ suspend fun getProfile(
         url("$baseUrl/api/Profile")
         contentType(ContentType.Application.Json)
     }
-    println("--- RESPONSE DEBUG: Status: ${response.status.value}")
+    println("--- RESPONSE DEBUG Profile: Status: ${response.status.value}")
     val rawBody = response.bodyAsText()
-    println("--- RAW BODY: $rawBody")
+    println("--- RAW BODY Profile: $rawBody")
 
     if (response.status.isSuccess()) {
         return response.body<GetProfileResponse>()
     } else {
-        println("--- ERROR DETAILS: $rawBody")
-        throw Exception("API Error (${response.status.value}): $rawBody")
+        println("--- ERROR DETAILS Profile: $rawBody")
+        throw Exception("API Error Profile (${response.status.value}): $rawBody")
     }
 }
 suspend fun updateProfile( request: UpdateProfileRequest,client: HttpClient): UpdateProfileResponse {
@@ -42,12 +42,12 @@ suspend fun updateProfile( request: UpdateProfileRequest,client: HttpClient): Up
         setBody(request)
     }
 
-    println("--- RESPONSE DEBUG: Status: ${response.status.value}")
+    println("--- RESPONSE DEBUG Profile: Status: ${response.status.value}")
     val rawBody = response.bodyAsText()
-    println("--- RAW BODY: $rawBody")
+    println("--- RAW BODY Profile: $rawBody")
     if (response.status.isSuccess()) {
         return response.body<UpdateProfileResponse>()
     } else {
-        throw Exception("Update Error (${response.status.value}): $rawBody")
+        throw Exception("Update Error Profile (${response.status.value}): $rawBody")
     }
 }

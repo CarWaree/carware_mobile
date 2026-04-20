@@ -24,7 +24,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 
-const val baseUrl = "https://qp37zq31-7136.uks1.devtunnels.ms"
+const val baseUrl = "https://hlz0h5s8-7136.uks1.devtunnels.ms"
 
 suspend fun signupUser(request: SignUpRequest,client: HttpClient): SignUpResponse {
 
@@ -78,7 +78,7 @@ suspend fun loginUser(request: LoginRequest,client: HttpClient): AuthResponse {
 
     } catch (e: Exception) {
         println("❌ login failed: ${e.message}")
-        println("Raw response: $rawBody")
+        println("Raw response login: $rawBody")
         throw Exception(e.message ?: "login failed")
     }
 }
@@ -94,6 +94,7 @@ suspend fun otpVerificationUser(request: OTPRequest,client: HttpClient): OTPResp
     return client.post("$baseUrl/api/Auth/Verify-Otp") {
         contentType(ContentType.Application.Json)
         setBody(request)
+
     }.body()
 }
 
@@ -110,9 +111,32 @@ suspend fun verifyEmailUser(request: EmailVerificationRequest,client: HttpClient
         setBody(request)
     }.body()
 }
+
 suspend fun googleSignIn(request: GoogleSignInRequest,client: HttpClient): GoogleSignInResponse {
-    return client.post("$baseUrl/api/Auth/google-mobile") {
+
+    println("➡️ googleSignIn request started")
+    println("📤 googleSignIn Request body: $request")
+
+    val response: HttpResponse = client.post("$baseUrl/api/Auth/google-mobile") {
         contentType(ContentType.Application.Json)
         setBody(request)
-    }.body()
+    }
+
+    val rawBody = response.bodyAsText()
+
+    return try {
+        // Check HTTP status code first
+        if (!response.status.isSuccess()) {
+            val errorResponse = response.body<AuthResponse>()
+            throw Exception(errorResponse.message ?: "Request failed")
+        }
+
+        // HTTP 200 - parse and return
+        response.body<GoogleSignInResponse>()
+
+    } catch (e: Exception) {
+        println("❌ googleSignIn failed: ${e.message}")
+        println("Raw response googleSignIn: $rawBody")
+        throw Exception(e.message ?: "googleSignIn failed")
+    }
 }

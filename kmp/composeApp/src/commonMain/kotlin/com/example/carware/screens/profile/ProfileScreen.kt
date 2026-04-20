@@ -29,7 +29,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -46,9 +45,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.add_new
@@ -67,10 +63,10 @@ import carware.composeapp.generated.resources.settings_logout
 import carware.composeapp.generated.resources.visa
 import com.example.carware.m
 import com.example.carware.navigation.EditProfileScreen
+import com.example.carware.navigation.SignUpScreen
 import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.profile.ProfileScreenState
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
-import kotlinx.coroutines.awaitCancellation
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 
@@ -356,7 +352,8 @@ fun ProfileScreen(
 
                     // Logout Button
                     Button(
-                        onClick = { preferencesManager.performLogout() },
+                        onClick = { preferencesManager.performLogout()
+                                  navController.navigate(SignUpScreen)},
                         modifier = Modifier
                             .fillMaxWidth(0.65f)
                             .align(Alignment.CenterHorizontally)

@@ -153,7 +153,7 @@ class SignUpViewModel(
                 val request = GoogleSignInRequest(idToken)
                 val response = repository.googleSignInRepo(request)
 
-                preferencesManager.performLogin(token = response.token)
+                preferencesManager.performLogin(token = response.accessToken)
                 preferencesManager.saveEmailVerified(true)
 
                 val vehicles = vehicleRepository.getVehiclesRepo()
