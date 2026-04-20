@@ -374,8 +374,9 @@ fun ServiceRecordRow(
 @Composable
 fun ServiceRecordScreen(
     navController: NavController,
-    viewModel: HistoryScreenViewModel
-) {
+    viewModel: HistoryScreenViewModel,
+    id: Int
+){
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
     val strings = LocalStrings.current
@@ -499,13 +500,15 @@ fun ServiceRecordScreen(
                             .background(Color(200, 200, 200, 255))
                             .padding(14.dp)
                     ) {
-                        Text(
-                            text = historyItem.serviceDetails,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.W400,
-                            color = Color(102, 102, 102, 191),
-                            lineHeight = 22.sp
-                        )
+                        historyItem.serviceDetails?.let {
+                            Text(
+                                text = it,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.W400,
+                                color = Color(102, 102, 102, 191),
+                                lineHeight = 22.sp
+                            )
+                        }
                     }
                 }
 

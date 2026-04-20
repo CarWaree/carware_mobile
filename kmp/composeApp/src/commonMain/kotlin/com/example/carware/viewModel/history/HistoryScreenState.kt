@@ -9,5 +9,5 @@ sealed class HistoryScreenState {
     data class Success(val historyItems: List<GetHistoryResponse>,
                        val historyItem: GetHistoryItemResponse) : HistoryScreenState()
     data class Error(val message: String) : HistoryScreenState()
-    var id :Int ?= null
+    var id :Int=8
 }

@@ -11,5 +11,5 @@ data class GetHistoryItemResponse(
     val date:String,
     val totalPrice:String,
     val paymentMethod:String,
-    val serviceDetails: String,
+    val serviceDetails: String? = null,
 )
