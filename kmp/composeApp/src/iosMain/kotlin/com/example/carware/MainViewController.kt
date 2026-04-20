@@ -1,13 +1,23 @@
 package com.example.carware
 
 import androidx.compose.ui.window.ComposeUIViewController
+import com.example.carware.di.appModule
 import com.example.carware.util.storage.PreferencesManager
 import com.russhwolf.settings.KeychainSettings
 import com.russhwolf.settings.Settings
+import org.koin.core.context.startKoin
 import platform.Foundation.NSUserDefaults
+import platform.UIKit.UIViewController
 
-val preferencesManager = PreferencesManager(Settings())
+// MainViewController.kt
+fun MainViewController(): UIViewController {
+    val preferencesManager = PreferencesManager(Settings())
 
-fun MainViewController() = ComposeUIViewController {
-    MainScreen(preferencesManager = preferencesManager)
+    startKoin {
+        modules(appModule(preferencesManager))
+    }
+
+    return ComposeUIViewController {
+        MainScreen()
+    }
 }

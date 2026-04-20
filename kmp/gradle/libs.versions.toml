@@ -1,5 +1,5 @@
 [versions]
-agp = "8.13.1"
+agp = "8.9.1"
 android-compileSdk = "36"
 android-minSdk = "24"
 android-targetSdk = "36"
@@ -14,6 +14,9 @@ junit = "4.13.2"
 kotlin = "2.2.21"
 core-splashscreen="1.0.1"
 ktor = "3.3.2"
+kstore = "1.0.0"
+koin = "4.0.0"
+
 
 
 [libraries]
@@ -37,6 +40,15 @@ ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx
 ktor-client-auth = { module = "io.ktor:ktor-client-auth", version.ref = "ktor" }
 
 core-splashscreen={group="androidx.core",name="core-splashscreen",version.ref="core-splashscreen"}
+
+kstore = { module = "io.github.xxfast:kstore", version.ref = "kstore" }
+kstore-file = { module = "io.github.xxfast:kstore-file", version.ref = "kstore" }
+kstore-storage = { module = "io.github.xxfast:kstore-storage", version.ref = "kstore" }
+
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

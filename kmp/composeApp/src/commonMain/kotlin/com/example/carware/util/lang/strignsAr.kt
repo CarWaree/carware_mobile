@@ -7,6 +7,9 @@ val StringsAr = mapOf(
     "ARABIC" to "العربية",
     "CONTINUE" to "متابعة",
     "CHANGE_LANG" to "يمكنك تغيير ذلك لاحقًا من الإعدادات",
+    "HEADER_TITLE"  to "لغه التطبيق",
+    "SAVE_CHANGES"  to "احفظ التغيرات ",
+
 
 
     // Onboarding
@@ -70,10 +73,10 @@ val StringsAr = mapOf(
     "CONFIRM_YOUR_PASSWORD_TITLE" to "تأكيد كلمة المرور",
 
     // Verification Code
-    "OTP_EMAIL" to "لقد أرسلنا رمزًا مكوّنًا من 6 أرقام إلى بريدك الإلكتروني",
+    "OTP_EMAIL" to "لقد أرسلنا رمزًا مكوّنًا من 6 أرقام إلى بريدك الإلكتروني\n أدخل الرمز للمتابعة",
     "CODE_SENT" to "تم إرسال الرمز بنجاح",
     "ENTER_CODE" to "أدخل رمز التحقق",
-    "ENTER_CODE_SUBTITLE" to "أدخل الرمز للمتابعة",
+//    "ENTER_CODE_SUBTITLE" to "أدخل الرمز للمتابعة",
     "CODE_EXPIRED" to "ستنتهي صلاحية الرمز خلال 3 دقائق",
     "OTP_REQUIRED" to "رمز التحقق مطلوب",
     "OTP" to "رمز التحقق",
@@ -88,6 +91,7 @@ val StringsAr = mapOf(
 
     // Home
     "WELCOME_BACK_HOME" to " مرحباً بعودتك ",
+    "MORE_DETAILS" to " تفاصيل أكتر",
     // add car
     "ADD_CAR" to "أضف سيارتك",
     "SET_UP_CAR_PROFILE" to "قم بإعداد ملف تعريف سيارتك للحصول على \nتذكيرات ونصائح خدمة مخصصة.",
@@ -95,4 +99,62 @@ val StringsAr = mapOf(
     "CAR_MODEL" to "الموديل",
     "CAR_YEAR" to "سنة",
     "CAR_COLOR" to "اللون",
+    "HOUR" to "ساعه",
+    "DAY" to "يوم",
+    "MINUTE" to "دقيقه",
+    //history
+    "HISTORY" to "القديم",
+    //settings
+    "SETTINGS" to "الاعدادات",
+    //home screen
+    "LOADING_CAR_DATA" to "يتم تحميل بيانات السيارة",
+    "SCHEDULED_SERVICES" to "الخدمات المحجوزه",
+    "NO_UPCOMING_APPOINTMENTS" to "لا يوجد مواعيد قادمه",
+    "UP_COMING_MAINTENANCE" to "مواعيد قادمه ",
+    // schedule screen
+    "SCHEDULE_SERVICE" to "خدمه الحجز ",
+    "SELECT_CAR" to "اختر سيارتك",
+    "SELECT_SERVICE"  to "اخنر الخدمه",
+    "SELECT_YOUR_PROVIDER" to "اختر موفر الخدمه",
+    "PROCESSING" to "قيد المعالجة",
+    "CONFIRM_RESERVATION" to "تأكيد الحجز",
+    "RESERVATION_DETAILS" to "تفاصيل الحجز",
+    "no_date/time_selected" to "لم يتم اختيار التاريخ/الوقت",
+    "SERVICE_NOT_SELECTED" to "الخدمة: غير محددة",
+    "SERVICE" to "الخدمة:",
+    "PROVIDER" to "المزوّد:",
+    "PROVIDER_NOT_SELECTED" to "المزوّد: غير محدد",
+    "CAR_NOT_SELECTED" to "السيارة: غير محددة",
+
+    // Service History / Record
+    "SERVICE_HISTORY" to "سجل الخدمة",
+    "HISTORY_SUBTITLE" to "عرض وإدارة سجلات الصيانة لجميع مركباتك.",
+    "SERVICE_RECORD" to "سجل الخدمة",
+    "DATE_LABEL" to "التاريخ",
+    "COST_LABEL" to "التكلفة",
+    "PAYMENT_LABEL" to "الدفع",
+    "SERVICE_DETAILS" to "تفاصيل الخدمة",
+    "VIEW_DETAILS" to "عرض التفاصيل",
+    "SERVICE_LABEL" to "الخدمة",
+    "PROVIDER_LABEL" to "المزوّد",
+    "ERROR" to "خطأ",
+
+    // Filter options
+    "FILTER_ALL" to "الكل",
+    "OIL_CHANGE" to "تغيير الزيت",
+    "TIRES" to "الإطارات",
+    "MAINTENANCE" to "الصيانة",
+    "BRAKES" to "الفرامل",
+
+    // Settings
+    "ACCOUNT" to "الحساب",
+    "EDIT_PROFILE" to "تعديل الملف الشخصي",
+    "CHANGE_PASSWORD" to "تغيير كلمة المرور",
+    "NOTIFICATIONS" to "الإشعارات",
+    "SERVICE_REMINDER" to "تذكير الخدمة",
+    "APP_UPDATE" to "تحديث التطبيق",
+    "PREFERENCES" to "التفضيلات",
+    "CHANGE_LANGUAGE" to "تغيير اللغة",
+    "HELP_SUPPORT" to "المساعدة والدعم",
+    "LOG_OUT" to "تسجيل الخروج"
 )

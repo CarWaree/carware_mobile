@@ -28,6 +28,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -38,6 +39,7 @@ import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.carware
 import carware.composeapp.generated.resources.line_1
+import carware.composeapp.generated.resources.new_logo
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.LocalStrings
@@ -83,20 +85,15 @@ fun OnBoardingScreen(
             Column(
                 modifier = m
                     .fillMaxSize()
-                    .padding(top = 95.dp)
+                    .padding(top = 50.dp)
                     .padding(horizontal = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Icon(
-                    painter = painterResource(Res.drawable.line_1),
+                    painter = painterResource(Res.drawable.new_logo),
                     contentDescription = null,
-                    tint = Color(211, 203, 203, 255)
-                )
-                Spacer(modifier = m.padding(vertical = 4.dp))
-                Icon(
-                    painter = painterResource(Res.drawable.carware),
-                    contentDescription = null,
-                    tint = Color(211, 203, 203, 255)
+                    tint = Color(211, 203, 203, 255),
+                    modifier = m.scale(0.7f)
                 )
                 Spacer(modifier = m.padding(vertical = 25.dp))
 

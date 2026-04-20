@@ -6,8 +6,17 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		3FC86DC02F94077500D19256 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 3FC86DBF2F94077500D19256 /* GoogleSignIn */; };
+		3FC86DC22F94077500D19256 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 3FC86DC12F94077500D19256 /* GoogleSignInSwift */; };
+		3FC86E792F94DCF700D19256 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3FC86E782F94DCF200D19256 /* GoogleService-Info.plist */; };
+		3FEA45762F94E95D004C1E49 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 3FEA45752F94E95D004C1E49 /* FirebaseCore */; };
+		3FEA45782F94E9D5004C1E49 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 3FEA45772F94E9D5004C1E49 /* FirebaseMessaging */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		0CBA2F5A01F0ED70A86EDD3A /* CareWare.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CareWare.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3FC86E782F94DCF200D19256 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -41,6 +50,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3FEA45782F94E9D5004C1E49 /* FirebaseMessaging in Frameworks */,
+				3FC86DC02F94077500D19256 /* GoogleSignIn in Frameworks */,
+				3FEA45762F94E95D004C1E49 /* FirebaseCore in Frameworks */,
+				3FC86DC22F94077500D19256 /* GoogleSignInSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -50,10 +63,19 @@
 		13DB31A6A23CD0C7554E2C23 = {
 			isa = PBXGroup;
 			children = (
+				3FC86E782F94DCF200D19256 /* GoogleService-Info.plist */,
 				550A86BEE3C609E8970001E2 /* Configuration */,
 				035372D1604D92C72ED8E916 /* iosApp */,
+				3FEA45742F94E95D004C1E49 /* Frameworks */,
 				A113F95BE4607E7154904F49 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		3FEA45742F94E95D004C1E49 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		A113F95BE4607E7154904F49 /* Products */ = {
@@ -85,6 +107,10 @@
 			);
 			name = iosApp;
 			packageProductDependencies = (
+				3FC86DBF2F94077500D19256 /* GoogleSignIn */,
+				3FC86DC12F94077500D19256 /* GoogleSignInSwift */,
+				3FEA45752F94E95D004C1E49 /* FirebaseCore */,
+				3FEA45772F94E9D5004C1E49 /* FirebaseMessaging */,
 			);
 			productName = iosApp;
 			productReference = 0CBA2F5A01F0ED70A86EDD3A /* CareWare.app */;
@@ -98,7 +124,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1620;
-				LastUpgradeCheck = 1620;
+				LastUpgradeCheck = 1640;
 				TargetAttributes = {
 					A1ED887D7B9E74D5B5F4E4BB = {
 						CreatedOnToolsVersion = 16.2;
@@ -114,6 +140,10 @@
 			);
 			mainGroup = 13DB31A6A23CD0C7554E2C23;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				3FC86DBE2F94077500D19256 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				3FC86E772F94DC8E00D19256 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A113F95BE4607E7154904F49 /* Products */;
 			projectDirPath = "";
@@ -129,6 +159,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3FC86E792F94DCF700D19256 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -152,7 +183,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then\n  echo \"Skipping Gradle build task invocation due to OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED environment variable set to \\\"YES\\\"\"\n  exit 0\nfi\ncd \"$SRCROOT/..\"\n./gradlew :composeApp:embedAndSignAppleFrameworkForXcode\n";
+			shellScript = "if [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then\n  echo \"Skipping Gradle build task invocation due to OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED environment variable set to \\\"YES\\\"\"\n  exit 0\nfi\nexport JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home\nexport PATH=$JAVA_HOME/bin:$PATH\ncd \"$SRCROOT/..\"\n./gradlew :composeApp:embedAndSignAppleFrameworkForXcode\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -204,6 +235,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = BC9G5Q94M9;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -228,13 +260,11 @@
 		2E328A9B15DADA75B9C96D45 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = BC9G5Q94M9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = iosApp/Info.plist;
@@ -256,13 +286,11 @@
 		8C64C689AF115C97AAD5675C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = arm64;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
-				DEVELOPMENT_TEAM = BC9G5Q94M9;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = iosApp/Info.plist;
@@ -318,6 +346,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = BC9G5Q94M9;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -368,6 +397,48 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3FC86DBE2F94077500D19256 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.1.0;
+			};
+		};
+		3FC86E772F94DC8E00D19256 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.12.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3FC86DBF2F94077500D19256 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3FC86DBE2F94077500D19256 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		3FC86DC12F94077500D19256 /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3FC86DBE2F94077500D19256 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
+		};
+		3FEA45752F94E95D004C1E49 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3FC86E772F94DC8E00D19256 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		3FEA45772F94E9D5004C1E49 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3FC86E772F94DC8E00D19256 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 61454773E895A5993818362E /* Project object */;
 }

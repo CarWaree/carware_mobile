@@ -10,7 +10,8 @@ val StringsEn = mapOf(
     "ARABIC" to "Arabic",
     "CONTINUE" to "Continue",
     "CHANGE_LANG" to " you can change this later in settings",
-
+    "HEADER_TITLE"  to "App Language",
+    "SAVE_CHANGES"  to "Save Changes",
 
     // Onboarding
     "GET_STARTED" to "Get Started",
@@ -73,10 +74,10 @@ val StringsEn = mapOf(
     "CONFIRM_YOUR_PASSWORD_TITLE" to "Confirm your Password",
 
     // Verification Code
-    "OTP_EMAIL" to "We’ve sent a 6-digit code to your email",
+    "OTP_EMAIL" to "We’ve sent a 6-digit code to your email\n enter the code to continue",
     "CODE_SENT" to "Code sent successfully",
     "ENTER_CODE" to "Enter Verification Code",
-    "ENTER_CODE_SUBTITLE" to "\"enter the code to continues",
+//    "ENTER_CODE_SUBTITLE" to "enter the code to continue",
     "CODE_EXPIRED" to "Code will expire in 3 minutes",
     "OTP_REQUIRED" to "OTP is required",
     "OTP" to "OTP ",
@@ -98,5 +99,65 @@ val StringsEn = mapOf(
     "CAR_MODEL" to " Model",
     "CAR_YEAR" to "Year",
     "CAR_COLOR" to "Color",
+    "HOUR" to "hour",
+    "DAY" to "day",
+    "MINUTE" to "minute",
+    //history
+    "HISTORY" to "History",
+    //settings
+    "SETTINGS" to "Settings",
+    //home screen
+    "LOADING_CAR_DATA" to "Loading car data ...",
+    "SCHEDULED_SERVICES" to "Scheduled Services",
+    "NO_UPCOMING_APPOINTMENTS" to "No upcoming appointments",
+    "UP_COMING_MAINTENANCE" to " Upcoming \n Maintenance ",
+    "MORE_DETAILS" to "more details",
 
+
+    // schedule screen
+    "SCHEDULE_SERVICE" to "Schedule Service",
+    "SELECT_CAR" to "Select your Car",
+    "SELECT_SERVICE"  to "Select Service",
+    "SELECT_YOUR_PROVIDER" to "select your Provider",
+    "PROCESSING" to "Processing...",
+    "CONFIRM_RESERVATION" to "Confirm Reservation",
+    "RESERVATION_DETAILS" to "Reservation Details",
+    "no_date/time_selected" to  "No date/time selected",
+    "SERVICE_NOT_SELECTED" to "Service: Not selected",
+    "SERVICE"   to  "Service:",
+    "PROVIDER" to "Provider:",
+    "PROVIDER_NOT_SELECTED" to "Provider: Not selected",
+    "CAR_NOT_SELECTED"   to "Car: Not selected",
+
+    // Service History / Record
+    "SERVICE_HISTORY" to "Service History",
+    "HISTORY_SUBTITLE" to "View and manage your maintenance records for all your vehicles.",
+    "SERVICE_RECORD" to "Service Record",
+    "DATE_LABEL" to "Date",
+    "COST_LABEL" to "Cost",
+    "PAYMENT_LABEL" to "Payment",
+    "SERVICE_DETAILS" to "Service Details",
+    "VIEW_DETAILS" to "View Details",
+    "SERVICE_LABEL" to "Service",
+    "PROVIDER_LABEL" to "Provider",
+    "ERROR" to "Error",
+
+    // Filter options
+    "FILTER_ALL" to "All",
+    "OIL_CHANGE" to "Oil Change",
+    "TIRES" to "Tires",
+    "MAINTENANCE" to "Maintenance",
+    "BRAKES" to "Brakes",
+
+    // Settings
+    "ACCOUNT" to "Account",
+    "EDIT_PROFILE" to "Edit Profile",
+    "CHANGE_PASSWORD" to "Change Password",
+    "NOTIFICATIONS" to "Notifications",
+    "SERVICE_REMINDER" to "Service Reminder",
+    "APP_UPDATE" to "App Update",
+    "PREFERENCES" to "Preferences",
+    "CHANGE_LANGUAGE" to "Change Language",
+    "HELP_SUPPORT" to "Help & Support",
+    "LOG_OUT" to "Log Out"
 )

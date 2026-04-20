@@ -12,5 +12,6 @@ data class ServiceTypesResponse(
 
 @Serializable
 data class Service(
+    val id:Int,
     val name: String
 )
