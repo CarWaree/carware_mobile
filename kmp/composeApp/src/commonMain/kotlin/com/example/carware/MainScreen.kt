@@ -33,6 +33,7 @@ import com.example.carware.navigation.ProfileScreen
 import com.example.carware.navigation.ResetPasswordScreen
 import com.example.carware.navigation.ScheduleScreen
 import com.example.carware.navigation.SelectLanguageScreen
+import com.example.carware.navigation.ServiceRecordScreen
 import com.example.carware.navigation.SettingsScreen
 import com.example.carware.navigation.SignUpScreen
 import com.example.carware.navigation.SplashScreen
@@ -51,6 +52,7 @@ import com.example.carware.screens.auth.VerificationCodeScreen
 import com.example.carware.screens.mainScreens.HistoryScreen
 import com.example.carware.screens.mainScreens.HomeScreen
 import com.example.carware.screens.mainScreens.ScheduleScreen
+import com.example.carware.screens.mainScreens.ServiceRecordScreen
 import com.example.carware.screens.mainScreens.SettingsScreen
 import com.example.carware.screens.onBoarding.LanguageSelectionScreen
 import com.example.carware.screens.onBoarding.OnBoardingScreen
@@ -247,6 +249,17 @@ fun MainScreen() {
                         currentLanguage = it
                     })
             }
+
+            composable<ServiceRecordScreen> {
+                val historyViewModel: HistoryScreenViewModel = koinInject()
+                ServiceRecordScreen(
+                    navController,
+                    historyViewModel,
+
+                )
+            }
+
+
         }
     }
 }

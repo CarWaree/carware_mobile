@@ -1,11 +1,8 @@
 package com.example.carware.viewModel.history
 
-import androidx.compose.runtime.MutableState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.carware.repository.HistoryRepository
-import com.example.carware.util.storage.PreferencesManager
-import com.example.carware.viewModel.home.HomeScreenState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,7 +17,7 @@ class HistoryScreenViewModel(
     val state: StateFlow<HistoryScreenState> = _state.asStateFlow()
 
     init {
-
+        loadHistoryItem()
         loadHistory()
     }
 
@@ -32,12 +29,42 @@ class HistoryScreenViewModel(
                 }
                 try {
 
-                    val historyItems = repository.getHistoryItemRepo()
+                    val historyItems = repository.getHistoryRepo()
+                    val historyItem = repository.getHistoryItemRepo(1)
 
                     if (historyItems.isEmpty())
                         _state.value = HistoryScreenState.Error("No History Found")
                     else
-                        _state.value = HistoryScreenState.Success(historyItems)
+                        _state.value = HistoryScreenState.Success(historyItems, historyItem)
+
+                } catch (e: Exception) {
+                    _state.value = HistoryScreenState.Error(
+                        e.message ?: "Unknown error: ${e::class.simpleName}"
+                    )
+
+                }
+            }
+        }
+    }
+
+    fun loadHistoryItem() {
+        viewModelScope.launch {
+            viewModelScope.launch {
+                if (_state.value !is HistoryScreenState.Success) {
+                    _state.value = HistoryScreenState.Loading
+                }
+                try {
+                    val historyItems = repository.getHistoryRepo()
+
+                    val historyItem = repository.getHistoryItemRepo(state.value.id)
+
+
+
+
+                    if (historyItem.id == null)
+                        _state.value = HistoryScreenState.Error("No History Found")
+                    else
+                        _state.value = HistoryScreenState.Success(historyItems, historyItem)
 
                 } catch (e: Exception) {
                     _state.value = HistoryScreenState.Error(

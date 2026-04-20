@@ -49,6 +49,7 @@ import carware.composeapp.generated.resources.poppins_semibold
 import carware.composeapp.generated.resources.arrow_1
 import com.example.carware.LocalStrings
 import com.example.carware.m
+import com.example.carware.navigation.ServiceRecordScreen
 import com.example.carware.screens.ShimmerHistoryCard
 import com.example.carware.viewModel.history.HistoryScreenState
 import com.example.carware.viewModel.history.HistoryScreenViewModel
@@ -60,7 +61,8 @@ import org.jetbrains.compose.resources.painterResource
 fun HistoryScreen(
     navController: NavController,
     viewModel: HistoryScreenViewModel,
-) {
+)
+{
     val strings = LocalStrings.current
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
@@ -158,7 +160,8 @@ fun HistoryScreen(
                                 cost = item.totalPrice,
                                 paymentMethod = item.paymentMethod,
                                 onClick = {
-                                    // navController.navigate("serviceRecord/${item.id}")
+                                     navController.navigate(ServiceRecordScreen)
+                                    state.id=item.id
                                 }
                             )
                         }
@@ -306,7 +309,7 @@ fun ServiceHistoryCard(
                     brush = gradientBrush,
                     shape = RoundedCornerShape(10.dp)
                 )
-                .clickable { onClick() }
+                .clickable {  onClick() }
                 .padding(vertical = 10.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -318,125 +321,6 @@ fun ServiceHistoryCard(
                 textAlign = TextAlign.Center
             )
         }
-    }
-}
-
-@Composable
-fun ServiceRecordScreen(
-    navController: NavController,
-) {
-    val popSemi = FontFamily(Font(Res.font.poppins_semibold))
-    val popMid = FontFamily(Font(Res.font.poppins_medium))
-    val strings = LocalStrings.current
-
-    val gradientBrush = Brush.linearGradient(
-        listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
-    )
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(217, 217, 217, 255))
-            .verticalScroll(rememberScrollState())
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 45.dp, start = 18.dp, end = 16.dp)
-        ) {
-            Icon(
-                painter = painterResource(Res.drawable.arrow_1),
-                contentDescription = "Back",
-                tint = Color.Red,
-                modifier = Modifier
-                    .rotate(180f)
-                    .align(Alignment.CenterStart)
-                    .size(24.dp)
-                    .clickable { navController.popBackStack() }
-            )
-            Text(
-                text = strings.get("SERVICE_RECORD"),
-                fontFamily = popSemi,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.W500,
-                style = TextStyle(brush = gradientBrush),
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-
-        Spacer(Modifier.height(24.dp))
-
-        Text(
-            text = "carName",
-            fontFamily = popSemi,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.W500,
-            style = TextStyle(brush = gradientBrush),
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-
-        Spacer(Modifier.height(16.dp))
-
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            ServiceRecordRow(
-                label = strings.get("SERVICE_LABEL"),
-                value = "serviceType",
-                popMid = popMid
-            )
-            ServiceRecordRow(
-                label = strings.get("DATE_LABEL"),
-                value = "date",
-                popMid = popMid
-            )
-            ServiceRecordRow(
-                label = strings.get("PROVIDER_LABEL"),
-                value = "provider",
-                popMid = popMid
-            )
-            ServiceRecordRow(
-                label = strings.get("COST_LABEL"),
-                value = "cost",
-                popMid = popMid
-            )
-            ServiceRecordRow(
-                label = strings.get("PAYMENT_LABEL"),
-                value = "paymentMethod",
-                popMid = popMid,
-                showPaymentIcon = true
-            )
-        }
-
-        Spacer(Modifier.height(24.dp))
-
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            Text(
-                text = strings.get("SERVICE_DETAILS"),
-                fontFamily = popSemi,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.W400,
-                color = Color(102, 102, 102, 255)
-            )
-
-            Spacer(Modifier.height(10.dp))
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color(200, 200, 200, 255))
-                    .padding(14.dp)
-            ) {
-                Text(
-                    text = "serviceDetails",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.W400,
-                    color = Color(102, 102, 102, 191),
-                    lineHeight = 22.sp
-                )
-            }
-        }
-
-        Spacer(Modifier.height(100.dp))
     }
 }
 
@@ -486,3 +370,153 @@ fun ServiceRecordRow(
         )
     }
 }
+
+@Composable
+fun ServiceRecordScreen(
+    navController: NavController,
+    viewModel: HistoryScreenViewModel
+) {
+    val popSemi = FontFamily(Font(Res.font.poppins_semibold))
+    val popMid = FontFamily(Font(Res.font.poppins_medium))
+    val strings = LocalStrings.current
+    val _state by viewModel.state.collectAsState()
+    val state = _state
+
+    val gradientBrush = Brush.linearGradient(
+        listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
+    )
+    when (state) {
+        is HistoryScreenState.Loading -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                repeat(5) {
+                    ShimmerHistoryCard()
+                }
+            }
+        }
+
+        is HistoryScreenState.Error -> {
+            Spacer(modifier = m.padding(vertical = 50.dp))
+            Text("Error: ${state.message}", color = Color.Red,)
+        }
+
+        is HistoryScreenState.Success -> {
+            val historyItem = state.historyItem
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(217, 217, 217, 255))
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 45.dp, start = 18.dp, end = 16.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(Res.drawable.arrow_1),
+                        contentDescription = "Back",
+                        tint = Color.Red,
+                        modifier = Modifier
+                            .rotate(180f)
+                            .align(Alignment.CenterStart)
+                            .size(24.dp)
+                            .clickable { navController.popBackStack() }
+                    )
+                    Text(
+                        text = strings.get("SERVICE_RECORD"),
+                        fontFamily = popSemi,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.W500,
+                        style = TextStyle(brush = gradientBrush),
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+
+                Spacer(Modifier.height(24.dp))
+
+                Text(
+                    text = historyItem.carName,
+                    fontFamily = popSemi,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.W500,
+                    style = TextStyle(brush = gradientBrush),
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+
+                Spacer(Modifier.height(16.dp))
+
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    ServiceRecordRow(
+                        label = strings.get("SERVICE_LABEL"),
+                        value = "serviceType",
+                        popMid = popMid
+                    )
+                    ServiceRecordRow(
+                        label = strings.get("DATE_LABEL"),
+                        value = "date",
+                        popMid = popMid
+                    )
+                    ServiceRecordRow(
+                        label = strings.get("PROVIDER_LABEL"),
+                        value = "provider",
+                        popMid = popMid
+                    )
+                    ServiceRecordRow(
+                        label = strings.get("COST_LABEL"),
+                        value = "cost",
+                        popMid = popMid
+                    )
+                    ServiceRecordRow(
+                        label = strings.get("PAYMENT_LABEL"),
+                        value = "paymentMethod",
+                        popMid = popMid,
+                        showPaymentIcon = true
+                    )
+                }
+
+                Spacer(Modifier.height(24.dp))
+
+                Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                    Text(
+                        text = strings.get("SERVICE_DETAILS"),
+                        fontFamily = popSemi,
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.W400,
+                        color = Color(102, 102, 102, 255)
+                    )
+
+                    Spacer(Modifier.height(10.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color(200, 200, 200, 255))
+                            .padding(14.dp)
+                    ) {
+                        Text(
+                            text = historyItem.serviceDetails,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.W400,
+                            color = Color(102, 102, 102, 191),
+                            lineHeight = 22.sp
+                        )
+                    }
+                }
+
+                Spacer(Modifier.height(100.dp))
+            }
+    }
+
+        else -> {}
+    }
+
+
+
+}
+
