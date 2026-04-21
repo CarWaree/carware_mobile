@@ -18,7 +18,7 @@ object ResetPasswordScreen
 object NewPasswordScreen
 
 @Serializable
-object VerificationCodeScreen
+data class VerificationCodeScreen(val email: String)
 
 @Serializable
 object OnboardingScreen
@@ -46,7 +46,7 @@ object LanguageSelectionScreen
 object TestScreen
 
 @Serializable
-object EmailVerificationScreen
+data class EmailVerificationScreen(val email: String)
 
 @Serializable
 object ProfileScreen

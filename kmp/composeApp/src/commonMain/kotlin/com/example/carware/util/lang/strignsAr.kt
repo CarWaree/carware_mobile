@@ -65,6 +65,8 @@ val StringsAr = mapOf(
     "CONTINUE" to "متابعة",
     "BACK_TO" to "العودة إلى",
     "LOGIN" to "تسجيل الدخول",
+    "SIGNUP" to "انشاء حساب ",
+
 
     // New Password
     "CREATE_NEW_PASSWORD" to "إنشاء كلمة مرور جديدة",

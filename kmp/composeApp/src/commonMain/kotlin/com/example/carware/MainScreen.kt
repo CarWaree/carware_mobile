@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.example.carware.navigation.AddCarScreen
 import com.example.carware.navigation.EditProfileScreen
 import com.example.carware.navigation.EmailVerificationScreen
@@ -74,7 +75,9 @@ import com.example.carware.viewModel.home.HomeScreenViewModel
 import com.example.carware.viewModel.notification.NotificationViewModel
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
+import io.ktor.client.request.invoke
 import org.koin.compose.koinInject
+import org.koin.core.parameter.parametersOf
 
 val m = Modifier
 val LocalStrings = staticCompositionLocalOf<LocalizedStrings> {
@@ -172,12 +175,12 @@ fun MainScreen() {
                 ResetPasswordScreen(navController, forgetPasswordViewModel)
             }
 
-            composable<VerificationCodeScreen> {
+            composable<VerificationCodeScreen> {backStackEntry->
                 val otpViewModel: OTPViewModel = koinInject()
+                val route: VerificationCodeScreen = backStackEntry.toRoute()
 
-                VerificationCodeScreen(navController, otpViewModel)
+                VerificationCodeScreen(navController, otpViewModel,route.email)
             }
-
             composable<NewPasswordScreen> {
                 val newPasswordViewModel: NewPasswordViewModel = koinInject()
 
@@ -227,16 +230,17 @@ fun MainScreen() {
                 com.example.carware.screens.TestScreen(navController, preferencesManager)
             }
 
-            composable<EmailVerificationScreen> {
+            composable<EmailVerificationScreen> { backStackEntry ->
+                val route: EmailVerificationScreen = backStackEntry.toRoute()
                 val emailVerificationViewModel: EmailVerificationViewModel = koinInject()
-
-                EmailVerificationScreen(navController, emailVerificationViewModel)
+                EmailVerificationScreen(navController, emailVerificationViewModel,route.email)
             }
 
             composable<ProfileScreen> {
                 val profileViewModel: ProfileScreenViewModel = koinInject()
                 ProfileScreen(navController, profileViewModel, preferencesManager)
             }
+
             composable<EditProfileScreen> {
                 val profileViewModel: ProfileScreenViewModel = koinInject()
                 EditProfileScreen(navController, profileViewModel)
@@ -261,4 +265,4 @@ fun MainScreen() {
             }
         }
     }
-}
+}   

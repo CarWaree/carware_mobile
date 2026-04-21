@@ -12,6 +12,9 @@ class PreferencesManager(
         private const val KEY_AUTH_TOKEN = "auth_token"
         private const val KEY_REFRESH_TOKEN = "refresh_token"
 
+        private const val KEY_RESET_TOKEN = "reset_token"
+
+
         private const val KEY_USER_ID = "user_id"
         private const val KEY_ONBOARDING = "onboarding_complete"
         private const val KEY_CAR_ADDED = "car_added_complete"
@@ -69,7 +72,13 @@ class PreferencesManager(
     fun isLoggedIn(): Boolean {
         return getToken() != null
     }
+    /* -------------------- Reset Token -------------------- */
+    fun saveResetToken(token: String?) {
+        if (token != null) settings[KEY_RESET_TOKEN] = token
+        else settings.remove(KEY_RESET_TOKEN)
+    }
 
+    fun getResetToken(): String? = settings.getStringOrNull(KEY_RESET_TOKEN)
     /* -------------------- User ID -------------------- */
 
     fun saveUserId(userId: String?) {
@@ -117,6 +126,7 @@ class PreferencesManager(
         settings.remove(KEY_USER_ID)
         settings.remove(KEY_EXPIRES_ON)
         settings.remove(KEY_EMAIL_VERIFIED)
+        settings.remove(KEY_RESET_TOKEN)
         settings.remove(KEY_CAR_ADDED)
         // Add any other user-specific keys here
     }

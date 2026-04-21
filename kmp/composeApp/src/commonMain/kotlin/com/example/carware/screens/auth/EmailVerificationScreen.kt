@@ -68,7 +68,8 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun EmailVerificationScreen(
     navController: NavController,
-    viewModel: EmailVerificationViewModel
+    viewModel: EmailVerificationViewModel,
+    email: String
 ) {
 
     val state by viewModel.state.collectAsState()
@@ -124,8 +125,8 @@ fun EmailVerificationScreen(
 
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
-            navController.navigate(AddCarScreen){
-                popUpTo(EmailVerificationScreen) { inclusive = true }
+            navController.navigate(AddCarScreen) {
+                popUpTo<EmailVerificationScreen> { inclusive = true }
             }
         }
     }
@@ -250,12 +251,7 @@ fun EmailVerificationScreen(
                     Spacer(modifier = m.padding(vertical = 8.dp))
 
                     Card(
-                        //                    when {
-//                        cameFromSignup -> navController.navigate(HomeScreen)
-//                        cameFromReset -> navController.navigate(NewPasswordScreen)
-//                        else -> navController.popBackStack() // fallback
-                        //}
-                        onClick = { viewModel.emailVerification() },
+                        onClick = { viewModel.emailVerification(email) },
                         modifier = m
 
                             .size(width = 280.dp, height = 45.dp)
@@ -296,7 +292,7 @@ fun EmailVerificationScreen(
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(194, 0, 0, 255),
-                            modifier = m.clickable {viewModel.emailVerification() }
+                            modifier = m.clickable {viewModel.emailVerification(email) }
                         )
                     }
 

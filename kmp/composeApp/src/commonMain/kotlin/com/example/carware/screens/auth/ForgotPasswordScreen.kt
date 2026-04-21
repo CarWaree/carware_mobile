@@ -18,6 +18,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -37,7 +38,12 @@ import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.LocalStrings
 import com.example.carware.m
+import com.example.carware.navigation.AddCarScreen
+import com.example.carware.navigation.HomeScreen
 import com.example.carware.navigation.LoginScreen
+import com.example.carware.navigation.ResetPasswordScreen
+import com.example.carware.navigation.VerificationCodeScreen
+import com.example.carware.screens.LoadingOverlay
 import com.example.carware.screens.appButtonBack
 import com.example.carware.screens.appGradBack
 import com.example.carware.viewModel.auth.forgotPassword.ForgotPasswordViewModel
@@ -93,7 +99,13 @@ fun ResetPasswordScreen(navController: NavController,
 
 
     )
-
+    LaunchedEffect(state.isSuccess) {
+        if (state.isSuccess) {
+            navController.navigate(VerificationCodeScreen(email = state.email)) {
+                popUpTo<ResetPasswordScreen> { inclusive = true }
+            }
+        }
+    }
     Column(
         modifier = m
             .fillMaxSize()
@@ -257,5 +269,7 @@ fun ResetPasswordScreen(navController: NavController,
 
     }
 
-
+    if (state.isLoading) {
+        LoadingOverlay()
+    }
 }

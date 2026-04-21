@@ -39,7 +39,8 @@ class SignUpViewModel(
 
     private fun validateForm(): String? {
         val state = _state.value
-
+        var firstNameError = false
+        var lastNameError = false
         var userNameError = false
         var emailError = false
         var passError = false
@@ -48,7 +49,13 @@ class SignUpViewModel(
         var errorMessage: String? = null
 
         // Check each field and set specific error
-        if (state.userName.isBlank()) {
+        if (state.lastName.isBlank()){
+            lastNameError=true
+            errorMessage="First Name is required"
+        } else if (state.firstName.isBlank()){
+            firstNameError=true
+            errorMessage="First Name is required"
+        }else if (state.userName.isBlank()) {
             userNameError = true
             errorMessage = "Username is required"
         } else if (state.email.isBlank()) {
@@ -70,6 +77,8 @@ class SignUpViewModel(
 
         _state.update {
             it.copy(
+                firstNameError=firstNameError,
+                lastNameError = lastNameError,
                 userNameError = userNameError,
                 emailError = emailError,
                 passError = passError,
@@ -104,7 +113,7 @@ class SignUpViewModel(
 
                 val response = repository.signUpRepo(request)
 
-                val isEmailVerified = response.data?.isEmailVerified ?: false
+                val isEmailVerified = response.data.isEmailVerified
                 preferencesManager.saveEmailVerified(isEmailVerified)
 
                 val vehicles = vehicleRepository.getVehiclesRepo()

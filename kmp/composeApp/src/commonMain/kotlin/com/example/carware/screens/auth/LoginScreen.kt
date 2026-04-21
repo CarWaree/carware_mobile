@@ -145,6 +145,7 @@ fun LoginScreen(
 
     }
 
+
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
             val destination = if (state.isCarAdded) {
@@ -437,7 +438,7 @@ fun LoginScreen(
                             color = Color(30, 30, 30, 168)
                         )
                         Text(
-                            strings.get("SIGN_IN"), fontFamily = popMid,
+                            strings.get("SIGNUP"), fontFamily = popMid,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                             color = Color(194, 0, 0, 255),
@@ -471,11 +472,12 @@ fun LoginScreen(
 
         }
 
-        if (state.isLoading) {
-            LoadingOverlay()
-        }
 
     }
+    if (state.isLoading) {
+        LoadingOverlay()
+    }
+
 }
 
 

@@ -44,7 +44,7 @@ class OTPViewModel(
     }
 
 
-    fun otpVerification() {
+    fun otpVerification(email: String) {
         val validationError = validateForm()
         if (validationError != null) {
             _state.update { it.copy(errorMessage = validationError) }
@@ -55,13 +55,14 @@ class OTPViewModel(
             try {
                 _state.update { it.copy(isLoading = true, errorMessage = null) }
                 val request = OTPRequest(
+                    email = email,
                     otp = _state.value.otp
                 )
                 val response = repository.otpVerificationRepo(request)
 
                 val token = response.data?.token
                     ?: throw IllegalStateException("Token missing in response")
-                preferencesManager.saveToken(token)
+                preferencesManager.saveResetToken(token)
                 _state.update {
                     it.copy(isLoading = false, isSuccess = true)
 

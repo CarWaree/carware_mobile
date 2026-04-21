@@ -152,6 +152,7 @@ fun SignUpScreen(
             ) {
                 if (state.needsEmailVerification) {
                     ToastMessage(message = "Check your email to verify your account", state = true)
+                    navController.navigate(EmailVerificationScreen(email = state.email))
                 }
                 if (state.errorMessage != null) {
                     AnimatedVisibility(

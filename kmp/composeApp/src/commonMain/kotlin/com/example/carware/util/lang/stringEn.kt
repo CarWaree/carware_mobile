@@ -32,6 +32,8 @@ val StringsEn = mapOf(
     // Sign up
     "WELCOME_MESSAGE" to "Welcome!",
     "MARKETING_SLOGAN" to " Drive with confidence.Enroll in smarter! \n CarWare today.",
+    "SIGNUP" to "Sign Up",
+
 //    "JOIN_CARWARE" to "CarWare today .",
     "FIRST_NAME" to "First Name",
     "LAST_NAME" to "Last Name",
