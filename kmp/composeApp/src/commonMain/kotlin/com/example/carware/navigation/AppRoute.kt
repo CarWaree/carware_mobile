@@ -57,3 +57,6 @@ object EditProfileScreen
 
 @Serializable
 object SelectLanguageScreen
+
+@Serializable
+object ReminderScreen

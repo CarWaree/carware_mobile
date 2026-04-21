@@ -30,6 +30,7 @@ import com.example.carware.navigation.LoginScreen
 import com.example.carware.navigation.NewPasswordScreen
 import com.example.carware.navigation.OnboardingScreen
 import com.example.carware.navigation.ProfileScreen
+import com.example.carware.navigation.ReminderScreen
 import com.example.carware.navigation.ResetPasswordScreen
 import com.example.carware.navigation.ScheduleScreen
 import com.example.carware.navigation.SelectLanguageScreen
@@ -40,6 +41,7 @@ import com.example.carware.navigation.TestScreen
 import com.example.carware.navigation.VerificationCodeScreen
 import com.example.carware.screens.AddCarScreen
 import com.example.carware.screens.BottomNavBar
+import com.example.carware.screens.ReminderScreen
 import com.example.carware.screens.SelectLanguageScreen
 import com.example.carware.screens.SplashScreen
 import com.example.carware.screens.auth.EmailVerificationScreen
@@ -246,6 +248,16 @@ fun MainScreen() {
                         preferencesManager.saveLanguageCode(it.isoCode)
                         currentLanguage = it
                     })
+            }
+
+            composable<ReminderScreen> {
+                val scheduleViewModel: ScheduleScreenViewModel = koinInject()
+
+                ReminderScreen(
+                    navController,
+                    scheduleViewModel,
+                    preferencesManager
+                )
             }
         }
     }
