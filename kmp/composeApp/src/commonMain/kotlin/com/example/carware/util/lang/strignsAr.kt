@@ -110,7 +110,8 @@ val StringsAr = mapOf(
     "LOADING_CAR_DATA" to "يتم تحميل بيانات السيارة",
     "SCHEDULED_SERVICES" to "الخدمات المحجوزه",
     "NO_UPCOMING_APPOINTMENTS" to "لا يوجد مواعيد قادمه",
-    "UP_COMING_MAINTENANCE" to "مواعيد قادمه ",
+    "UP_COMING_REMINDER" to "مواعيد قادمه ",
+    "CREATE_REMINDER" to "إضافة تذكير",
     // schedule screen
     "SCHEDULE_SERVICE" to "خدمه الحجز ",
     "SELECT_CAR" to "اختر سيارتك",

@@ -10,11 +10,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -25,7 +23,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -33,17 +30,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.audi
@@ -55,24 +47,21 @@ import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.LocalStrings
 import com.example.carware.Notification.RequestNotificationPermission
 import com.example.carware.m
+import com.example.carware.navigation.ReminderScreen
 import com.example.carware.network.apiResponse.appointment.Appointments
 import com.example.carware.network.apiResponse.vehicle.Vehicles
 import com.example.carware.screens.CarCard
 import com.example.carware.screens.OBDCard
 import com.example.carware.screens.ServiceHistoryItem
 import com.example.carware.screens.ShimmerCarCard
-import com.example.carware.screens.ShimmerMaintenance
-import com.example.carware.screens.UpcomingMaintenance
+import com.example.carware.screens.UpcomingReminder
 import com.example.carware.screens.appGradBack
 import com.example.carware.screens.shimmerEffect
-import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.home.HomeScreenState
 import com.example.carware.viewModel.home.HomeScreenViewModel
 import com.example.carware.viewModel.notification.NotificationViewModel
-import kotlinx.coroutines.awaitCancellation
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun HomeScreen(
@@ -205,13 +194,8 @@ fun HomeScreen(
                 }
             }
             Spacer(modifier = m.padding(vertical = 16.dp))
-            if (state is HomeScreenState.Loading) {
-                Box(modifier = m.padding(horizontal = 12.dp)) {
-                    ShimmerMaintenance()
-                }
-            } else {
-                UpcomingMaintenance()
-            }
+
+                UpcomingReminder (navController)
             Spacer(modifier = m.padding(vertical = 12.dp))
             Text(
                 strings.get("SCHEDULED_SERVICES"),

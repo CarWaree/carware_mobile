@@ -110,7 +110,8 @@ val StringsEn = mapOf(
     "LOADING_CAR_DATA" to "Loading car data ...",
     "SCHEDULED_SERVICES" to "Scheduled Services",
     "NO_UPCOMING_APPOINTMENTS" to "No upcoming appointments",
-    "UP_COMING_MAINTENANCE" to " Upcoming \n Maintenance ",
+    "UP_COMING_REMINDER" to " Upcoming Reminder",
+    "CREATE_REMINDER" to "Create One",
     "MORE_DETAILS" to "more details",
 
 

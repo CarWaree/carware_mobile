@@ -34,9 +34,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -65,6 +65,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
+import carware.composeapp.generated.resources.add_new
 import carware.composeapp.generated.resources.arrow_1
 import carware.composeapp.generated.resources.audi
 import carware.composeapp.generated.resources.car
@@ -85,6 +86,7 @@ import carware.composeapp.generated.resources.x_time_slot
 import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.navigation.AddCarScreen
+import com.example.carware.navigation.ReminderScreen
 import com.example.carware.util.navBar.TabItem
 import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
@@ -139,8 +141,9 @@ fun Modifier.cardGradBack(): Modifier = this.then(
     )
 )
 
-    fun Modifier.backgroundColor(): Modifier = this.then(
-    background(Color(217, 217, 217, 255)
+fun Modifier.backgroundColor(): Modifier = this.then(
+    background(
+        Color(217, 217, 217, 255)
     )
 )
 
@@ -154,8 +157,6 @@ fun BottomNavBar(
     modifier: Modifier = Modifier
 ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
-
-    val popMid = FontFamily(Font(Res.font.poppins_medium))
 
 
     // OUTER HEIGHT ONLY FOR SPACING
@@ -267,7 +268,6 @@ fun CarCard(
     image: DrawableResource
 ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
-    val popMid = FontFamily(Font(Res.font.poppins_medium))
 
     val cardMod = Modifier.size(width = 305.dp, height = 255.dp)
 
@@ -399,10 +399,9 @@ fun CarCard(
 }
 
 @Composable
-fun OBDCard(onClick: () -> Unit, ) {
+fun OBDCard(onClick: () -> Unit) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
 
-    val popMid = FontFamily(Font(Res.font.poppins_medium))
     val strings = LocalStrings.current
     Card(
         m.fillMaxWidth().height(170.dp),
@@ -468,17 +467,16 @@ fun OBDCard(onClick: () -> Unit, ) {
 }
 
 @Composable
-fun UpcomingMaintenance(
+fun UpcomingReminder(
+navController: NavController
 ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
-    val popMid = FontFamily(Font(Res.font.poppins_medium))
     val strings = LocalStrings.current
 
     @Composable
     fun TimerUpcomingMaintenance(time: String) {
         val popSemi = FontFamily(Font(Res.font.poppins_semibold))
 
-        val popMid = FontFamily(Font(Res.font.poppins_medium))
         Column(
             m.size(40.dp).border(
                 shape = RoundedCornerShape(8.dp), width = 1.dp, color = Color(30, 30, 30, 110)
@@ -499,7 +497,7 @@ fun UpcomingMaintenance(
     }
     Row(
         m.appButtonBack()
-            .padding(vertical = 20.dp, horizontal = 10.dp)
+            .padding(vertical = 18.dp, horizontal = 10.dp)
             .fillMaxWidth()
             .height(54.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -508,13 +506,44 @@ fun UpcomingMaintenance(
     )
 
     {
-        Text(
-            strings.get("UP_COMING_MAINTENANCE"),
-            fontFamily = popSemi,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(217, 217, 217, 255)
-        )
+        Column {
+            Text(
+                strings.get("UP_COMING_REMINDER"),
+                fontFamily = popSemi,
+                fontSize = 19.sp,
+                fontWeight = FontWeight.W600,
+                color = Color(217, 217, 217, 255)
+            )
+            Spacer(m.height(2.dp))
+            Row(m
+                .fillMaxWidth(0.5f)
+                .clickable { navController.navigate(ReminderScreen) },
+                horizontalArrangement = Arrangement.Center) {
+                Text(
+                    strings.get("CREATE_REMINDER"),
+                    fontFamily = popSemi,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W500,
+                    color = Color(217, 217, 217, 255)
+                )
+                Spacer(m.width(4.dp))
+
+                Icon(
+                    painter = painterResource(Res.drawable.x_time_slot),
+                    contentDescription = null,
+                    tint = Color(229, 174, 65, 255),
+                    modifier = m.size(20.dp)
+
+                        .rotate(45f)
+                        .size(4.dp)
+
+
+                )
+
+
+            }
+        }
+
 
         Spacer(m.padding(horizontal = 2.dp))
         Column(
@@ -581,6 +610,7 @@ fun UpcomingMaintenance(
 
 }
 
+
 @Composable
 fun ToastMessage(message: String, state: Boolean) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
@@ -632,9 +662,9 @@ fun CurvedLineCanvas() {
         val path = Path().apply {
             moveTo(0f, 0f) // start point
             // First curve (quadratic)
-            quadraticBezierTo(85f, 50f, 50f, 140f)
+            quadraticTo(85f, 50f, 50f, 140f)
             // Second curve (quadratic)
-            quadraticBezierTo(150f, 100f, 320f, 110f)
+            quadraticTo(150f, 100f, 320f, 110f)
         }
 
         drawPath(
@@ -730,7 +760,7 @@ fun SelectDropdown(
 
                 )
                 if (index < options.size - 1) {
-                    Divider(color = Color(118, 118, 118, 128), thickness = 1.dp)
+                    HorizontalDivider(Modifier, thickness = 1.dp, color = Color(118, 118, 118, 128))
                 }
 
             }
@@ -794,7 +824,6 @@ fun CalenderBox(
         )
     )
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
-    val popMid = FontFamily(Font(Res.font.poppins_medium))
     Column(
         modifier = m.size(375.dp, 300.dp).scale(0.9f).clip(RoundedCornerShape(5.dp))
             .background(Color(207, 207, 207, 207)),
@@ -1302,16 +1331,15 @@ fun ServiceHistoryItem(
             Box(
                 modifier = Modifier
                     .size(10.dp)
-                    .background(color =if (status =="Confirmed") {
-                        Color(4, 186, 0, 255)
-                    }
-                    else if(status=="Pending")
-                    {
-                        Color(210, 194, 4, 255)
-                    }else{
-                        Color(194, 0, 0, 255)
-                    }
-                        , shape = CircleShape)
+                    .background(
+                        color = if (status == "Confirmed") {
+                            Color(4, 186, 0, 255)
+                        } else if (status == "Pending") {
+                            Color(210, 194, 4, 255)
+                        } else {
+                            Color(194, 0, 0, 255)
+                        }, shape = CircleShape
+                    )
             )
             Image(
                 painter = painterResource(Res.drawable.recycle_bin),
@@ -1344,8 +1372,4 @@ fun switchTest() {
 
 }
 
-@Preview
-@Composable
-fun prev() {
-}
 

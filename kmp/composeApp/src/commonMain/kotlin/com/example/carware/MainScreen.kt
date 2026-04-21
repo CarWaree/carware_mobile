@@ -30,10 +30,10 @@ import com.example.carware.navigation.LoginScreen
 import com.example.carware.navigation.NewPasswordScreen
 import com.example.carware.navigation.OnboardingScreen
 import com.example.carware.navigation.ProfileScreen
+import com.example.carware.navigation.ReminderScreen
 import com.example.carware.navigation.ResetPasswordScreen
 import com.example.carware.navigation.ScheduleScreen
 import com.example.carware.navigation.SelectLanguageScreen
-import com.example.carware.navigation.ServiceRecordScreen
 import com.example.carware.navigation.SettingsScreen
 import com.example.carware.navigation.SignUpScreen
 import com.example.carware.navigation.SplashScreen
@@ -41,6 +41,7 @@ import com.example.carware.navigation.TestScreen
 import com.example.carware.navigation.VerificationCodeScreen
 import com.example.carware.screens.AddCarScreen
 import com.example.carware.screens.BottomNavBar
+import com.example.carware.screens.ReminderScreen
 import com.example.carware.screens.SelectLanguageScreen
 import com.example.carware.screens.SplashScreen
 import com.example.carware.screens.auth.EmailVerificationScreen
@@ -52,7 +53,6 @@ import com.example.carware.screens.auth.VerificationCodeScreen
 import com.example.carware.screens.mainScreens.HistoryScreen
 import com.example.carware.screens.mainScreens.HomeScreen
 import com.example.carware.screens.mainScreens.ScheduleScreen
-import com.example.carware.screens.mainScreens.ServiceRecordScreen
 import com.example.carware.screens.mainScreens.SettingsScreen
 import com.example.carware.screens.onBoarding.LanguageSelectionScreen
 import com.example.carware.screens.onBoarding.OnBoardingScreen
@@ -97,7 +97,7 @@ fun MainScreen() {
     val layoutDirection =
         if (currentLanguage == AppLanguage.AR) LayoutDirection.Rtl else LayoutDirection.Ltr
 
-    val historyViewModel: HistoryScreenViewModel = koinInject()
+    // ✅ Get all ViewModels from Koin once
 
     CompositionLocalProvider(
         LocalStrings provides localizedStrings,
@@ -195,11 +195,9 @@ fun MainScreen() {
             }
 
             composable<HistoryScreen> {
-                HistoryScreen(navController, historyViewModel)
-            }
+                val historyViewModel: HistoryScreenViewModel = koinInject()
 
-            composable<ServiceRecordScreen> {
-                ServiceRecordScreen(navController, historyViewModel)
+                HistoryScreen(navController, historyViewModel)
             }
 
             composable<AddCarScreen> {
@@ -252,8 +250,15 @@ fun MainScreen() {
                     })
             }
 
+            composable<ReminderScreen> {
+                val scheduleViewModel: ScheduleScreenViewModel = koinInject()
 
-
+                ReminderScreen(
+                    navController,
+                    scheduleViewModel,
+                    preferencesManager
+                )
+            }
         }
     }
 }
