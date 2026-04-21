@@ -51,6 +51,7 @@ import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.navigation.ServiceRecordScreen
 import com.example.carware.screens.ShimmerHistoryCard
+import com.example.carware.viewModel.history.HistoryItemState
 import com.example.carware.viewModel.history.HistoryScreenState
 import com.example.carware.viewModel.history.HistoryScreenViewModel
 import kotlinx.datetime.LocalDateTime
@@ -68,8 +69,8 @@ fun HistoryScreen(
     val popMid = FontFamily(Font(Res.font.poppins_medium))
 
     val pageScrollState = rememberScrollState()
-    val _state by viewModel.state.collectAsState()
-    val state = _state
+    val state by viewModel.historyState.collectAsState()
+    val currentState = state  // add this
 
     Column(
         m.fillMaxSize()
@@ -125,7 +126,7 @@ fun HistoryScreen(
         Spacer(m.height(32.dp))
         
         Column(m.fillMaxSize()) {
-            when (state) {
+            when (currentState) {
                 is HistoryScreenState.Loading -> {
                     Column(
                         modifier = Modifier
@@ -141,30 +142,23 @@ fun HistoryScreen(
 
                 is HistoryScreenState.Error -> {
                     Spacer(modifier = m.padding(vertical = 50.dp))
-                    Text("Error: ${state.message}", color = Color.Red, modifier = Modifier.align(Alignment.CenterHorizontally))
+                    Text("Error: ${currentState.message}", color = Color.Red, modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
 
                 is HistoryScreenState.Success -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        state.historyItems.forEach { item ->
-                            ServiceHistoryCard(
-                                carName = item.carName,
-                                serviceName = item.providerName,
-                                date = item.date,
-                                location = "BNU",
-                                cost = item.totalPrice,
-                                paymentMethod = item.paymentMethod,
-                                onClick = {
-                                     navController.navigate(ServiceRecordScreen)
-                                    state.id=item.id
-                                }
-                            )
-                        }
+                    currentState.historyItems.forEach { item ->
+                        ServiceHistoryCard(
+                            carName = item.carName,
+                            serviceName = item.providerName,
+                            date = item.date,
+                            location = "BNU",
+                            cost = item.totalPrice,
+                            paymentMethod = item.paymentMethod,
+                            onClick = {
+                                viewModel.loadHistoryItem(item.id)
+                                navController.navigate(ServiceRecordScreen)
+                            }
+                        )
                     }
                 }
             }
@@ -375,23 +369,22 @@ fun ServiceRecordRow(
 fun ServiceRecordScreen(
     navController: NavController,
     viewModel: HistoryScreenViewModel,
-    id: Int
 ){
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
     val strings = LocalStrings.current
-    val _state by viewModel.state.collectAsState()
-    val state = _state
 
+    val state by viewModel.historyItemState.collectAsState()
+    val currentState =state
     val gradientBrush = Brush.linearGradient(
         listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
     )
-    when (state) {
-        is HistoryScreenState.Loading -> {
+    when (currentState) {
+        is HistoryItemState.Loading -> {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 16.dp),
+                    .padding(vertical=16.dp,horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 repeat(5) {
@@ -399,22 +392,17 @@ fun ServiceRecordScreen(
                 }
             }
         }
-
-        is HistoryScreenState.Error -> {
-            Spacer(modifier = m.padding(vertical = 50.dp))
-            Text("Error: ${state.message}", color = Color.Red,)
-        }
-
-        is HistoryScreenState.Success -> {
-            val historyItem = state.historyItem
+        is HistoryItemState.Error -> { Text("Error: ${currentState.message}") }
+        is HistoryItemState.Success -> {
+            val historyItem = currentState.historyItem
             Column(
-                modifier = Modifier
+                modifier = m
                     .fillMaxSize()
                     .background(Color(217, 217, 217, 255))
                     .verticalScroll(rememberScrollState())
             ) {
                 Box(
-                    modifier = Modifier
+                    modifier = m
                         .fillMaxWidth()
                         .padding(top = 45.dp, start = 18.dp, end = 16.dp)
                 ) {
@@ -457,24 +445,26 @@ fun ServiceRecordScreen(
                         value = "serviceType",
                         popMid = popMid
                     )
+                    val shortDate = LocalDateTime.parse(historyItem.date)
+
                     ServiceRecordRow(
                         label = strings.get("DATE_LABEL"),
-                        value = "date",
+                        value = "${shortDate.dayOfMonth}/${shortDate.monthNumber}/${shortDate.year}",
                         popMid = popMid
                     )
                     ServiceRecordRow(
                         label = strings.get("PROVIDER_LABEL"),
-                        value = "provider",
+                        value = historyItem.providerName,
                         popMid = popMid
                     )
                     ServiceRecordRow(
                         label = strings.get("COST_LABEL"),
-                        value = "cost",
+                        value = historyItem.totalPrice.toString(),
                         popMid = popMid
                     )
                     ServiceRecordRow(
                         label = strings.get("PAYMENT_LABEL"),
-                        value = "paymentMethod",
+                        value = historyItem.paymentMethod,
                         popMid = popMid,
                         showPaymentIcon = true
                     )

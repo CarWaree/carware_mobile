@@ -9,7 +9,7 @@ data class GetHistoryItemResponse(
     val carName: String,
     val providerName:String,
     val date:String,
-    val totalPrice:String,
+    val totalPrice:Int,
     val paymentMethod:String,
     val serviceDetails: String? = null,
 )

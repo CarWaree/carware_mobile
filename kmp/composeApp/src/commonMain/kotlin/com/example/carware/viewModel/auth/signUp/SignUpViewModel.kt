@@ -160,7 +160,14 @@ class SignUpViewModel(
                 val hasAddedCar = vehicles.isNotEmpty()
                 preferencesManager.setCarAdded(hasAddedCar)
 
-                _state.update { it.copy(isLoading = false, isSuccess = true) } // ← missing
+                // ADD THIS:
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        isCarAdded = hasAddedCar,  // ADD THIS LINE
+                        isSuccess = true
+                    )
+                }
             } catch (e: Exception) {
                 _state.update {
                     it.copy(

@@ -1,9 +1,9 @@
 package com.example.carware.viewModel.history
 
+import androidx.compose.material3.Text
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.carware.repository.HistoryRepository
-import com.example.carware.viewModel.history.HistoryScreenState.Loading.id
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,9 +13,11 @@ class HistoryScreenViewModel(
     private val repository: HistoryRepository,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow<HistoryScreenState>(HistoryScreenState.Loading)
+    private val _historyState = MutableStateFlow<HistoryScreenState>(HistoryScreenState.Loading)
+    val historyState: StateFlow<HistoryScreenState> = _historyState.asStateFlow()
 
-    val state: StateFlow<HistoryScreenState> = _state.asStateFlow()
+    private val _historyItemState = MutableStateFlow<HistoryItemState>(HistoryItemState.Loading)
+    val historyItemState: StateFlow<HistoryItemState> = _historyItemState.asStateFlow()
 
     init {
         loadHistory()
@@ -23,23 +25,17 @@ class HistoryScreenViewModel(
 
     fun loadHistory() {
         viewModelScope.launch {
-            val historyItem = repository.getHistoryItemRepo(id)
-
-            _state.value = HistoryScreenState.Loading
+            _historyState.value = HistoryScreenState.Loading
             try {
-                val historyItems = repository.getHistoryRepo()
-
-                if (historyItems.isEmpty()) {
-                    _state.value = HistoryScreenState.Error("No History Found")
+                val items = repository.getHistoryRepo()
+                _historyState.value = if (items.isEmpty()) {
+                    HistoryScreenState.Error("No History Found")
                 } else {
-                    _state.value = HistoryScreenState.Success(
-                        historyItems = historyItems,
-                        historyItem = historyItem,
-                    )
+                    HistoryScreenState.Success(items)
                 }
             } catch (e: Exception) {
-                _state.value = HistoryScreenState.Error(
-                    e.message ?: "Unknown error: ${e::class.simpleName}"
+                _historyState.value = HistoryScreenState.Error(
+                    e.message ?: "Unknown error"
                 )
             }
         }
@@ -47,31 +43,15 @@ class HistoryScreenViewModel(
 
     fun loadHistoryItem(id: Int) {
         viewModelScope.launch {
+            _historyItemState.value = HistoryItemState.Loading
             try {
-                val currentState = _state.value
-
-                val historyItems = when (currentState) {
-                    is HistoryScreenState.Success -> currentState.historyItems
-                    else -> repository.getHistoryRepo()
-                }
-
-                val historyItem = repository.getHistoryItemRepo(id)
-
-                if (historyItem.id == null) {
-                    _state.value = HistoryScreenState.Error("No History Found")
-                } else {
-                    _state.value = HistoryScreenState.Success(
-                        historyItems = historyItems,
-                        historyItem = historyItem,
-                    )
-                }
+                val item = repository.getHistoryItemRepo(id)
+                println("--- VIEWMODEL: got item, setting Success")
+                _historyItemState.value = HistoryItemState.Success(item)
+                println("--- VIEWMODEL: state is now ${_historyItemState.value}")
             } catch (e: Exception) {
-                _state.value = HistoryScreenState.Error(
-                    e.message ?: "Unknown error: ${e::class.simpleName}"
-                )
+                println("--- VIEWMODEL ERROR: ${e.message}")
+                _historyItemState.value = HistoryItemState.Error(e.message ?: "Unknown error")
             }
         }
-    }
-
-
-}
+    }}

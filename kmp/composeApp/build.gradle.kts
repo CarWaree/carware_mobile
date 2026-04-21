@@ -62,7 +62,6 @@ kotlin {
             implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
             implementation(libs.kstore)
             implementation(libs.kstore.file)
-
             implementation("io.insert-koin:koin-compose:4.0.0")
             implementation(libs.koin.core)
 

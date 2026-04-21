@@ -46,7 +46,7 @@ fun appModule(preferencesManager: PreferencesManager) = module {
     factory { OTPViewModel(get(), get()) }
     factory { NewPasswordViewModel(get(), get()) }
     factory { EmailVerificationViewModel(get(), get()) }
-    factory { HistoryScreenViewModel(get()) }
+    single { HistoryScreenViewModel(get()) }
     factory { ScheduleScreenViewModel(get(), get()) }
     factory { AddCarViewModel(get(), get()) }
     factory { ProfileScreenViewModel(get(), get()) }

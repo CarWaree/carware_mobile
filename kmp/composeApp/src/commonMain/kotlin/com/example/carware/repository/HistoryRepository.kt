@@ -14,7 +14,7 @@ class HistoryRepository(
         val response = getHistory(client)
         return response
     }
-    suspend fun getHistoryItemRepo(id: Int?): GetHistoryItemResponse {
+    suspend fun getHistoryItemRepo(id: Int): GetHistoryItemResponse {
         val response = getHistoryItem(client, id)
         return response
     }

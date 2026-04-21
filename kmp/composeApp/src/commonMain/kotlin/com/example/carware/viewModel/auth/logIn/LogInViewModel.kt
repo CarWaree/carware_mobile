@@ -71,6 +71,7 @@ class LogInViewModel(
 
                 val token = response.data?.accessToken
                     ?: throw IllegalStateException("Token missing in response")
+
                 preferencesManager.performLogin(token)
                 val expireToken=response.data.refreshTokenExpiration
                 preferencesManager.saveExpiresOn(expireToken)
@@ -133,5 +134,7 @@ class LogInViewModel(
                 }
             }
         }
-    }}
+    }
+
+}
 

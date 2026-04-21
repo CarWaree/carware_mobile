@@ -97,7 +97,7 @@ fun MainScreen() {
     val layoutDirection =
         if (currentLanguage == AppLanguage.AR) LayoutDirection.Rtl else LayoutDirection.Ltr
 
-    // ✅ Get all ViewModels from Koin once
+    val historyViewModel: HistoryScreenViewModel = koinInject()
 
     CompositionLocalProvider(
         LocalStrings provides localizedStrings,
@@ -195,9 +195,11 @@ fun MainScreen() {
             }
 
             composable<HistoryScreen> {
-                val historyViewModel: HistoryScreenViewModel = koinInject()
-
                 HistoryScreen(navController, historyViewModel)
+            }
+
+            composable<ServiceRecordScreen> {
+                ServiceRecordScreen(navController, historyViewModel)
             }
 
             composable<AddCarScreen> {
@@ -250,14 +252,6 @@ fun MainScreen() {
                     })
             }
 
-            composable<ServiceRecordScreen> {
-                val historyViewModel: HistoryScreenViewModel = koinInject()
-                ServiceRecordScreen(
-                    navController,
-                    historyViewModel,
-
-                )
-            }
 
 
         }
