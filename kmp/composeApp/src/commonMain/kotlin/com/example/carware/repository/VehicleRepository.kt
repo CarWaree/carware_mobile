@@ -68,17 +68,13 @@ class VehicleRepository(
 
 
     suspend fun getAppointmentsRepo(): List<Appointments> {
-        // 1. Get token from SharedPrefs
-
-
         return try {
-            // 2. Call API
             val response = getAppointments(client)
-
-            // 3. Return only the list of data
+            println("=== REPO: getAppointments success, count: ${response.data?.size}")
             response.data ?: emptyList()
         } catch (e: Exception) {
-            emptyList() // Return empty on error to prevent UI crashes
+            println("=== REPO ERROR: ${e.message}")
+            emptyList()
         }
     }
 }

@@ -109,7 +109,7 @@ fun ReminderScreen(
         Column(m.fillMaxSize()) {
             SelectDateBox(viewModel = viewModel)
         }
-    } else if (state.isInitialLoading) {
+    } else if (state.isLoading) {
         ShimmerScheduleScreen()
     } else {
         Column(
@@ -213,7 +213,7 @@ fun ReminderScreen(
                 Box(m.padding(horizontal = 26.dp)) {
                     SelectDropdown(
                         label = strings.get("SELECT_SERVICE"),
-                        selectedValue = state.selectedService.toString(),
+                        selectedValue = state.selectedServiceName ?: "",
                         options = state.availableServicesTypes.map { it.name },
                         onSelect = { selectedName ->
                             val serviceType =
@@ -221,7 +221,7 @@ fun ReminderScreen(
                                     it.name == selectedName
                                 }
                             // ============ CHANGE: Add it.id as second parameter ============
-                            serviceType?.let { viewModel.selectServiceType(it.name, it.id) }
+                            serviceType?.let { viewModel.selectServiceType(it.id, it.name) }
                         },
                     )
                 }
@@ -354,9 +354,7 @@ fun ReminderScreen(
                     // Confirm Button
                     Card(
                         onClick = {
-                            if (viewModel.isAppointmentValid()) {
                                 viewModel.confirmAppointment()
-                            }
                         },
                         modifier = m
                             .fillMaxWidth(0.8f)

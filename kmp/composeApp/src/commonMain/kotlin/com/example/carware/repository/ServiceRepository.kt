@@ -19,9 +19,7 @@ class ServiceRepository(private val client: HttpClient) {
 
         return getServiceCenters(client)
     }
-    suspend fun setAppointmentRepo(
-        request: SetAppointmentRequest,
-    ): AppointmentResponse {
-        return setAppointment(request,client)
+    suspend fun setAppointmentRepo(request: SetAppointmentRequest): AppointmentResponse {
+        return setAppointment(request, client)
     }
 }

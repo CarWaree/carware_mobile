@@ -1,6 +1,5 @@
 package com.example.carware.viewModel.profile
 
-import com.example.carware.network.apiResponse.appointment.Appointments
 import com.example.carware.network.apiResponse.profile.ProfileDetails
 import com.example.carware.network.apiResponse.vehicle.Vehicles
 import com.example.carware.viewModel.home.HomeScreenState

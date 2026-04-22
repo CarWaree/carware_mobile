@@ -5,6 +5,7 @@ import com.example.carware.network.apiResponse.schedule.Centers
 import com.example.carware.network.apiResponse.schedule.Service
 import com.example.carware.network.apiResponse.schedule.ServiceTypesResponse
 import com.example.carware.network.apiResponse.appointment.AppointmentResponse
+import com.example.carware.network.apiResponse.appointment.GetAppointmentResponse
 import com.example.carware.network.apiResponse.vehicle.GetVehicleResponse
 import com.example.carware.network.createHttpClient
 import io.ktor.client.HttpClient
@@ -35,55 +36,60 @@ suspend fun getServiceCenters(client: HttpClient): List<Centers> {
 }
 
 
-suspend fun getAppointments( client: HttpClient): AppointmentResponse {
+suspend fun getAppointments(client: HttpClient): GetAppointmentResponse {
+    println("=== GET APPOINTMENTS REQUEST ===")
+    println("URL: $baseUrl/api/Appointments/my")
+
     val response: HttpResponse = client.get {
-        url("$baseUrl/api/Appointments/my")
+        url("$baseUrl/api/Appointment/my")
         contentType(ContentType.Application.Json)
     }
-    println("--- RESPONSE DEBUG get Appointments : Status: ${response.status.value}")
+
+    println("=== GET APPOINTMENTS RESPONSE ===")
+    println("Status: ${response.status.value}")
+    println("Headers: ${response.headers.entries()}")
 
     if (response.status.isSuccess()) {
-        return response.body<AppointmentResponse>()
-    } else {
-        val errorBody = try {
-            response.bodyAsText()
+        val rawBody = response.bodyAsText()
+        println("Raw Body: $rawBody")
+        return try {
+            Json.decodeFromString<GetAppointmentResponse>(rawBody)
         } catch (e: Exception) {
-            "Could not read error body."
+            println("Parse Error: ${e.message}")
+            throw Exception("Failed to parse response: ${e.message}")
         }
-        println("--- ERROR DETAILS get Appointments: $errorBody")
+    } else {
+        val errorBody = try { response.bodyAsText() } catch (e: Exception) { "Could not read error body." }
+        println("Error Body: $errorBody")
         throw Exception("API Error (${response.status.value}): $errorBody")
     }
 }
 
-suspend fun setAppointment(
-    request: SetAppointmentRequest,
-    client: HttpClient
-): AppointmentResponse {
+suspend fun setAppointment(request: SetAppointmentRequest, client: HttpClient): AppointmentResponse {
+    println("=== SET APPOINTMENT REQUEST ===")
+    println("URL: $baseUrl/api/Appointment")
+    println("date: ${request.date}")
+    println("timeSlot: ${request.timeSlot}")
+    println("vehicleId: ${request.vehicleId}")
+    println("serviceId: ${request.serviceId}")
+    println("centerId: ${request.serviceCenterId}")
 
-    return try {
-        val response = client.post("$baseUrl/api/Appointments") {
-            contentType(ContentType.Application.Json)
-            setBody(request)
-        }
-
-        // Get raw response
-        val rawBody = response.bodyAsText()
-        println("Raw Response: set Appointments $rawBody")
-
-        // Try to parse it
-        try {
-            Json.decodeFromString<AppointmentResponse>(rawBody)
-        } catch (e: Exception) {
-            // If parsing fails, create a default success response
-            println("Parse error set Appointments: ${e.message}")
-            AppointmentResponse(
-                data = emptyList(),
-                statusCode = response.status.value,
-                message = "Appointment created successfully"
-            )
-        }
-    } catch (e: Exception) {
-        println("API Error: ${e.message}")
-        throw e
+    val response = client.post("$baseUrl/api/Appointment") {
+        contentType(ContentType.Application.Json)
+        setBody(request)
     }
+
+    println("=== SET APPOINTMENT RESPONSE ===")
+    println("Status: ${response.status.value}")
+
+    if (!response.status.isSuccess()) {
+        val errorBody = try { response.bodyAsText() } catch (e: Exception) { "Could not read error body" }
+        println("Error Body: $errorBody")
+        throw Exception("Server error: ${response.status.value} - $errorBody")
+    }
+
+    val rawBody = response.bodyAsText()
+    println("Raw Body: $rawBody")
+
+    return Json.decodeFromString<AppointmentResponse>(rawBody)
 }

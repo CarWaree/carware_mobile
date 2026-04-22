@@ -64,6 +64,13 @@ fun ScheduleScreen(
 
     val state by viewModel.state.collectAsState()
 
+    LaunchedEffect(state.isBookingSuccess) {
+        if (state.isBookingSuccess) {
+            viewModel.onBookingSuccessConsumed()
+            navController.navigate("your_route_here")
+        }
+    }
+
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
     val pageScrollState = rememberScrollState()
@@ -71,16 +78,13 @@ fun ScheduleScreen(
     val strings = LocalStrings.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
-//    LaunchedEffect(Unit) {
-//        viewModel.loadInitialData()
-//        viewModel.loadInitialTimeSlots()
-//    }
+
 
     if (state.isTimePickerVisible) {
         Column(m.fillMaxSize()) {
             SelectDateBox(viewModel = viewModel)
         }
-    } else if (state.isInitialLoading) {
+    } else if (state.isLoading) {
         ShimmerScheduleScreen()
     } else {
         Column(
@@ -169,7 +173,7 @@ fun ScheduleScreen(
                 Box(m.padding(horizontal = 26.dp)) {
                     SelectDropdown(
                         label = strings.get("SELECT_SERVICE"),
-                        selectedValue = state.selectedService.toString(),
+                        selectedValue = state.selectedServiceName ?: "",
                         options = state.availableServicesTypes.map { it.name },
                         onSelect = { selectedName ->
                             val serviceType =
@@ -177,7 +181,7 @@ fun ScheduleScreen(
                                     it.name == selectedName
                                 }
                             // ============ CHANGE: Add it.id as second parameter ============
-                            serviceType?.let { viewModel.selectServiceType(it.name, it.id) }
+                            serviceType?.let { viewModel.selectServiceType(it.id, it.name) }
                         },
                     )
                 }
@@ -205,7 +209,7 @@ fun ScheduleScreen(
                 Column(m.padding(horizontal = 26.dp)) {
                     SelectDropdown(
                         label = strings.get("SELECT_YOUR_PROVIDER"),
-                        selectedValue = state.selectedCenter.toString(),
+                        selectedValue = state.selectedCenterName ?: "",
                         options = state.availableCenters.mapNotNull { it.name },
                         onSelect = { name ->
                             state.availableCenters.firstOrNull { it.name == name }?.let {
@@ -257,9 +261,9 @@ fun ScheduleScreen(
                     // Confirm Button
                     Card(
                         onClick = {
-                            if (viewModel.isAppointmentValid()) {
+
                                 viewModel.confirmAppointment()
-                            }
+
                         },
                         modifier = m
                             .fillMaxWidth(0.8f)
@@ -301,60 +305,37 @@ fun ScheduleScreen(
                     Spacer(m.height(8.dp))
 
                     // Date & Time
-                    viewModel.getFinalSelectionString()?.let {
-                        Text(
-                            text = it,
-                            fontFamily = popMid,
-                            fontSize = 12.sp,
-                            color = Color.DarkGray
-                        )
-                    } ?: run {
-                        Text(
-                            text = strings.get("no_date/time_selected"),
-                            fontFamily = popMid,
-                            fontSize = 12.sp,
-                            color = Color.Gray
-                        )
-                    }
+                    val months = listOf("January","February","March","April","May","June","July","August","September","October","November","December")
+                    val summaryDate = if (state.selectedDay != null && state.selectedTime != null) {
+                        "${months[state.currentMonthIndex]} ${state.selectedDay}, ${state.currentYear} at ${state.selectedTime}"
+                    } else null
+
+                    Text(
+                        text = summaryDate ?: strings.get("no_date/time_selected"),
+                        fontFamily = popMid,
+                        fontSize = 12.sp,
+                        color = if (summaryDate != null) Color.DarkGray else Color.Gray
+                    )
 
                     Spacer(m.height(4.dp))
 
 
                     // Selected Service
-                    state.selectedService?.let {
-                        Text(
-                            text = strings.get("SERVICE") + "$it",
-                            fontFamily = popMid,
-                            fontSize = 12.sp,
-                            color = Color.DarkGray
-                        )
-                    } ?: run {
-                        Text(
-                            text = strings.get("SERVICE_NOT_SELECTED"),
-                            fontFamily = popMid,
-                            fontSize = 12.sp,
-                            color = Color.Gray
-                        )
-                    }
-
+                    Text(
+                        text = state.selectedServiceName?.let { strings.get("SERVICE") + it } ?: strings.get("SERVICE_NOT_SELECTED"),
+                        fontFamily = popMid,
+                        fontSize = 12.sp,
+                        color = if (state.selectedServiceName != null) Color.DarkGray else Color.Gray
+                    )
                     Spacer(m.height(4.dp))
 
                     // Selected Center
-                    state.selectedCenter?.let {
-                        Text(
-                            text = strings.get("PROVIDER") + "$it",
-                            fontFamily = popMid,
-                            fontSize = 12.sp,
-                            color = Color.DarkGray
-                        )
-                    } ?: run {
-                        Text(
-                            text = strings.get("PROVIDER_NOT_SELECTED"),
-                            fontFamily = popMid,
-                            fontSize = 12.sp,
-                            color = Color.Gray
-                        )
-                    }
+                    Text(
+                        text = state.selectedCenterName?.let { strings.get("PROVIDER") + it } ?: strings.get("PROVIDER_NOT_SELECTED"),
+                        fontFamily = popMid,
+                        fontSize = 12.sp,
+                        color = if (state.selectedCenterName != null) Color.DarkGray else Color.Gray
+                    )
 
                     Spacer(m.height(4.dp))
 

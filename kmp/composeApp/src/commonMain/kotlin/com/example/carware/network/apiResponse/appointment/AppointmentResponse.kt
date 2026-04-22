@@ -4,13 +4,13 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AppointmentResponse(
-    val data: List<Appointments>,
+    val data: Appointment,
     val statusCode: Int,
     val message: String
 )
 
 @Serializable
-data class Appointments(
+data class Appointment(
     val id: Int,
     val date: String,
     val status: String,

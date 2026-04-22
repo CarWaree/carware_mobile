@@ -93,6 +93,7 @@ import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
 import com.example.carware.viewModel.schedule.screen.TimeSlot
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.Font
@@ -774,143 +775,72 @@ fun CalenderBox(
     viewModel: ScheduleScreenViewModel,
     preferencesManager: PreferencesManager
 ) {
-    val _state by viewModel.state.collectAsState()
-    val state = _state
-
-    val daysOfWeek = listOf("SUN", "MON", "TUE", "WEN", "THU", "FRI", "SAT")
-
-    // Using your data structure
-    val calendarDays = listOf(
-        listOf(
-            "28" to false,
-            "29" to false,
-            "30" to false,
-            "1" to true,
-            "2" to true,
-            "3" to true,
-            "4" to true
-        ), listOf(
-            "5" to true,
-            "6" to true,
-            "7" to true,
-            "8" to true,
-            "9" to true,
-            "10" to true,
-            "11" to true
-        ), listOf(
-            "12" to true,
-            "13" to true,
-            "14" to true,
-            "15" to true,
-            "16" to true,
-            "17" to true,
-            "18" to true
-        ), listOf(
-            "19" to true,
-            "20" to true,
-            "21" to true,
-            "22" to true,
-            "23" to true,
-            "24" to true,
-            "25" to true
-        ), listOf(
-            "26" to true,
-            "27" to true,
-            "28" to true,
-            "29" to true,
-            "30" to true,
-            "1" to false,
-            "2" to false
-        )
-    )
+    val state by viewModel.state.collectAsState()
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
+
+    val months = listOf(
+        "January","February","March","April","May","June",
+        "July","August","September","October","November","December"
+    )
+    val daysOfWeek = listOf("SUN","MON","TUE","WED","THU","FRI","SAT")
+
+    // Compute real calendar days from current month/year
+    val calendarDays = remember(state.currentMonthIndex, state.currentYear) {
+        buildCalendarDays(state.currentMonthIndex + 1, state.currentYear)
+    }
+
     Column(
-        modifier = m.size(375.dp, 300.dp).scale(0.9f).clip(RoundedCornerShape(5.dp))
-            .background(Color(207, 207, 207, 207)),
-//        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier
+            .size(375.dp, 300.dp)
+            .scale(0.9f)
+            .clip(RoundedCornerShape(5.dp))
+            .background(Color(207, 207, 207, 207))
     ) {
-        // Header: Month and Year
+        // Header
         Row(
-            modifier = m.fillMaxWidth().height(50.dp).appButtonBack(),
+            modifier = Modifier.fillMaxWidth().height(50.dp).appButtonBack(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            // Month Control
-            CalendarArrowButton(
-                isLeft = true,
-                onClick = { viewModel.changeMonth(false) },
-                preferencesManager
-            )
+            CalendarArrowButton(isLeft = true, onClick = { viewModel.changeMonth(false) }, preferencesManager)
+            Text(months[state.currentMonthIndex], color = Color.White, fontFamily = popSemi, fontSize = 20.sp)
+            CalendarArrowButton(isLeft = false, onClick = { viewModel.changeMonth(true) }, preferencesManager)
 
-
-            Text(
-                viewModel.months[state.currentMonthIndex],
-                color = Color.White,
-                fontFamily = popSemi,
-                fontSize = 20.sp,
-                modifier = m.padding(horizontal = 10.dp)
-            )
-            CalendarArrowButton(
-                isLeft = false,
-                onClick = { viewModel.changeMonth(true) },
-                preferencesManager
-            )
-
-            // Year Control
-            CalendarArrowButton(
-                isLeft = true,
-                { viewModel.changeYear(false) },
-                preferencesManager
-            )
-            Text(
-                state.currentYear.toString(),
-                color = Color.White,
-                fontFamily = popSemi,
-                fontSize = 20.sp,
-                modifier = m.padding(horizontal = 10.dp)
-            )
-            CalendarArrowButton(
-                isLeft = false,
-                { viewModel.changeYear(true) },
-                preferencesManager
-            )
+            CalendarArrowButton(isLeft = true, onClick = { viewModel.changeYear(false) }, preferencesManager)
+            Text(state.currentYear.toString(), color = Color.White, fontFamily = popSemi, fontSize = 20.sp)
+            CalendarArrowButton(isLeft = false, onClick = { viewModel.changeYear(true) }, preferencesManager)
         }
 
-        // Days Header (SUN, MON...)
-        Row(modifier = Modifier.fillMaxWidth().padding(top = 10.dp)) {
+        // Day headers
+        Row(Modifier.fillMaxWidth().padding(top = 10.dp)) {
             daysOfWeek.forEach { day ->
-                Text(
-                    day,
-                    modifier = Modifier.weight(1f),
-                    textAlign = TextAlign.Center,
-                    fontSize = 12.sp
-                )
+                Text(day, modifier = Modifier.weight(1f), textAlign = TextAlign.Center, fontSize = 12.sp)
             }
         }
 
-        // Days Grid
+        // Days grid
         calendarDays.forEach { week ->
             Row(
-                modifier = m.fillMaxWidth().padding(vertical = 4.dp),
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 week.forEach { (day, isCurrentMonth) ->
                     val isSelected = state.selectedDay == day && isCurrentMonth
 
                     Box(
-                        modifier = m.size(35.dp).clip(RoundedCornerShape(8.dp))
-                            // Highlight the background if selected
+                        modifier = Modifier
+                            .size(35.dp)
+                            .clip(RoundedCornerShape(8.dp))
                             .background(if (isSelected) Color(0xFFC20000) else Color.Transparent)
                             .clickable(enabled = isCurrentMonth) {
-                                viewModel.onDayClick(day)
-                                state.isTimePickerVisible = true
-
+                                viewModel.selectDay(day)
                             },
-
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = day, fontFamily = popSemi, color = when {
+                            text = day.toString(),
+                            fontFamily = popSemi,
+                            color = when {
                                 isSelected -> Color.White
                                 isCurrentMonth -> Color.Black
                                 else -> Color.Gray
@@ -922,6 +852,47 @@ fun CalenderBox(
         }
     }
 }
+
+// Builds the actual weeks for any month/year
+private fun buildCalendarDays(month: Int, year: Int): List<List<Pair<Int, Boolean>>> {
+    val firstDay = LocalDate(year, month, 1)
+    val daysInMonth = when (month) {
+        1, 3, 5, 7, 8, 10, 12 -> 31
+        4, 6, 9, 11 -> 30
+        2 -> if (isLeapYear(year)) 29 else 28
+        else -> 30
+    }
+    val startDayOfWeek = firstDay.dayOfWeek.ordinal + 1 // Mon=1, shift to Sun=0
+    val prevMonthDays = if (startDayOfWeek == 7) 0 else startDayOfWeek
+
+    val days = mutableListOf<Pair<Int, Boolean>>()
+
+    // Previous month padding
+    val prevMonth = if (month == 1) LocalDate(year - 1, 12, 1) else LocalDate(year, month - 1, 1)
+    val prevMonthNumber = if (month == 1) 12 else month - 1
+    val prevYear = if (month == 1) year - 1 else year
+    val daysInPrevMonth = when (prevMonthNumber) {
+        1, 3, 5, 7, 8, 10, 12 -> 31
+        4, 6, 9, 11 -> 30
+        2 -> if (isLeapYear(prevYear)) 29 else 28
+        else -> 30
+    }
+
+    for (i in (daysInPrevMonth - prevMonthDays + 1)..daysInPrevMonth) {
+        days.add(i to false)
+    }
+
+    // Current month
+    for (i in 1..daysInMonth) days.add(i to true)
+
+    // Next month padding
+    val remaining = 42 - days.size
+    for (i in 1..remaining) days.add(i to false)
+
+    return days.chunked(7)
+}
+
+private fun isLeapYear(year: Int) = year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)
 
 @Composable
 fun CalendarArrowButton(
@@ -956,73 +927,56 @@ fun CalendarArrowButton(
 
 @Composable
 fun SelectDateBox(viewModel: ScheduleScreenViewModel) {
-
-    val _state by viewModel.state.collectAsState()
-    val state = _state
-    val textFieldColors = TextFieldDefaults.colors(
-
-        unfocusedTextColor = Color.DarkGray,
-        errorTextColor = Color(194, 0, 0, 255),
-
-        focusedContainerColor = Color.Transparent,
-        unfocusedContainerColor = Color.Transparent,
-        disabledContainerColor = Color.Transparent,
-        errorContainerColor = Color.Transparent,
-
-
-        cursorColor = Color(194, 0, 0, 255),
-        focusedIndicatorColor = Color(
-            118, 118, 118, 255
-        ),    // underline/border when focused
-        unfocusedIndicatorColor = Color(
-            118, 118, 118, 255
-        ),  // underline/border when not focused
-        errorIndicatorColor = Color(194, 0, 0, 255),
-        focusedTextColor = Color(0, 0, 0, 255)
-
-
-    )
-
+    val state by viewModel.state.collectAsState()
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
+
+    val morningSlots = state.availableSlots.filter {
+        val hour = parseHour(it.time)
+        hour in 10..17
+    }
+    val eveningSlots = state.availableSlots.filter {
+        val hour = parseHour(it.time)
+        hour >= 18 || hour == 0
+    }
+
     Column(
-        m.fillMaxSize().background(Color(0, 0, 0, 128)),
+        Modifier.fillMaxSize().background(Color(0, 0, 0, 128)),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Column(
-            m
-
-                .fillMaxWidth(0.85f).fillMaxHeight(0.7f).clip(RoundedCornerShape(10.dp))
-                .background(Color(217, 217, 217, 255)).padding(horizontal = 20.dp, vertical = 24.dp)
+            Modifier
+                .fillMaxWidth(0.85f)
+                .fillMaxHeight(0.7f)
+                .clip(RoundedCornerShape(10.dp))
+                .background(Color(217, 217, 217, 255))
+                .padding(horizontal = 20.dp, vertical = 24.dp)
         ) {
             Text(
                 "Choose Available Time Slot",
                 fontFamily = popSemi,
                 fontSize = 16.sp,
-                fontWeight = FontWeight.W500,
                 style = TextStyle(
                     brush = Brush.linearGradient(
-                        listOf(
-                            Color(194, 0, 0, 255), Color(92, 0, 0, 255)
-                        )
-                    ),
-                ),
-            ) // choose text
-            Spacer(m.padding(top = 24.dp))
+                        listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
+                    )
+                )
+            )
+
+            Spacer(Modifier.height(24.dp))
+
             Text(
                 "Morning",
                 fontFamily = popSemi,
                 fontSize = 16.sp,
-                fontWeight = FontWeight.W500,
                 style = TextStyle(
                     brush = Brush.linearGradient(
-                        listOf(
-                            Color(194, 0, 0, 255), Color(92, 0, 0, 255)
-                        )
-                    ),
-                ),
-            ) //morning text
-            Spacer(m.padding(top = 4.dp))
+                        listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
+                    )
+                )
+            )
+
+            Spacer(Modifier.height(4.dp))
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
@@ -1030,26 +984,25 @@ fun SelectDateBox(viewModel: ScheduleScreenViewModel) {
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier.weight(1f)
             ) {
-                items(viewModel.morningSlots) { slot ->
-                    TimeSlotItem(
-                        slot = slot, onSlotClick = { viewModel.onTimeClick(it) })
+                items(morningSlots) { slot ->
+                    TimeSlotItem(slot = slot, onSlotClick = { viewModel.selectTimeSlot(it) })
                 }
             }
-            Spacer(m.padding(top = 22.dp))
+
+            Spacer(Modifier.height(22.dp))
+
             Text(
                 "Evening",
                 fontFamily = popSemi,
                 fontSize = 16.sp,
-                fontWeight = FontWeight.W500,
                 style = TextStyle(
                     brush = Brush.linearGradient(
-                        listOf(
-                            Color(194, 0, 0, 255), Color(92, 0, 0, 255)
-                        )
-                    ),
-                ),
-            ) //evening text
-            Spacer(m.padding(top = 4.dp))
+                        listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
+                    )
+                )
+            )
+
+            Spacer(Modifier.height(4.dp))
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
@@ -1057,61 +1010,47 @@ fun SelectDateBox(viewModel: ScheduleScreenViewModel) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.weight(1f)
             ) {
-                items(viewModel.eveningSlots) { slot ->
-                    TimeSlotItem(
-                        slot = slot, onSlotClick = { viewModel.onTimeClick(it) })
+                items(eveningSlots) { slot ->
+                    TimeSlotItem(slot = slot, onSlotClick = { viewModel.selectTimeSlot(it) })
                 }
             }
-            Spacer(m.padding(top = 22.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
-            ) {
+
+            Spacer(Modifier.height(22.dp))
+
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 Card(
-                    onClick = {
-                        val finalDate = viewModel.getFinalSelectionString()
-                        if (finalDate != null) {
-                            println("User selected😂😂: $finalDate")
-                            // This is where you would pass it to the next screen
-                            // or save it to your database
-                            viewModel.closeTimePicker()
-                        } else {
-                            println("Please select both a day and a time💕.")
-                        }
-
-                    },
-                    modifier = m
-
-                        .fillMaxWidth(0.8f).height(45.dp).border(
-                            width = 1.dp,
-                            color = Color(30, 30, 30, 110),
-                            shape = RoundedCornerShape(8.dp)
-                        ).clip(shape = RoundedCornerShape(8.dp)).appButtonBack(),
-
-                    colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-
-                    ) {
-
+                    onClick = { viewModel.confirmTimeSelection() },
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f)
+                        .height(45.dp)
+                        .border(1.dp, Color(30, 30, 30, 110), RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(8.dp))
+                        .appButtonBack(),
+                    colors = CardDefaults.cardColors(containerColor = Color.Transparent)
+                ) {
                     Row(
-                        modifier = m.fillMaxSize(),
+                        Modifier.fillMaxSize(),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Text(
-                            "Confirm",
-                            fontFamily = popSemi,
-                            fontSize = 18.sp,
-                            color = Color(217, 217, 217, 255)
-                        )
+                        Text("Confirm", fontFamily = popSemi, fontSize = 18.sp, color = Color(217, 217, 217, 255))
                     }
                 }
-            } //continue button
-
-
+            }
         }
-
     }
 }
 
+// Parses "10:30 AM" -> 10, "6:00 PM" -> 18, "12:00 AM" -> 0
+private fun parseHour(time: String): Int {
+    return try {
+        val parts = time.split(" ")
+        var hour = parts[0].split(":")[0].toInt()
+        if (parts[1] == "PM" && hour != 12) hour += 12
+        else if (parts[1] == "AM" && hour == 12) hour = 0
+        hour
+    } catch (e: Exception) { 0 }
+}
 @Composable
 fun TimeSlotItem(
     slot: TimeSlot, onSlotClick: (String) -> Unit
