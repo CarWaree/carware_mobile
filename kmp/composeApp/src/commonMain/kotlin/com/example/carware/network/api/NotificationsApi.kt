@@ -34,3 +34,13 @@ suspend fun registerFCMToken( request: RegisterTokenRequest,client: HttpClient):
         throw Exception("Update Error (${response.status.value}): $rawBody")
     }
 }
+suspend fun testFcmNotification(client: HttpClient) {
+    val response: HttpResponse = client.get {
+        url("$baseUrl/api/notifications/test-fcm")
+    }
+    println("--- RESPONSE DEBUG test-fcm: Status: ${response.status.value}")
+    if (!response.status.isSuccess()) {
+        val rawBody = response.bodyAsText()
+        throw Exception("FCM Test Error (${response.status.value}): $rawBody")
+    }
+}

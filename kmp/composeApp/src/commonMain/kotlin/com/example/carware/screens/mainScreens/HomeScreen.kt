@@ -85,8 +85,9 @@ fun HomeScreen(
         is HomeScreenState.Success -> state.cars.firstOrNull()?.userName ?: "User"
         else -> "Guest"
     }
-    RequestNotificationPermission { granted ->
+    RequestNotificationPermission {  granted ->
         notificationViewModel.onPermissionResult(granted)
+        if (granted) notificationViewModel.testPushNotification()
     }
 
 //    val lifecycleOwner = LocalLifecycleOwner.current

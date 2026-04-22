@@ -37,4 +37,14 @@ class NotificationViewModel(
             }
         }
     }
+
+    fun testPushNotification() {
+        viewModelScope.launch {
+            try {
+                notificationsRepository.testFcmNotificationRepo()
+            } catch (e: Exception) {
+                println("FCM_TEST Failed: ${e.message}")
+            }
+        }
+    }
 }
