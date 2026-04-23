@@ -61,6 +61,7 @@ import carware.composeapp.generated.resources.poppins_semibold
 import carware.composeapp.generated.resources.pp
 import carware.composeapp.generated.resources.settings_logout
 import carware.composeapp.generated.resources.visa
+import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.navigation.EditProfileScreen
 import com.example.carware.navigation.SignUpScreen
@@ -84,17 +85,12 @@ fun ProfileScreen(
     viewModel: ProfileScreenViewModel,
     preferencesManager: PreferencesManager
 ) {
+    val strings = LocalStrings.current
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
     val redWithAlpha = Color(0x80C20000) // #C2000080
 
     val state by viewModel.state.collectAsState()
-
-//    val lifecycleOwner = LocalLifecycleOwner.current
-//
-//    LaunchedEffect(Unit) {
-//        viewModel.loadProfile()
-//    }
 
     val primaryGradientBrush = Brush.linearGradient(
         listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
@@ -117,7 +113,7 @@ fun ProfileScreen(
         is ProfileScreenState.Success -> {
             val profile = (state as ProfileScreenState.Success).profile
             val cars = (state as ProfileScreenState.Success).cars
-            val car = cars[0]
+            val car = if (cars.isNotEmpty()) cars[0] else null
             Column(
                 modifier = m
                     .fillMaxSize()
@@ -133,7 +129,7 @@ fun ProfileScreen(
                 ) {
                     Icon(
                         painter = painterResource(Res.drawable.arrow_left),
-                        contentDescription = "Back",
+                        contentDescription = strings.get("BACK"),
                         modifier = m
                             .size(28.dp)
                             .clickable { navController.popBackStack() }
@@ -142,7 +138,7 @@ fun ProfileScreen(
                     )
                     Spacer(modifier = m.weight(1f))
                     Text(
-                        text = "Profile",
+                        text = strings.get("PROFILE"),
                         fontFamily = popSemi,
                         fontSize = 25.sp,
                         fontWeight = FontWeight.Medium,
@@ -170,7 +166,7 @@ fun ProfileScreen(
                     Box(contentAlignment = Alignment.BottomEnd) {
                         Image(
                             painter = painterResource(Res.drawable.pp),
-                            contentDescription = "Profile Picture",
+                            contentDescription = strings.get("PROFILE"),
                             modifier = Modifier
                                 .size(140.dp)
                                 .clip(CircleShape)
@@ -179,7 +175,7 @@ fun ProfileScreen(
                         // The edit icon already contains the background and white pencil
                         Icon(
                             painter = painterResource(Res.drawable.edit),
-                            contentDescription = "Edit",
+                            contentDescription = strings.get("EDIT_PROFILE"),
                             tint = Color.Unspecified,
                             modifier = Modifier
                                 .size(34.dp)
@@ -202,7 +198,7 @@ fun ProfileScreen(
                     )
 
                     Text(
-                        text = "Member since July 2025",
+                        text = "${strings.get("MEMBER_SINCE")} July 2025",
                         fontFamily = popMid,
                         fontSize = 17.sp,
                         fontWeight = FontWeight.W400,
@@ -215,7 +211,7 @@ fun ProfileScreen(
                     // My Primary Vehicle Section
                     Column(modifier = Modifier.padding(horizontal = 20.dp)) {
                         Text(
-                            text = "My Primary Vehicle",
+                            text = strings.get("MY_PRIMARY_VEHICLE"),
                             fontFamily = popSemi,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Medium,
@@ -226,14 +222,14 @@ fun ProfileScreen(
                         Spacer(modifier = Modifier.height(12.dp))
 
                         // Primary Vehicle Card
-
-                        PrimaryCarCard(
-                            car.modelName,
-                            car.brandName,
-                            car.brandName,
-                            car.color,
-                        )
-                        // car card
+                        if (car != null) {
+                            PrimaryCarCard(
+                                modelName = car.modelName,
+                                brandName = car.brandName,
+                                modelYear = car.modelName, // Using modelName as placeholder for year if not available separately
+                                color = car.color,
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(24.dp))
@@ -261,7 +257,7 @@ fun ProfileScreen(
                             )
                             Spacer(modifier = Modifier.width(16.dp))
                             Text(
-                                text = "My Cars",
+                                text = strings.get("MY_CARS"),
                                 fontFamily = popSemi,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Medium,
@@ -294,7 +290,7 @@ fun ProfileScreen(
                             Spacer(modifier = Modifier.width(16.dp))
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(
-                                    text = "Visa ending in 2030",
+                                    text = "${strings.get("VISA_ENDING_IN")} 2030",
                                     fontFamily = popSemi,
                                     fontSize = 19.sp,
                                     fontWeight = FontWeight.Medium,
@@ -304,7 +300,7 @@ fun ProfileScreen(
 
                                 )
                                 Text(
-                                    "Expires 12/26",
+                                    "${strings.get("EXPIRES")} 12/26",
                                     fontFamily = popMid,
                                     fontSize = 12.sp,
                                     color = Color.Gray
@@ -336,7 +332,7 @@ fun ProfileScreen(
                                 )
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Text(
-                                    text = "Add new method",
+                                    text = strings.get("ADD_NEW_METHOD"),
                                     fontFamily = popSemi,
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Medium,
@@ -352,8 +348,12 @@ fun ProfileScreen(
 
                     // Logout Button
                     Button(
-                        onClick = { preferencesManager.performLogout()
-                                  navController.navigate(SignUpScreen)},
+                        onClick = { 
+                            preferencesManager.performLogout()
+                            navController.navigate(SignUpScreen) {
+                                popUpTo(0) { inclusive = true }
+                            }
+                        },
                         modifier = Modifier
                             .fillMaxWidth(0.65f)
                             .align(Alignment.CenterHorizontally)
@@ -369,7 +369,7 @@ fun ProfileScreen(
                             )
                             Spacer(modifier = Modifier.width(12.dp))
                             Text(
-                                "log out",
+                                strings.get("LOG_OUT"),
                                 fontFamily = popSemi,
                                 fontSize = 20.sp,
                                 color = Color.White
@@ -393,8 +393,6 @@ fun PrimaryCarCard(
     brandName: String,
     modelYear: String,
     color: String
-
-
 ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
 
@@ -402,7 +400,6 @@ fun PrimaryCarCard(
         colors = CardDefaults.cardColors(containerColor = Color(204, 204, 204, 204)),
         modifier = m
             .fillMaxWidth()
-//                        .padding(vertical = 20.dp)
             .clip(shape = RoundedCornerShape(8.dp)),
     ) {
         Column(
@@ -431,7 +428,6 @@ fun PrimaryCarCard(
             Spacer(modifier = m.padding(vertical = 2.dp))
             Row(
                 modifier = m.fillMaxWidth(),
-                //                                .padding(horizontal = 20.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -499,6 +495,3 @@ fun PrimaryCarCard(
         } //card content
     }
 }
-
-
-

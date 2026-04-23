@@ -119,8 +119,9 @@ val StringsEn = mapOf(
 
     // schedule screen
     "SCHEDULE_SERVICE" to "Schedule Service",
-    "SELECT_CAR" to "Select your Car",
-    "SELECT_SERVICE"  to "Select Service",
+    "SELECT_CAR" to "Select Your Car",
+    "SELECT_SERVICE"  to "select your Service",
+    "SELECT_SERVICES" to "Select Services",
     "SELECT_YOUR_PROVIDER" to "select your Provider",
     "PROCESSING" to "Processing...",
     "CONFIRM_RESERVATION" to "Confirm Reservation",
@@ -162,5 +163,24 @@ val StringsEn = mapOf(
     "PREFERENCES" to "Preferences",
     "CHANGE_LANGUAGE" to "Change Language",
     "HELP_SUPPORT" to "Help & Support",
-    "LOG_OUT" to "Log Out"
+    "LOG_OUT" to "Log Out",
+
+    // Profile
+    "PROFILE" to "Profile",
+    "MEMBER_SINCE" to "Member since",
+    "MY_PRIMARY_VEHICLE" to "My Primary Vehicle",
+    "MY_CARS" to "My Cars",
+    "VISA_ENDING_IN" to "Visa ending in",
+    "EXPIRES" to "Expires",
+    "ADD_NEW_METHOD" to "Add new method",
+    "CHANGE_PHOTO" to "Change profile photo",
+    "DISCARD_CHANGES" to "Discard Changes",
+    "EMAIL_ADDRESS" to "Email Address",
+    "FULL_NAME_LABEL" to "Full Name",
+
+    // Reminder
+    "REMINDER" to "Reminder",
+    "ADD_REMINDER" to "Add Reminder",
+    "NOTE_LABEL" to "Note",
+    "ADD_NOTE_PLACEHOLDER" to "Add your Note"
 )
