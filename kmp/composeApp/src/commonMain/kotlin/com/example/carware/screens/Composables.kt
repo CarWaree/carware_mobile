@@ -50,6 +50,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
@@ -87,9 +88,12 @@ import carware.composeapp.generated.resources.x_time_slot
 import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.navigation.AddCarScreen
+import com.example.carware.navigation.EditCarScreen
 import com.example.carware.navigation.ReminderScreen
+import com.example.carware.screens.vehicle.EditCarScreen
 import com.example.carware.util.navBar.TabItem
 import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.viewModel.home.HomeScreenViewModel
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
 import com.example.carware.viewModel.schedule.screen.TimeSlot
 import kotlinx.coroutines.CoroutineScope
@@ -261,12 +265,15 @@ fun BottomNavBar(
 // home Screen
 @Composable
 fun CarCard(
+    viewModel: HomeScreenViewModel,
     navController: NavController,
     brand: String,
     model: String,
     modelYear: String,
     color: String,
-    image: DrawableResource
+    image: DrawableResource,
+    onEditClick: () -> Unit,  // add this
+
 ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
 
@@ -311,46 +318,53 @@ fun CarCard(
 
                     )
                     DropdownMenu(
-                        modifier = m.border(
-                            width = 0.5.dp,
-                            color = Color.White.copy(alpha = 0.3f),
-                            shape = RoundedCornerShape(12.dp)
-                        ),
-
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(12.dp),
                         containerColor = Color(217, 217, 217).copy(alpha = 0.8f),
-                        tonalElevation = 0.dp,
-                        shadowElevation = 0.dp
 
-                    ) {
+                        modifier = Modifier
+                            .border(
+                                width = 0.5.dp,
+                                color = Color.White.copy(alpha = 0.3f),
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                    )
+                    {
                         DropdownMenuItem(
                             text = { Text("Add",
-                                fontSize = 12.sp,
+                                fontSize = 14.sp,
                                 color=Color(30, 30, 30, 153),
                                 fontFamily = popSemi,
                                 fontWeight = FontWeight.W400
                             ) },
-                            onClick = { navController.navigate(AddCarScreen) }
+                            onClick = {
+                                navController.navigate(AddCarScreen)
+                                expanded = false}
                         )
                         DropdownMenuItem(
                             text = { Text("Edit",
-                                fontSize = 12.sp,
+                                fontSize = 14.sp,
                                 color=Color(30, 30, 30, 153),
                                 fontFamily = popSemi,
                                 fontWeight = FontWeight.W400
                             ) },
-                            onClick = { expanded = false }
+                            onClick = {
+                                onEditClick()
+                                expanded = false }
                         )
                         DropdownMenuItem(
                             text = { Text("Delete",
-                                fontSize = 12.sp,
+                                fontSize = 14.sp,
                                 color=Color(30, 30, 30, 153),
                                 fontFamily = popSemi,
                                 fontWeight = FontWeight.W400
                             ) },
-                            onClick = { expanded = false }
+                            onClick = {
+                                viewModel.deleteCar()
+                                viewModel.loadVehicles()
+                                expanded = false
+                            }
                         )
                     }
                 }

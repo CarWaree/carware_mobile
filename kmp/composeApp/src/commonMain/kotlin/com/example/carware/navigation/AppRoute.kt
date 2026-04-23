@@ -1,5 +1,6 @@
 package com.example.carware.navigation
 
+import com.example.carware.network.apiResponse.vehicle.Vehicles
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -64,3 +65,6 @@ object ReminderScreen
 
 @Serializable
 object ServiceRecordScreen
+
+@Serializable
+data class EditCarScreen(val carId: Int)

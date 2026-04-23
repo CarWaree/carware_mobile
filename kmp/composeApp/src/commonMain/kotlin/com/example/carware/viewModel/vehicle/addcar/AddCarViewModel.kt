@@ -1,4 +1,4 @@
-package com.example.carware.viewModel.addcar
+package com.example.carware.viewModel.vehicle.addcar
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -64,7 +64,6 @@ class AddCarViewModel( private val repository: VehicleRepository,
             _state.update { it.copy(availableModels = modelsFromApi.map { it.name }) }
         }
     }
-
 
     fun selectModel(model: Model) {
         _state.update { current ->

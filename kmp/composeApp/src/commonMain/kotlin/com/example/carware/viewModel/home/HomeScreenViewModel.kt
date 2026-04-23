@@ -3,6 +3,7 @@ package com.example.carware.viewModel.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.carware.cache.vehiclesStore
+import com.example.carware.network.api.deleteVehicle
 import com.example.carware.repository.VehicleRepository
 import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.profile.ProfileScreenState
@@ -59,6 +60,18 @@ class HomeScreenViewModel(
                     _state.value = HomeScreenState.Error("No internet connection")
                 }
             }
+        }
+    }
+    private var currentCarId: Int? = null
+
+    fun setCurrentCar(carId: Int) {
+        currentCarId = carId
+    }
+
+    fun deleteCar() {
+        val id = currentCarId ?: return
+        viewModelScope.launch {
+            repository.deleteVehicleRepo(id)
         }
     }
 }

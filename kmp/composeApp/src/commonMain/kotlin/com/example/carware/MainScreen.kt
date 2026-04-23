@@ -8,6 +8,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -22,6 +23,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.carware.navigation.AddCarScreen
+import com.example.carware.navigation.EditCarScreen
 import com.example.carware.navigation.EditProfileScreen
 import com.example.carware.navigation.EmailVerificationScreen
 import com.example.carware.navigation.HistoryScreen
@@ -40,7 +42,8 @@ import com.example.carware.navigation.SignUpScreen
 import com.example.carware.navigation.SplashScreen
 import com.example.carware.navigation.TestScreen
 import com.example.carware.navigation.VerificationCodeScreen
-import com.example.carware.screens.AddCarScreen
+import com.example.carware.network.apiResponse.vehicle.Vehicles
+import com.example.carware.screens.vehicle.AddCarScreen
 import com.example.carware.screens.BottomNavBar
 import com.example.carware.screens.ReminderScreen
 import com.example.carware.screens.SelectLanguageScreen
@@ -59,11 +62,12 @@ import com.example.carware.screens.onBoarding.LanguageSelectionScreen
 import com.example.carware.screens.onBoarding.OnBoardingScreen
 import com.example.carware.screens.profile.EditProfileScreen
 import com.example.carware.screens.profile.ProfileScreen
+import com.example.carware.screens.vehicle.EditCarScreen
 import com.example.carware.util.lang.AppLanguage
 import com.example.carware.util.lang.LocalizedStrings
 import com.example.carware.util.navBar.bottomTabs
 import com.example.carware.util.storage.PreferencesManager
-import com.example.carware.viewModel.addcar.AddCarViewModel
+import com.example.carware.viewModel.vehicle.addcar.AddCarViewModel
 import com.example.carware.viewModel.auth.emailVerification.EmailVerificationViewModel
 import com.example.carware.viewModel.auth.forgotPassword.ForgotPasswordViewModel
 import com.example.carware.viewModel.auth.logIn.LogInViewModel
@@ -75,9 +79,9 @@ import com.example.carware.viewModel.home.HomeScreenViewModel
 import com.example.carware.viewModel.notification.NotificationViewModel
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
-import io.ktor.client.request.invoke
+import com.example.carware.viewModel.vehicle.editCar.EditCarViewModel
 import org.koin.compose.koinInject
-import org.koin.core.parameter.parametersOf
+import kotlin.reflect.typeOf
 
 val m = Modifier
 val LocalStrings = staticCompositionLocalOf<LocalizedStrings> {
@@ -128,7 +132,9 @@ fun MainScreen() {
                             HomeScreen::class -> {
                                 val notificationViewModel: NotificationViewModel = koinInject()
                                 val homeViewModel: HomeScreenViewModel = koinInject()
-                                HomeScreen(navController, homeViewModel, notificationViewModel)
+                                HomeScreen(navController, homeViewModel,
+//                                    notificationViewModel
+                                )
                             }
 
                             ScheduleScreen::class -> {
@@ -262,6 +268,17 @@ fun MainScreen() {
                     scheduleViewModel,
                     preferencesManager
                 )
+            }
+
+            composable<EditCarScreen> { backStackEntry ->
+                val route = backStackEntry.toRoute<EditCarScreen>()
+                val viewModel : EditCarViewModel=koinInject()
+
+                LaunchedEffect(Unit) {
+                    viewModel.loadCar(route.carId)
+                }
+
+                EditCarScreen(navController = navController, viewModel = viewModel)
             }
         }
     }

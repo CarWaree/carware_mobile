@@ -23,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -47,6 +48,7 @@ import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.LocalStrings
 import com.example.carware.Notification.RequestNotificationPermission
 import com.example.carware.m
+import com.example.carware.navigation.EditCarScreen
 import com.example.carware.navigation.ReminderScreen
 import com.example.carware.network.apiResponse.appointment.Appointments
 import com.example.carware.network.apiResponse.vehicle.Vehicles
@@ -67,8 +69,7 @@ import org.jetbrains.compose.resources.painterResource
 fun HomeScreen(
     navController: NavController,
     viewModel: HomeScreenViewModel,
-    notificationViewModel: NotificationViewModel
-
+//    notificationViewModel: NotificationViewModel
 ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
@@ -85,16 +86,65 @@ fun HomeScreen(
         is HomeScreenState.Success -> state.cars.firstOrNull()?.userName ?: "User"
         else -> "Guest"
     }
-    RequestNotificationPermission {  granted ->
-        notificationViewModel.onPermissionResult(granted)
-        if (granted) notificationViewModel.testPushNotification()
-    }
-
-//    val lifecycleOwner = LocalLifecycleOwner.current
-//
-//    LaunchedEffect(Unit) {
-//        viewModel.loadVehicles()
+//    RequestNotificationPermission {  granted ->
+//        notificationViewModel.onPermissionResult(granted)
+//        if (granted) notificationViewModel.testPushNotification()
 //    }
+    @Composable
+    fun SuccessCarPagerContent(cars: List<Vehicles>,navController: NavController) {
+        val pagerState = rememberPagerState(pageCount = { cars.size })
+
+        LaunchedEffect(pagerState.currentPage) {
+            val currentCarId = cars[pagerState.currentPage].id
+            viewModel.setCurrentCar(currentCarId)
+        }
+
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Spacer(modifier = m.padding(vertical = 16.dp))
+
+            HorizontalPager(
+                state = pagerState,
+                modifier = m.fillMaxWidth(),
+                verticalAlignment = Alignment.Top
+            ) { page ->
+                val car = cars[page]
+                Box(modifier = m.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CarCard(
+                        brand = car.brandName,
+                        model = car.modelName,
+                        modelYear = car.year.toString(),
+                        color = car.color,
+                        image = Res.drawable.audi,
+                        navController = navController,
+                        viewModel = viewModel,
+                        onEditClick = {
+                            navController.navigate(EditCarScreen( carId = car.id))
+                        },
+
+                    )
+                }
+            }
+
+            //  page indicator
+            Row(
+                Modifier.fillMaxWidth().padding(top = 8.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                repeat(cars.size) { iteration ->
+                    val color = if (pagerState.currentPage == iteration)
+                        Color(194, 0, 0, 255)
+                    else Color.Transparent
+                    Box(
+                        modifier = m
+                            .padding(4.dp)
+                            .clip(shape = CircleShape)
+                            .background(color).size(10.dp)
+                            .border(shape = CircleShape, width = 1.dp, color = Color(194, 0, 0, 255))
+                    )
+                }
+            }
+        }
+    }
 
     Column(
         m
@@ -270,55 +320,9 @@ fun HomeScreen(
         }
     }
     }
-}
-
-@Composable
-fun SuccessCarPagerContent(cars: List<Vehicles>,navController: NavController) {
-    // Initialize pager state with the number of cars
-    val pagerState = rememberPagerState(pageCount = { cars.size })
-
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Spacer(modifier = m.padding(vertical = 16.dp))
-
-        HorizontalPager(
-            state = pagerState,
-            modifier = m.fillMaxWidth(),
-            verticalAlignment = Alignment.Top
-        ) { page ->
-            val car = cars[page]
-            Box(modifier = m.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                CarCard(
-                    brand = car.brandName,
-                    model = car.modelName,
-                    modelYear = car.year.toString(),
-                    color = car.color,
-                    image = Res.drawable.audi,
-                    navController = navController
-
-                )
-            }
-        }
-
-        //  page indicator
-        Row(
-            Modifier.fillMaxWidth().padding(top = 8.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            repeat(cars.size) { iteration ->
-                val color = if (pagerState.currentPage == iteration)
-                    Color(194, 0, 0, 255)
-                else Color.Transparent
-                Box(
-                    modifier = m
-                        .padding(4.dp)
-                        .clip(shape = CircleShape)
-                        .background(color).size(10.dp)
-                        .border(shape = CircleShape, width = 1.dp, color = Color(194, 0, 0, 255))
-                )
-            }
-        }
     }
-}
+
+
 
 @Composable
 fun SuccessServicePagerContent(appointments: List<Appointments>) {

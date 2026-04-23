@@ -2,14 +2,21 @@ package com.example.carware.repository
 
 import com.example.carware.cache.vehiclesStore
 import com.example.carware.network.api.addVehicles
+import com.example.carware.network.api.deleteVehicle
 import com.example.carware.network.api.getAppointments
 import com.example.carware.network.api.getBrands
 import com.example.carware.network.api.getModels
+import com.example.carware.network.api.getVehicle
 import com.example.carware.network.api.getVehicles
+import com.example.carware.network.api.updateVehicle
+import com.example.carware.network.apiRequests.vehicle.UpdateVehicleRequest
 import com.example.carware.network.apiRequests.vehicle.VehicleRequest
 import com.example.carware.network.apiResponse.appointment.Appointments
 import com.example.carware.network.apiResponse.vehicle.Brand
+import com.example.carware.network.apiResponse.vehicle.DeleteVehicleResponse
 import com.example.carware.network.apiResponse.vehicle.Model
+import com.example.carware.network.apiResponse.vehicle.UpdateVehicleResponse
+import com.example.carware.network.apiResponse.vehicle.Vehicle
 import com.example.carware.network.apiResponse.vehicle.VehicleResponse
 import com.example.carware.network.apiResponse.vehicle.Vehicles
 import com.example.carware.network.cache.VehiclesCacheData
@@ -51,6 +58,16 @@ class VehicleRepository(
         }
     }
 
+    suspend fun getVehicleRepo(id: Int): Vehicle {
+        return try {
+            val response = getVehicle(client, id)
+            response.data
+        } catch (e: Exception) {
+            println("Failed to get vehicle: ${e.message}")
+            throw e
+        }
+    }
+
     suspend fun getModelsRepo(brandId: Int): List<Model> {
         return try {
             getModels(brandId, client)
@@ -76,6 +93,17 @@ class VehicleRepository(
             println("=== REPO ERROR: ${e.message}")
             emptyList()
         }
+    }
+
+    suspend fun deleteVehicleRepo(id: Int): DeleteVehicleResponse {
+        return deleteVehicle(client, id)
+    }
+
+    suspend fun updateVehicleRepo(
+        id: Int,
+        updateVehicleRequest: UpdateVehicleRequest
+    ): UpdateVehicleResponse {
+        return updateVehicle(client, id, updateVehicleRequest)
     }
 }
 

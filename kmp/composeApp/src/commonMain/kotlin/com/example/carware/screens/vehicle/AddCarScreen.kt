@@ -1,0 +1,359 @@
+package com.example.carware.screens.vehicle
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import carware.composeapp.generated.resources.Res
+import carware.composeapp.generated.resources.arrow_1
+import carware.composeapp.generated.resources.keyboard_arrow_down
+import carware.composeapp.generated.resources.keyboard_arrow_up
+import carware.composeapp.generated.resources.poppins_medium
+import carware.composeapp.generated.resources.poppins_semibold
+import com.example.carware.LocalStrings
+import com.example.carware.m
+import com.example.carware.screens.SelectDropdown
+import com.example.carware.screens.appButtonBack
+import com.example.carware.screens.appGradBack
+import com.example.carware.viewModel.vehicle.addcar.AddCarViewModel
+import org.jetbrains.compose.resources.Font
+import org.jetbrains.compose.resources.painterResource
+
+
+@Composable
+fun AddCarIntDropdown(
+    label: String,
+    selectedValue: Int?, // Accepts Int?
+    options: List<Int>, // Accepts List<Int>
+    onSelect: (Int) -> Unit, // Returns Int
+    m: Modifier = Modifier, // Added a default modifier parameter for convenience
+) {
+
+    // 1. Convert Int options to String options for display
+    val displayOptions = remember(options) { options.map { it.toString() } }
+
+    // 2. Convert selected Int value to String for display
+    val selectedValueString = remember(selectedValue) { selectedValue?.toString() ?: "" }
+
+
+    val textFieldColors = TextFieldDefaults.colors(
+        unfocusedTextColor = Color.DarkGray,
+        errorTextColor = Color(194, 0, 0, 255),
+
+        focusedContainerColor = Color.Transparent,
+        unfocusedContainerColor = Color.Transparent,
+        disabledContainerColor = Color.Transparent,
+        errorContainerColor = Color.Transparent,
+
+        cursorColor = Color(194, 0, 0, 255),
+        focusedIndicatorColor = Color(118, 118, 118, 255),
+        unfocusedIndicatorColor = Color(118, 118, 118, 255),
+        errorIndicatorColor = Color(194, 0, 0, 255),
+        focusedTextColor = Color(0, 0, 0, 255)
+    )
+    // NOTE: You must define your Font resources (Res.font.poppins_...)
+    // in your project structure for this code to compile.
+    val popSemi = FontFamily(Font(Res.font.poppins_semibold))
+    val popMid = FontFamily(Font(Res.font.poppins_medium))
+    val scrollState = rememberScrollState()
+
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(
+        m
+            .clickable { expanded = true }
+    ) {
+        OutlinedTextField(
+            modifier = m
+                .fillMaxWidth()
+                .clickable { expanded = true }
+                .size(290.dp, 55.dp),
+            value = selectedValueString, // Use the String representation
+            onValueChange = {},
+            readOnly = true,
+            placeholder = {
+                Text(
+                    label,
+                    fontFamily = popMid,
+                    fontSize = 16.sp,
+                    color = Color(30, 30, 30, 51)
+                )
+            },
+            trailingIcon = {
+                Icon(
+                    if (!expanded) {
+                        painterResource(Res.drawable.keyboard_arrow_down)
+                    } else {
+                        painterResource(Res.drawable.keyboard_arrow_up)
+                    },
+                    contentDescription = "dropdown arrow",
+                    m.clickable { expanded = true }
+                )
+            },
+            shape = RoundedCornerShape(8.dp),
+            colors = textFieldColors
+        )
+
+        DropdownMenu(
+            modifier = m
+                .verticalScroll(scrollState)
+                .size(300.dp, 135.dp)
+                .background(Color(230, 230, 230, 255)),
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            displayOptions.forEachIndexed { index, optionString ->
+                DropdownMenuItem(
+                    modifier = m.height(40.dp),
+                    text = {
+                        Text(
+                            optionString, // Display the String
+                            fontFamily = popSemi,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.W400,
+                            color = Color(102, 104, 105, 255),
+                        )
+                    },
+                    onClick = {
+                        val selectedInt = optionString.toIntOrNull()
+                        if (selectedInt != null) {
+                            onSelect(selectedInt)
+                        }
+                        expanded = false
+                    }
+                )
+                if (index < displayOptions.size - 1) {
+                    Divider(color = Color(118, 118, 118, 128), thickness = 1.dp)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun AddCarScreen(
+    navController: NavController,
+
+    viewModel: AddCarViewModel,
+) {
+    val strings = LocalStrings.current
+    val state by viewModel.state.collectAsState()
+    val popSemi = FontFamily(Font(Res.font.poppins_semibold))
+    val popMid = FontFamily(Font(Res.font.poppins_medium))
+
+    Column(
+        m
+            .background(Color(230, 230, 230, 255))
+            .fillMaxSize()
+
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.25f)
+                .clip(RoundedCornerShape(bottomStart = 70.dp, bottomEnd = 70.dp))
+                .appGradBack(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp)
+            ) {
+                // Back icon at the start
+                Icon(
+                    painter = painterResource(Res.drawable.arrow_1),
+                    contentDescription = null,
+
+                    tint = Color(245, 245, 245),
+                    modifier = Modifier
+                        .size(26.dp)
+                        .rotate(180f)
+                        .align(Alignment.CenterStart)
+                )
+
+                // Centered text
+                Text(
+                    strings.get("ADD_CAR"),
+                    fontFamily = popMid,
+                    fontSize = 26.sp,
+                    fontWeight = Bold,
+                    color = Color(235, 235, 235),
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Subtitle
+            Text(
+                strings.get("SET_UP_CAR_PROFILE"),
+                fontFamily = popMid,
+                fontSize = 14.sp,
+                color = Color(235, 235, 235),
+                textAlign = TextAlign.Center
+            )
+        }//top bar
+
+        Spacer(m.padding(vertical = 30.dp)) //will be edited at line addition
+        Column(
+            m.padding(horizontal = 30.dp)
+                .fillMaxSize(),
+
+            ) {
+            Text(
+                strings.get("CAR_BRAND"),
+                fontFamily = popMid,
+                fontSize = 20.sp,
+                fontWeight = Bold,
+                color = Color(30, 30, 30, 153),
+            )
+            SelectDropdown(
+                strings.get("CAR_BRAND"),
+                state.selectedBrand,
+                state.availableBrands,
+                { name ->
+                    val brand = viewModel.brands.firstOrNull { it.name == name }
+                    brand?.let { viewModel.selectBrand(it) } // stores ID and name
+                }
+            )
+
+            Spacer(m.padding(vertical = 8.dp))
+
+            Spacer(m.padding(vertical = 8.dp))
+            Text(
+                strings.get("CAR_MODEL"),
+                fontFamily = popMid,
+                fontSize = 20.sp,
+                fontWeight = Bold,
+                color = Color(30, 30, 30, 153),
+            )
+            SelectDropdown(
+                strings.get("CAR_MODEL"),
+                state.selectedModel,
+                state.availableModels,
+                { name ->
+                    val model = viewModel.models.firstOrNull { it.name == name }
+                    model?.let { viewModel.selectModel(it) }
+                }
+
+            )
+            Text(
+                strings.get("CAR_YEAR"),
+                fontFamily = popMid,
+                fontSize = 20.sp,
+                fontWeight = Bold,
+                color = Color(30, 30, 30, 153),
+            )
+            AddCarIntDropdown(
+                label = strings.get("CAR_YEAR"),
+                selectedValue = state.selectedYear,
+                options = state.availableYears,
+                onSelect = viewModel::selectYear
+            )
+            Spacer(m.padding(vertical = 8.dp))
+            // Color Dropdown
+            Text(
+                strings.get("CAR_COLOR"),
+                fontFamily = popMid,
+                fontSize = 20.sp,
+                fontWeight = Bold,
+                color = Color(30, 30, 30, 153),
+            )
+            SelectDropdown(
+                label = strings.get("CAR_COLOR"),
+                selectedValue = state.selectedColor,
+                options = state.availableColors,
+                onSelect = viewModel::selectColor
+            )
+            Spacer(m.padding(vertical = 16.dp))
+
+            Card(
+                onClick = {
+                    viewModel.addVehicle(navController)
+
+                },
+                modifier = m
+                    .size(width = 240.dp, height = 45.dp)
+                    .border(
+                        width = 1.dp,
+                        color = Color(30, 30, 30, 110),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .align(Alignment.CenterHorizontally)
+                    .clip(shape = RoundedCornerShape(8.dp))
+                    .appButtonBack(),
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.Transparent,
+                    disabledContainerColor = Color.Gray
+                ),
+                enabled = state.isSaveButtonEnabled,
+
+                ) {
+
+                Row(
+                    modifier = m.fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        strings.get("ADD_CAR"),
+                        fontFamily = popSemi,
+                        fontSize = 18.sp,
+                        fontWeight = Bold,
+                        color = Color(217, 217, 217, 255)
+                    )
+
+
+                }
+
+            } // login button
+
+        }
+
+
+    }
+
+}
+

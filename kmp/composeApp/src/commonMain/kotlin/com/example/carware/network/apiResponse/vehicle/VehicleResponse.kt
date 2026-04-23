@@ -17,5 +17,4 @@ data class Vehicle(
     val modelName: String,
     val year: Int,
     val color: String,
-    val userName: String
-)
+    val userName: String?  )

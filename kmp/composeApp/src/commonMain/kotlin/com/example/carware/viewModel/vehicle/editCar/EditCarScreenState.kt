@@ -1,15 +1,15 @@
-package com.example.carware.viewModel.addcar
+package com.example.carware.viewModel.vehicle.editCar
 
-data class AddCarScreenState(
+data class EditCarScreenState(
     val selectedBrand: String? = null,
     val selectedModel: String? = null,
+
 
     val selectedBrandId: Int? = null,
     val selectedModelId: Int? = null,
 
     val selectedColor: String? = null,
     val selectedYear: Int? = null,
-
 
 
     val availableBrands: List<String> = emptyList(),

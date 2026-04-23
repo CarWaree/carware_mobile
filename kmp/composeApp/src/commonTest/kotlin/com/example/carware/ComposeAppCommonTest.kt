@@ -3,7 +3,8 @@ package com.example.carware
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ComposeAppCommonTest {
+class ComposeAppCommonTest
+{
 
     @Test
     fun example() {

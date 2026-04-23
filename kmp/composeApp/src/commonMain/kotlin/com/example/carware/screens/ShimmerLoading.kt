@@ -84,6 +84,26 @@ fun ShimmerCarCard() {
 }
 
 @Composable
+fun DropdownShimmer(modifier: Modifier = Modifier) {
+    val infiniteTransition = rememberInfiniteTransition()
+    val shimmerAlpha by infiniteTransition.animateFloat(
+        initialValue = 0.2f,
+        targetValue = 0.6f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(800, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(55.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(Color(118, 118, 118, (255 * shimmerAlpha).toInt()))
+    )
+}
+@Composable
 fun ShimmerOBDCard() {
     Box(
         modifier = Modifier

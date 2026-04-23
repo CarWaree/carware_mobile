@@ -9,7 +9,7 @@ import com.example.carware.repository.ServiceRepository
 import com.example.carware.repository.VehicleRepository
 import com.example.carware.repository.auth.AuthRepository
 import com.example.carware.util.storage.PreferencesManager
-import com.example.carware.viewModel.addcar.AddCarViewModel
+import com.example.carware.viewModel.vehicle.addcar.AddCarViewModel
 import com.example.carware.viewModel.auth.emailVerification.EmailVerificationViewModel
 import com.example.carware.viewModel.auth.forgotPassword.ForgotPasswordViewModel
 import com.example.carware.viewModel.auth.logIn.LogInViewModel
@@ -21,6 +21,7 @@ import com.example.carware.viewModel.home.HomeScreenViewModel
 import com.example.carware.viewModel.notification.NotificationViewModel
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
+import com.example.carware.viewModel.vehicle.editCar.EditCarViewModel
 import org.koin.dsl.module
 
 fun appModule(preferencesManager: PreferencesManager) = module {
@@ -52,6 +53,7 @@ fun appModule(preferencesManager: PreferencesManager) = module {
     factory { ProfileScreenViewModel(get(), get()) }
     factory { ForgotPasswordViewModel(get(), get()) }
     factory { NotificationViewModel(get(),get()) }
+    factory { EditCarViewModel(get()) }
     // AppFonts.kt
 
 }
