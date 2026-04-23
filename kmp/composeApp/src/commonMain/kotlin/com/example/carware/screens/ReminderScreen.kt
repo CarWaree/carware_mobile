@@ -129,7 +129,7 @@ fun ReminderScreen(
             ) {
                 Icon(
                     painter = painterResource(Res.drawable.arrow_left),
-                    contentDescription = "Back",
+                    contentDescription = strings.get("BACK"),
                     modifier = Modifier
                         .size(28.dp)
                         .clickable { navController.popBackStack() }
@@ -142,7 +142,7 @@ fun ReminderScreen(
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    text = " Add Reminder",
+                    text = strings.get("ADD_REMINDER"),
                     fontFamily = pop,
                     fontSize = 25.sp,
                     fontWeight = FontWeight.Medium,
@@ -194,7 +194,7 @@ fun ReminderScreen(
 
                 // ============ SELECT SERVICES SECTION ============
                 Text(
-                    strings.get("SELECT_SERVICE"),
+                    strings.get("SELECT_SERVICES"),
                     fontFamily = popSemi,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
@@ -237,7 +237,7 @@ fun ReminderScreen(
 
 // ── "Note" label ──────────────────────────────────────────────────────
                 Text(
-                    text = "Note",
+                    text = strings.get("NOTE_LABEL"),
                     fontFamily = popSemi,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
@@ -282,7 +282,7 @@ fun ReminderScreen(
                         decorationBox = { innerTextField ->
                             if (note.isEmpty()) {
                                 Text(
-                                    text = "Add your note",
+                                    text = strings.get("ADD_NOTE_PLACEHOLDER"),
                                     fontFamily = popMid,
                                     fontSize = 13.sp,
                                     color = Color(0xFF9E9E9E)
@@ -354,7 +354,7 @@ fun ReminderScreen(
                     // Confirm Button
                     Card(
                         onClick = {
-                                viewModel.confirmAppointment()
+                            viewModel.confirmAppointment()
                         },
                         modifier = m
                             .fillMaxWidth(0.8f)
@@ -374,7 +374,7 @@ fun ReminderScreen(
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                text = "Add Reminder",
+                                text = strings.get("ADD_REMINDER"),
                                 fontFamily = popSemi,
                                 fontSize = 18.sp,
                                 color = Color(217, 217, 217, 255)

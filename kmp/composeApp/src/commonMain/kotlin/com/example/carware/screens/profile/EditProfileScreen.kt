@@ -20,33 +20,27 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.*
+import com.example.carware.LocalStrings
 import com.example.carware.viewModel.profile.ProfileScreenState
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
-import kotlinx.coroutines.awaitCancellation
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 fun EditProfileScreen(
     navController: NavController,
     viewModel: ProfileScreenViewModel
 ) {
-
+    val strings = LocalStrings.current
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
     val pop = FontFamily(Font(Res.font.poppins))
@@ -57,15 +51,6 @@ fun EditProfileScreen(
 
     val state by viewModel.state.collectAsState()
     val editState by viewModel.editState.collectAsState()
-
-//    val lifecycleOwner = LocalLifecycleOwner.current
-//    LaunchedEffect(lifecycleOwner) {
-//        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-//            viewModel.loadProfile()
-//            awaitCancellation()    // 👈 stops the loop
-//
-//        }
-//    }
 
     when (state) {
         is ProfileScreenState.Loading -> {
@@ -102,7 +87,7 @@ fun EditProfileScreen(
                 ) {
                     Icon(
                         painter = painterResource(Res.drawable.arrow_left),
-                        contentDescription = "Back",
+                        contentDescription = strings.get("BACK"),
                         modifier = Modifier
                             .size(28.dp)
                             .clickable { navController.popBackStack() }
@@ -115,7 +100,7 @@ fun EditProfileScreen(
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
-                        text = "Edit Profile",
+                        text = strings.get("EDIT_PROFILE"),
                         fontFamily = pop,
                         fontSize = 25.sp,
                         fontWeight = FontWeight.Medium,
@@ -140,7 +125,7 @@ fun EditProfileScreen(
                     Box(contentAlignment = Alignment.BottomEnd) {
                         Image(
                             painter = painterResource(Res.drawable.pp),
-                            contentDescription = "Profile Picture",
+                            contentDescription = strings.get("PROFILE"),
                             modifier = Modifier
                                 .size(140.dp)
                                 .clip(CircleShape)
@@ -149,7 +134,7 @@ fun EditProfileScreen(
                         // The edit icon already contains the background and white pencil
                         Icon(
                             painter = painterResource(Res.drawable.edit),
-                            contentDescription = "Edit",
+                            contentDescription = strings.get("EDIT_PROFILE"),
                             tint = Color.Unspecified,
                             modifier = Modifier
                                 .size(34.dp)
@@ -168,7 +153,7 @@ fun EditProfileScreen(
                     )
 
                     Text(
-                        text = "Change profile photo",
+                        text = strings.get("CHANGE_PHOTO"),
                         fontFamily = pop,
                         fontSize = 17.sp,
                         fontWeight = FontWeight.Normal,
@@ -182,7 +167,7 @@ fun EditProfileScreen(
                 // Input Fields
                 Column(modifier = Modifier.padding(horizontal = 24.dp)) {
                     EditProfileField(
-                        label = "Full Name",
+                        label = strings.get("FULL_NAME_LABEL"),
                         placeholder = profile.fullName,
                         value = editState.fullName,
                         onValueChange = { viewModel.onFullNameChange(it) },
@@ -194,7 +179,7 @@ fun EditProfileScreen(
                     Spacer(modifier = Modifier.height(20.dp))
 
                     EditProfileField(
-                        label = "Email Address",
+                        label = strings.get("EMAIL_ADDRESS"),
                         placeholder = profile.email,
                         value = editState.email,
                         onValueChange = { viewModel.onEmailChange(it) },
@@ -207,7 +192,7 @@ fun EditProfileScreen(
 
                     profile.phoneNumber?.let {
                         EditProfileField(
-                            label = it,
+                            label = strings.get("PHONE"),
                             placeholder = profile.phoneNumber,
                             value = editState.phone,
                             onValueChange = { viewModel.onPhoneChange(it) },
@@ -245,7 +230,7 @@ fun EditProfileScreen(
 
 
                             Text(
-                                text = "Save Changes",
+                                text = strings.get("SAVE_CHANGES"),
                                 fontFamily = pop,
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Medium,
@@ -255,7 +240,7 @@ fun EditProfileScreen(
                     }
 
                     Text(
-                        text = "Discard Changes",
+                        text = strings.get("DISCARD_CHANGES"),
                         fontFamily = pop,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Normal,
@@ -339,9 +324,3 @@ fun EditProfileField(
         )
     }
 }
-
-//@Preview
-//@Composable
-//fun EditProfileScreenPreview() {
-//    EditProfileScreen(navController = rememberNavController())
-//}
