@@ -156,10 +156,9 @@ fun AddCarIntDropdown(
                         )
                     },
                     onClick = {
-                        // 3. Convert the selected String back to Int before calling onSelect
                         val selectedInt = optionString.toIntOrNull()
                         if (selectedInt != null) {
-                            onSelect(selectedInt) // Call the callback with the Int
+                            onSelect(selectedInt)
                         }
                         expanded = false
                     }

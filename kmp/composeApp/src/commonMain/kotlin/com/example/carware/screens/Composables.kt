@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -65,7 +66,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
-import carware.composeapp.generated.resources.add_new
 import carware.composeapp.generated.resources.arrow_1
 import carware.composeapp.generated.resources.audi
 import carware.composeapp.generated.resources.car
@@ -74,6 +74,7 @@ import carware.composeapp.generated.resources.check_time_slot
 import carware.composeapp.generated.resources.clander_right_arrow
 import carware.composeapp.generated.resources.color
 import carware.composeapp.generated.resources.cuate
+import carware.composeapp.generated.resources.dots
 import carware.composeapp.generated.resources.failed
 import carware.composeapp.generated.resources.keyboard_arrow_down
 import carware.composeapp.generated.resources.keyboard_arrow_up
@@ -98,7 +99,6 @@ import kotlinx.datetime.LocalDateTime
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 
 fun Modifier.appGradBack(): Modifier = this.then(
@@ -272,6 +272,8 @@ fun CarCard(
 
     val cardMod = Modifier.size(width = 305.dp, height = 255.dp)
 
+    var expanded by remember { mutableStateOf(false) }
+
 
     Card(
         colors = CardDefaults.cardColors(containerColor = Color(0x39000000)),
@@ -295,19 +297,63 @@ fun CarCard(
                 modifier = m.fillMaxWidth().padding(horizontal = 20.dp),
                 horizontalArrangement = Arrangement.End
             ) {
-                Icon(
-                    painter = painterResource(Res.drawable.x_time_slot),
-                    contentDescription = null,
-                    tint = Color(30, 30, 30, 168),
-                    modifier = m.size(20.dp)
-                        .clickable {
-                            navController.navigate(AddCarScreen)
-                        }
-                        .rotate(45f)
-                        .size(4.dp)
+                Box {
+                    Icon(
+                        painter = painterResource(Res.drawable.dots),
+                        contentDescription = null,
+                        tint = Color(194, 0, 0, 171),
+                        modifier = m.size(20.dp)
+                            .clickable {
+                                expanded = true
+                            }
+                            .size(4.dp)
 
 
-                )
+                    )
+                    DropdownMenu(
+                        modifier = m.border(
+                            width = 0.5.dp,
+                            color = Color.White.copy(alpha = 0.3f),
+                            shape = RoundedCornerShape(12.dp)
+                        ),
+
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                        shape = RoundedCornerShape(8.dp),
+                        containerColor = Color(217, 217, 217).copy(alpha = 0.8f),
+                        tonalElevation = 0.dp,
+                        shadowElevation = 0.dp
+
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Add",
+                                fontSize = 12.sp,
+                                color=Color(30, 30, 30, 153),
+                                fontFamily = popSemi,
+                                fontWeight = FontWeight.W400
+                            ) },
+                            onClick = { navController.navigate(AddCarScreen) }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Edit",
+                                fontSize = 12.sp,
+                                color=Color(30, 30, 30, 153),
+                                fontFamily = popSemi,
+                                fontWeight = FontWeight.W400
+                            ) },
+                            onClick = { expanded = false }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Delete",
+                                fontSize = 12.sp,
+                                color=Color(30, 30, 30, 153),
+                                fontFamily = popSemi,
+                                fontWeight = FontWeight.W400
+                            ) },
+                            onClick = { expanded = false }
+                        )
+                    }
+                }
             } // top dots
             Image(
                 painter = painterResource(image),
@@ -469,7 +515,7 @@ fun OBDCard(onClick: () -> Unit) {
 
 @Composable
 fun UpcomingReminder(
-navController: NavController
+    navController: NavController
 ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val strings = LocalStrings.current
@@ -516,10 +562,12 @@ navController: NavController
                 color = Color(217, 217, 217, 255)
             )
             Spacer(m.height(2.dp))
-            Row(m
-                .fillMaxWidth(0.5f)
-                .clickable { navController.navigate(ReminderScreen) },
-                horizontalArrangement = Arrangement.Center) {
+            Row(
+                m
+                    .fillMaxWidth(0.5f)
+                    .clickable { navController.navigate(ReminderScreen) },
+                horizontalArrangement = Arrangement.Center
+            ) {
                 Text(
                     strings.get("CREATE_REMINDER"),
                     fontFamily = popSemi,
@@ -779,10 +827,10 @@ fun CalenderBox(
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
 
     val months = listOf(
-        "January","February","March","April","May","June",
-        "July","August","September","October","November","December"
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
     )
-    val daysOfWeek = listOf("SUN","MON","TUE","WED","THU","FRI","SAT")
+    val daysOfWeek = listOf("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT")
 
     // Compute real calendar days from current month/year
     val calendarDays = remember(state.currentMonthIndex, state.currentYear) {
@@ -802,19 +850,50 @@ fun CalenderBox(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            CalendarArrowButton(isLeft = true, onClick = { viewModel.changeMonth(false) }, preferencesManager)
-            Text(months[state.currentMonthIndex], color = Color.White, fontFamily = popSemi, fontSize = 20.sp)
-            CalendarArrowButton(isLeft = false, onClick = { viewModel.changeMonth(true) }, preferencesManager)
+            CalendarArrowButton(
+                isLeft = true,
+                onClick = { viewModel.changeMonth(false) },
+                preferencesManager
+            )
+            Text(
+                months[state.currentMonthIndex],
+                color = Color.White,
+                fontFamily = popSemi,
+                fontSize = 20.sp
+            )
+            CalendarArrowButton(
+                isLeft = false,
+                onClick = { viewModel.changeMonth(true) },
+                preferencesManager
+            )
 
-            CalendarArrowButton(isLeft = true, onClick = { viewModel.changeYear(false) }, preferencesManager)
-            Text(state.currentYear.toString(), color = Color.White, fontFamily = popSemi, fontSize = 20.sp)
-            CalendarArrowButton(isLeft = false, onClick = { viewModel.changeYear(true) }, preferencesManager)
+            CalendarArrowButton(
+                isLeft = true,
+                onClick = { viewModel.changeYear(false) },
+                preferencesManager
+            )
+            Text(
+                state.currentYear.toString(),
+                color = Color.White,
+                fontFamily = popSemi,
+                fontSize = 20.sp
+            )
+            CalendarArrowButton(
+                isLeft = false,
+                onClick = { viewModel.changeYear(true) },
+                preferencesManager
+            )
         }
 
         // Day headers
         Row(Modifier.fillMaxWidth().padding(top = 10.dp)) {
             daysOfWeek.forEach { day ->
-                Text(day, modifier = Modifier.weight(1f), textAlign = TextAlign.Center, fontSize = 12.sp)
+                Text(
+                    day,
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Center,
+                    fontSize = 12.sp
+                )
             }
         }
 
@@ -1033,7 +1112,12 @@ fun SelectDateBox(viewModel: ScheduleScreenViewModel) {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Text("Confirm", fontFamily = popSemi, fontSize = 18.sp, color = Color(217, 217, 217, 255))
+                        Text(
+                            "Confirm",
+                            fontFamily = popSemi,
+                            fontSize = 18.sp,
+                            color = Color(217, 217, 217, 255)
+                        )
                     }
                 }
             }
@@ -1049,8 +1133,11 @@ private fun parseHour(time: String): Int {
         if (parts[1] == "PM" && hour != 12) hour += 12
         else if (parts[1] == "AM" && hour == 12) hour = 0
         hour
-    } catch (e: Exception) { 0 }
+    } catch (e: Exception) {
+        0
+    }
 }
+
 @Composable
 fun TimeSlotItem(
     slot: TimeSlot, onSlotClick: (String) -> Unit
