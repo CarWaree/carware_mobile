@@ -41,6 +41,7 @@ import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.LocalStrings
 import com.example.carware.m
+import com.example.carware.navigation.HomeScreen
 import com.example.carware.network.apiResponse.schedule.Service
 import com.example.carware.screens.CalenderBox
 import com.example.carware.screens.LoadingOverlay
@@ -67,7 +68,7 @@ fun ScheduleScreen(
     LaunchedEffect(state.isBookingSuccess) {
         if (state.isBookingSuccess) {
             viewModel.onBookingSuccessConsumed()
-            navController.navigate("your_route_here")
+            navController.navigate(HomeScreen)
         }
     }
 
