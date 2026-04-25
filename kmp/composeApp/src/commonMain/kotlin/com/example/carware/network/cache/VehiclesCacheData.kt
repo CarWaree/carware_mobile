@@ -6,8 +6,8 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 @Serializable
-data class VehiclesCacheData @OptIn(ExperimentalTime::class) constructor(
+data class VehiclesCacheData (
     val vehicles: List<Vehicles> = emptyList(),
-    val lastUpdated: Long = Clock.System.now().toEpochMilliseconds(),
+    val lastUpdated: String=" ",
     val userId: Int = 0
 )

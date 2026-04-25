@@ -1,8 +1,8 @@
 package com.example.carware.network.api
 
 import com.example.carware.network.apiRequests.reminder.ReminderRequest
-import com.example.carware.network.apiResponse.reminderr.GetReminderResponse
-import com.example.carware.network.apiResponse.reminderr.ReminderResponse
+import com.example.carware.network.apiResponse.reminder.GetReminderResponse
+import com.example.carware.network.apiResponse.reminder.ReminderResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get

@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -21,7 +20,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,9 +35,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.poppins_medium
@@ -47,19 +43,9 @@ import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.network.apiResponse.schedule.Service
-import com.example.carware.screens.CalenderBox
-import com.example.carware.screens.LoadingOverlay
-import com.example.carware.screens.SelectDateBox
-import com.example.carware.screens.SelectDropdown
-import com.example.carware.screens.ShimmerScheduleScreen
-import com.example.carware.screens.UsersCar
-import com.example.carware.screens.appButtonBack
 import com.example.carware.util.storage.PreferencesManager
-import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
-import kotlinx.coroutines.awaitCancellation
 import org.jetbrains.compose.resources.Font
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.ui.draw.drawWithContent
@@ -68,20 +54,18 @@ import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
-import carware.composeapp.generated.resources.arrow_1
 import carware.composeapp.generated.resources.arrow_left
-import carware.composeapp.generated.resources.home_line
 import carware.composeapp.generated.resources.poppins
 import carware.composeapp.generated.resources.reminder_note_resize
-import carware.composeapp.generated.resources.schedule
-import carware.composeapp.generated.resources.success
+import com.example.carware.viewModel.reminder.ReminderScreenViewModel
+import com.example.carware.viewModel.schedule.screen.TimeSlot
 import org.jetbrains.compose.resources.painterResource
 
 
 @Composable
 fun ReminderScreen(
     navController: NavController,
-    viewModel: ScheduleScreenViewModel,
+    viewModel: ReminderScreenViewModel,
     preferencesManager: PreferencesManager,
 
     ) {
@@ -105,10 +89,18 @@ fun ReminderScreen(
 //        viewModel.loadInitialTimeSlots()
 //    }
 
+    val allSlots = remember {
+        (0..23).map { hour ->
+            TimeSlot(time = "$hour:00", isAvailable = true)
+        }
+    }
     if (state.isTimePickerVisible) {
         Column(m.fillMaxSize()) {
-            SelectDateBox(viewModel = viewModel)
-        }
+            SelectDateBox(
+                availableSlots = allSlots,
+                onSlotClick = { viewModel.selectTimeSlot(it) },
+                onConfirm = { }
+            )        }
     } else if (state.isLoading) {
         ShimmerScheduleScreen()
     } else {
@@ -316,8 +308,13 @@ fun ReminderScreen(
 
                 // ============ CALENDAR SECTION ============
                 CalenderBox(
-                    viewModel,
-                    preferencesManager = preferencesManager
+                    currentMonthIndex = state.currentMonthIndex,
+                    currentYear = state.currentYear,
+                    selectedDay = state.selectedDay,
+                    preferencesManager = preferencesManager,
+                    onChangeMonth = { viewModel.changeMonth(it) },
+                    onChangeYear = { viewModel.changeYear(it) },
+                    onSelectDay = { viewModel.selectDay(it) }
                 )
 
                 Spacer(m.height(20.dp))
@@ -354,7 +351,7 @@ fun ReminderScreen(
                     // Confirm Button
                     Card(
                         onClick = {
-                            viewModel.confirmAppointment()
+                            viewModel.setReminder()
                         },
                         modifier = m
                             .fillMaxWidth(0.8f)

@@ -1,12 +1,11 @@
-package com.example.carware.viewModel.schedule.screen
+package com.example.carware.viewModel.reminder
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.carware.network.apiRequests.schedule.SetAppointmentRequest
-import com.example.carware.network.apiResponse.schedule.Centers
+import com.example.carware.repository.ReminderRepository
 import com.example.carware.repository.ServiceRepository
 import com.example.carware.repository.VehicleRepository
+import com.example.carware.viewModel.schedule.screen.TimeSlot
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,35 +17,32 @@ import kotlinx.datetime.toInstant
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
-class ScheduleScreenViewModel(
-    private val repository: ServiceRepository,
-    private val vehicleRepository: VehicleRepository,
+class ReminderScreenViewModel(
+    private val reminderRepo: ReminderRepository,
+    private val vehicleRepo: VehicleRepository,
+    private val serviceRepo: ServiceRepository,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(ScheduleScreenState())
-    val state: StateFlow<ScheduleScreenState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(ReminderScreenState())
+    val state: StateFlow<ReminderScreenState> = _state.asStateFlow()
 
     init {
         loadInitialData()
     }
 
-    // ============ DATA LOADING ============
-
-    fun loadInitialData() {
+    private fun loadInitialData() {
         _state.update { it.copy(isLoading = true, error = null) }
+
 
         viewModelScope.launch {
             try {
-                val services = repository.getServiceTypeRepo()
-                val centers = repository.getServiceCentersRepo()
-                val cars = vehicleRepository.getVehiclesRepo()
+                val services = serviceRepo.getServiceTypeRepo()
+                val cars = vehicleRepo.getVehiclesRepo()
 
                 _state.update {
                     it.copy(
                         availableServicesTypes = services,
-                        availableCenters = centers,
                         availableCars = cars,
-                        availableSlots = defaultSlots(), // hardcoded until endpoint exists
                         isLoading = false
                     )
                 }
@@ -58,17 +54,9 @@ class ScheduleScreenViewModel(
         }
     }
 
-    // ============ SELECTION ============
-
     fun selectServiceType(serviceId: Int, serviceName: String) {
         _state.update {
             it.copy(selectedServiceId = serviceId, selectedServiceName = serviceName, error = null)
-        }
-    }
-
-    fun selectCenter(center: Centers) {
-        _state.update {
-            it.copy(selectedCenterId = center.id, selectedCenterName = center.name, error = null)
         }
     }
 
@@ -86,7 +74,7 @@ class ScheduleScreenViewModel(
             it.copy(
                 selectedDay = day,
                 selectedTime = null,
-                availableSlots = defaultSlots(),
+                availableSlots = defaultSlots(), // reset slots per day until real endpoint exists
                 isTimePickerVisible = true,
                 error = null
             )
@@ -120,10 +108,6 @@ class ScheduleScreenViewModel(
         }
     }
 
-    fun closeTimePicker() {
-        _state.update { it.copy(isTimePickerVisible = false) }
-    }
-
     fun changeMonth(forward: Boolean) {
         _state.update { current ->
             var month = current.currentMonthIndex
@@ -144,57 +128,16 @@ class ScheduleScreenViewModel(
         }
     }
 
-    // ============ BOOKING ============
     fun changeYear(forward: Boolean) {
         _state.update { current ->
             val newYear = if (forward) current.currentYear + 1 else current.currentYear - 1
             current.copy(currentYear = newYear, selectedDay = null, selectedTime = null)
         }
     }
-    fun confirmAppointment() {
-        val current = _state.value
 
-        if (!isValid(current)) {
-            _state.update { it.copy(error = "Please complete all required fields") }
-            return
-        }
 
-        val request = SetAppointmentRequest(
-            date = formatToISO8601(current.currentYear, current.currentMonthIndex + 1, current.selectedDay!!, current.selectedTime!!),
-            timeSlot = current.selectedTime,
-            vehicleId = current.selectedCarId!!,
-            serviceId = current.selectedServiceId!!,
-            serviceCenterId = current.selectedCenterId!!
-        )
-
-        viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, error = null) }
-
-            println("=== REQUEST ===")
-            println("date: ${request.date}")
-            println("timeSlot: ${request.timeSlot}")
-            println("vehicleId: ${request.vehicleId}")
-            println("serviceId: ${request.serviceId}")
-            println("centerId: ${request.serviceCenterId}")
-
-            try {
-                repository.setAppointmentRepo(request)
-                _state.update { it.copy(isLoading = false, isBookingSuccess = true) }
-            } catch (e: Exception) {
-                println("=== BOOKING ERROR: ${e.message}")
-                _state.update { it.copy(isLoading = false, error = e.message) }
-            }
-        }    }
-
-    fun onBookingSuccessConsumed() {
-        _state.update { it.copy(isBookingSuccess = false) }
-    }
-
-    // ============ PRIVATE ============
-
-    private fun isValid(state: ScheduleScreenState): Boolean =
+    private fun isValid(state: ReminderScreenState): Boolean =
         state.selectedServiceId != null &&
-                state.selectedCenterId != null &&
                 state.selectedCarId != null &&
                 state.selectedDay != null &&
                 state.selectedTime != null
@@ -246,4 +189,9 @@ class ScheduleScreenViewModel(
         TimeSlot("11:30 PM", isAvailable = false),
         TimeSlot("12:00 AM"),
     )
+
+    fun setReminder() {
+        TODO("Not yet implemented")
+    }
+
 }

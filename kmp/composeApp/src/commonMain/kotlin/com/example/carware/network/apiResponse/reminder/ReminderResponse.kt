@@ -1,4 +1,4 @@
-package com.example.carware.network.apiResponse.reminderr
+package com.example.carware.network.apiResponse.reminder
 
 import kotlinx.serialization.Serializable
 

@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -43,14 +42,12 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
@@ -88,13 +85,10 @@ import carware.composeapp.generated.resources.x_time_slot
 import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.navigation.AddCarScreen
-import com.example.carware.navigation.EditCarScreen
 import com.example.carware.navigation.ReminderScreen
-import com.example.carware.screens.vehicle.EditCarScreen
 import com.example.carware.util.navBar.TabItem
 import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.home.HomeScreenViewModel
-import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
 import com.example.carware.viewModel.schedule.screen.TimeSlot
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -834,10 +828,14 @@ fun SelectDropdown(
 
 @Composable
 fun CalenderBox(
-    viewModel: ScheduleScreenViewModel,
-    preferencesManager: PreferencesManager
+    currentMonthIndex: Int,
+    currentYear: Int,
+    selectedDay: Int?,
+    preferencesManager: PreferencesManager,
+    onChangeMonth: (Boolean) -> Unit,
+    onChangeYear: (Boolean) -> Unit,
+    onSelectDay: (Int) -> Unit
 ) {
-    val state by viewModel.state.collectAsState()
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
 
     val months = listOf(
@@ -846,9 +844,8 @@ fun CalenderBox(
     )
     val daysOfWeek = listOf("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT")
 
-    // Compute real calendar days from current month/year
-    val calendarDays = remember(state.currentMonthIndex, state.currentYear) {
-        buildCalendarDays(state.currentMonthIndex + 1, state.currentYear)
+    val calendarDays = remember(currentMonthIndex, currentYear) {
+        buildCalendarDays(currentMonthIndex + 1, currentYear)
     }
 
     Column(
@@ -866,35 +863,35 @@ fun CalenderBox(
         ) {
             CalendarArrowButton(
                 isLeft = true,
-                onClick = { viewModel.changeMonth(false) },
+                onClick = { onChangeMonth(false) },
                 preferencesManager
             )
             Text(
-                months[state.currentMonthIndex],
+                months[currentMonthIndex],
                 color = Color.White,
                 fontFamily = popSemi,
                 fontSize = 20.sp
             )
             CalendarArrowButton(
                 isLeft = false,
-                onClick = { viewModel.changeMonth(true) },
+                onClick = { onChangeMonth(true) },
                 preferencesManager
             )
 
             CalendarArrowButton(
                 isLeft = true,
-                onClick = { viewModel.changeYear(false) },
+                onClick = { onChangeYear(false) },
                 preferencesManager
             )
             Text(
-                state.currentYear.toString(),
+                currentYear.toString(),
                 color = Color.White,
                 fontFamily = popSemi,
                 fontSize = 20.sp
             )
             CalendarArrowButton(
                 isLeft = false,
-                onClick = { viewModel.changeYear(true) },
+                onClick = { onChangeYear(true) },
                 preferencesManager
             )
         }
@@ -918,7 +915,7 @@ fun CalenderBox(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 week.forEach { (day, isCurrentMonth) ->
-                    val isSelected = state.selectedDay == day && isCurrentMonth
+                    val isSelected = selectedDay == day && isCurrentMonth
 
                     Box(
                         modifier = Modifier
@@ -926,7 +923,7 @@ fun CalenderBox(
                             .clip(RoundedCornerShape(8.dp))
                             .background(if (isSelected) Color(0xFFC20000) else Color.Transparent)
                             .clickable(enabled = isCurrentMonth) {
-                                viewModel.selectDay(day)
+                                onSelectDay(day)
                             },
                         contentAlignment = Alignment.Center
                     ) {
@@ -1019,18 +1016,22 @@ fun CalendarArrowButton(
 }
 
 @Composable
-fun SelectDateBox(viewModel: ScheduleScreenViewModel) {
-    val state by viewModel.state.collectAsState()
+fun SelectDateBox(
+    availableSlots: List<TimeSlot>,
+    onSlotClick: (String) -> Unit,
+    onConfirm: () -> Unit
+) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
 
-    val morningSlots = state.availableSlots.filter {
+    val morningSlots = availableSlots.filter {
         val hour = parseHour(it.time)
         hour in 10..17
     }
-    val eveningSlots = state.availableSlots.filter {
+    val eveningSlots = availableSlots.filter {
         val hour = parseHour(it.time)
         hour >= 18 || hour == 0
     }
+
 
     Column(
         Modifier.fillMaxSize().background(Color(0, 0, 0, 128)),
@@ -1078,7 +1079,7 @@ fun SelectDateBox(viewModel: ScheduleScreenViewModel) {
                 modifier = Modifier.weight(1f)
             ) {
                 items(morningSlots) { slot ->
-                    TimeSlotItem(slot = slot, onSlotClick = { viewModel.selectTimeSlot(it) })
+                    TimeSlotItem(slot = slot, onSlotClick = { onSlotClick(it) })
                 }
             }
 
@@ -1104,7 +1105,7 @@ fun SelectDateBox(viewModel: ScheduleScreenViewModel) {
                 modifier = Modifier.weight(1f)
             ) {
                 items(eveningSlots) { slot ->
-                    TimeSlotItem(slot = slot, onSlotClick = { viewModel.selectTimeSlot(it) })
+                    TimeSlotItem(slot = slot, onSlotClick = { onSlotClick(it) })
                 }
             }
 
@@ -1112,7 +1113,7 @@ fun SelectDateBox(viewModel: ScheduleScreenViewModel) {
 
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 Card(
-                    onClick = { viewModel.confirmTimeSelection() },
+                    onClick = { onConfirm },
                     modifier = Modifier
                         .fillMaxWidth(0.8f)
                         .height(45.dp)
