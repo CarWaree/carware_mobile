@@ -48,7 +48,8 @@ kstore-storage = { module = "io.github.xxfast:kstore-storage", version.ref = "ks
 koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
-
+ktor-client-mock = { module = "io.ktor:ktor-client-mock", version = "3.3.2" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version = "1.10.2" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
