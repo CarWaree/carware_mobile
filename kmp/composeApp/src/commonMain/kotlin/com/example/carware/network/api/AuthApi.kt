@@ -23,70 +23,41 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
-
-const val baseUrl = "https://63nw61z7-7136.euw.devtunnels.ms" //abdo
-//const val baseUrl = "https://qd5sjv6c-7136.uks1.devtunnels.ms"
-
-suspend fun signupUser(request: SignUpRequest,client: HttpClient): SignUpResponse {
-
-    println("➡️ Signup request started")
-    println("📤 Request body: $request")
-
+import kotlinx.serialization.json.Json
+//const val baseUrl = "https://63nw61z7-7136.euw.devtunnels.ms" //abdo
+const val baseUrl = "https://qd5sjv6c-7136.uks1.devtunnels.ms"
+suspend fun signupUser(request: SignUpRequest, client: HttpClient): SignUpResponse {
     val response: HttpResponse = client.post("$baseUrl/api/Auth/register") {
         contentType(ContentType.Application.Json)
         setBody(request)
     }
+    val body = response.bodyAsText()
+    val parsed = Json.decodeFromString<SignUpResponse>(body)
 
-    val rawBody = response.bodyAsText()
-    println("📥 Raw responseSignup: $rawBody") // ADD THIS
-
-
-    return try {
-        // Check HTTP status code first
-        if (!response.status.isSuccess()) {
-            // 400, 401, 500, etc. - treat as error
-            val errorResponse = response.body<SignUpResponse>()
-            throw Exception(errorResponse.message ?: "Request failed")
-        }
-
-        // HTTP 200 - parse and return
-        response.body<SignUpResponse>()
-
-    } catch (e: Exception) {
-        println("❌ Signup failed: ${e.message}")
-        throw Exception(e.message ?: "Signup failed")
+    if (!response.status.isSuccess()) {
+        throw Exception(parsed.message)
     }
+    return parsed
 } //done
-suspend fun loginUser(request: LoginRequest,client: HttpClient): AuthResponse {
 
-    println("➡️ login request started")
-    println("📤 Request body: $request")
-
+suspend fun loginUser(request: LoginRequest, client: HttpClient): AuthResponse {
     val response: HttpResponse = client.post("$baseUrl/api/Auth/login") {
         contentType(ContentType.Application.Json)
         setBody(request)
     }
 
-    val rawBody = response.bodyAsText()
-
-    return try {
-        // Check HTTP status code first
-        if (!response.status.isSuccess()) {
-            val errorResponse = response.body<AuthResponse>()
-            throw Exception(errorResponse.message ?: "Request failed")
-        }
-
-        // HTTP 200 - parse and return
-        response.body<AuthResponse>()
-
-    } catch (e: Exception) {
-        println("❌ login failed: ${e.message}")
-        println("Raw response login: $rawBody")
-        throw Exception(e.message ?: "login failed")
+    val body = response.bodyAsText()
+    val parsed = Json.decodeFromString<AuthResponse>(body)
+    if (!response.status.isSuccess()) {
+        throw Exception(parsed.message)
     }
+    return parsed
 } //DONE
 
-suspend fun forgotPasswordUser(request: ForgotPasswordRequest, client: HttpClient): ForgotPasswordResponse {
+suspend fun forgotPasswordUser(
+    request: ForgotPasswordRequest,
+    client: HttpClient
+): ForgotPasswordResponse {
     println("➡️ forgotPassword request started")
     println("📤 Request body: $request")
 
@@ -94,95 +65,60 @@ suspend fun forgotPasswordUser(request: ForgotPasswordRequest, client: HttpClien
         contentType(ContentType.Application.Json)
         setBody(request)
     }
-
-    val rawBody = response.bodyAsText()
-    println("📥 Raw response forgotPassword: $rawBody")
-
-    return try {
-        if (!response.status.isSuccess()) {
-            val errorResponse = response.body<ForgotPasswordResponse>()
-            throw Exception(errorResponse.message ?: "Request failed")
-        }
-        response.body<ForgotPasswordResponse>()
-    } catch (e: Exception) {
-        println("❌ forgotPassword failed: ${e.message}")
-        throw Exception(e.message ?: "forgotPassword failed")
+    val body = response.bodyAsText()
+    val parsed = Json.decodeFromString<ForgotPasswordResponse>(body)
+    if (!response.status.isSuccess()) {
+        throw Exception(parsed.message)
     }
+    return parsed
 }
 
 suspend fun otpVerificationUser(request: OTPRequest, client: HttpClient): OTPResponse {
-    println("➡️ otpVerification request started")
-    println("📤 Request body: $request")
-
     val response: HttpResponse = client.post("$baseUrl/api/Auth/Verify-Otp") {
         contentType(ContentType.Application.Json)
         setBody(request)
     }
-
-    val rawBody = response.bodyAsText()
-    println("📥 Raw response otpVerification: $rawBody")
-
-    return try {
-        if (!response.status.isSuccess()) {
-            val errorResponse = response.body<OTPResponse>()
-            throw Exception(errorResponse.message ?: "Request failed")
-        }
-        response.body<OTPResponse>()
-    } catch (e: Exception) {
-        println("❌ otpVerification failed: ${e.message}")
-        throw Exception(e.message ?: "otpVerification failed")
+    val body = response.bodyAsText()
+    val parsed = Json.decodeFromString<OTPResponse>(body)
+    if (!response.status.isSuccess()) {
+        throw Exception(parsed.message)
     }
+    return parsed
 }
 
-suspend fun resetPasswordUser(request: ResetPasswordRequest, client: HttpClient): ResetPasswordResponse {
-    println("➡️ resetPassword request started")
-    println("📤 Request body: $request")
-
+suspend fun resetPasswordUser(
+    request: ResetPasswordRequest,
+    client: HttpClient
+): ResetPasswordResponse {
     val response: HttpResponse = client.post("$baseUrl/api/Auth/reset-password") {
         contentType(ContentType.Application.Json)
         setBody(request)
     }
-
-    val rawBody = response.bodyAsText()
-    println("📥 Raw response resetPassword: $rawBody")
-
-    return try {
-        if (!response.status.isSuccess()) {
-            val errorResponse = response.body<ResetPasswordResponse>()
-            throw Exception(errorResponse.message ?: "Request failed")
-        }
-        response.body<ResetPasswordResponse>()
-    } catch (e: Exception) {
-        println("❌ resetPassword failed: ${e.message}")
-        throw Exception(e.message ?: "resetPassword failed")
+    val body = response.bodyAsText()
+    val parsed = Json.decodeFromString<ResetPasswordResponse>(body)
+    if (!response.status.isSuccess()) {
+        throw Exception(parsed.message)
     }
+    return parsed
 }
-suspend fun verifyEmailUser(request: EmailVerificationRequest,client: HttpClient): EmailVerificationResponse{
+
+suspend fun verifyEmailUser(
+    request: EmailVerificationRequest,
+    client: HttpClient
+): EmailVerificationResponse {
     val response: HttpResponse = client.post("$baseUrl/api/Auth/verify-email-otp") {
         contentType(ContentType.Application.Json)
         setBody(request)
     }
-    val rawBody = response.bodyAsText()
-    println("📥 Raw response email verify: $rawBody") // ADD THIS
-
-    return try {
-        // Check HTTP status code first
-        if (!response.status.isSuccess()) {
-            // 400, 401, 500, etc. - treat as error
-            val errorResponse = response.body<EmailVerificationResponse>()
-            throw Exception(errorResponse.message ?: "Request failed")
-        }
-
-        // HTTP 200 - parse and return
-        response.body<EmailVerificationResponse>()
-
-    } catch (e: Exception) {
-        println("❌ otp verify failed: ${e.message}")
-        throw Exception(e.message ?: "otp verify failed")
+    val body = response.bodyAsText()
+    val parsed = Json.decodeFromString<EmailVerificationResponse>(body)
+    if (!response.status.isSuccess()) {
+        throw Exception(parsed.message)
     }
-} //DONE
+    return parsed
+}
 
-suspend fun googleSignIn(request: GoogleSignInRequest,client: HttpClient): GoogleSignInResponse {
+suspend fun googleSignIn(request: GoogleSignInRequest, client: HttpClient): GoogleSignInResponse {
 
     println("➡️ googleSignIn request started")
     println("📤 googleSignIn Request body: $request")
@@ -200,8 +136,6 @@ suspend fun googleSignIn(request: GoogleSignInRequest,client: HttpClient): Googl
             val errorResponse = response.body<AuthResponse>()
             throw Exception(errorResponse.message ?: "Request failed")
         }
-
-        // HTTP 200 - parse and return
         response.body<GoogleSignInResponse>()
 
     } catch (e: Exception) {
