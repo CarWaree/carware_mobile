@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import com.example.carware.m
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 fun Modifier.shimmerEffect(): Modifier = composed {
@@ -167,32 +168,38 @@ fun ShimmerCalendar() {
 @Composable
 fun ShimmerScheduleScreen() {
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier = m
+            .fillMaxSize()
+            .background(Color(217, 217, 217, 255))
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(45.dp))
-        Box(modifier = Modifier.size(200.dp, 30.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = m.height(45.dp))
+        Box(modifier = m.size(200.dp, 30.dp)
+            .clip(RoundedCornerShape(4.dp)).shimmerEffect())
+        Spacer(modifier = m.height(32.dp))
         
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Box(modifier = Modifier.size(120.dp, 24.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
-            Spacer(modifier = Modifier.height(22.dp))
+        Column(modifier = m.fillMaxWidth()) {
+            Box(modifier = m.size(120.dp, 24.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
+            Spacer(modifier = m.height(22.dp))
             repeat(2) {
                 ShimmerUserCar()
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = m.height(8.dp))
             }
             
-            Spacer(modifier = Modifier.height(18.dp))
-            Box(modifier = Modifier.size(140.dp, 24.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = m.height(18.dp))
+            Box(modifier = m.size(140.dp, 24.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
+            Spacer(modifier = m.height(12.dp))
             ShimmerDropdown()
             
-            Spacer(modifier = Modifier.height(18.dp))
-            Box(modifier = Modifier.size(160.dp, 24.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = m.height(18.dp))
+            Box(modifier = m.size(160.dp,
+                24.dp).clip(RoundedCornerShape(4.dp))
+                .shimmerEffect())
+            Spacer(modifier = m.height(12.dp))
             ShimmerDropdown()
             
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = m.height(18.dp))
             ShimmerCalendar()
         }
     }

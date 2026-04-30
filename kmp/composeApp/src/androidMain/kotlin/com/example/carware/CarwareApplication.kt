@@ -18,7 +18,7 @@ class CarwareApplication : Application() {
         // Add this
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
-                "default_channel_v3",
+                "default_channel_v4",
                 "General Notifications",
                 NotificationManager.IMPORTANCE_HIGH
             )

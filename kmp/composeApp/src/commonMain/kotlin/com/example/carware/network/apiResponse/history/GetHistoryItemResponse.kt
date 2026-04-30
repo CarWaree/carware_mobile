@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 data class GetHistoryItemResponse(
     val id: Int,
     val carName: String,
+    val serviceName: String,
     val providerName:String,
     val date:String,
     val totalPrice:Int,

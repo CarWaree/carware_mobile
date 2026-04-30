@@ -69,7 +69,7 @@ import org.jetbrains.compose.resources.painterResource
 fun HomeScreen(
     navController: NavController,
     viewModel: HomeScreenViewModel,
-//    notificationViewModel: NotificationViewModel
+    notificationViewModel: NotificationViewModel
 ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
@@ -86,10 +86,10 @@ fun HomeScreen(
         is HomeScreenState.Success -> state.cars.firstOrNull()?.userName ?: "User"
         else -> "Guest"
     }
-//    RequestNotificationPermission {  granted ->
-//        notificationViewModel.onPermissionResult(granted)
-//        if (granted) notificationViewModel.testPushNotification()
-//    }
+    RequestNotificationPermission {  granted ->
+        notificationViewModel.onPermissionResult(granted)
+        if (granted) notificationViewModel.testPushNotification()
+    }
     @Composable
     fun SuccessCarPagerContent(cars: List<Vehicles>,navController: NavController) {
         val pagerState = rememberPagerState(pageCount = { cars.size })

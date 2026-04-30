@@ -410,7 +410,7 @@ fun ServiceRecordScreen(
                         painter = painterResource(Res.drawable.arrow_1),
                         contentDescription = "Back",
                         tint = Color.Red,
-                        modifier = Modifier
+                        modifier = m
                             .rotate(180f)
                             .align(Alignment.CenterStart)
                             .size(24.dp)
@@ -426,7 +426,7 @@ fun ServiceRecordScreen(
                     )
                 }
 
-                Spacer(Modifier.height(24.dp))
+                Spacer(m.height(24.dp))
 
                 Text(
                     text = historyItem.carName,
@@ -442,7 +442,7 @@ fun ServiceRecordScreen(
                 Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                     ServiceRecordRow(
                         label = strings.get("SERVICE_LABEL"),
-                        value = "serviceType",
+                        value = historyItem.serviceName,
                         popMid = popMid
                     )
                     val shortDate = LocalDateTime.parse(historyItem.date)

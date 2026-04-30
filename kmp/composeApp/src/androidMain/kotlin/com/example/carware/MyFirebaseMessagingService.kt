@@ -47,15 +47,19 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     private fun showNotification(title: String, body: String) {
-        val channelId =   "default_channel_v3"
+        val channelId = "default_channel_v4"
 
-
+        // The channel is already created in CarwareApplication, but we can ensure it here too with HIGH importance
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 channelId,
                 "General Notifications",
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Channel for general app notifications"
+                enableLights(true)
+                enableVibration(true)
+            }
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(channel)
         }
