@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -21,7 +20,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,9 +35,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.poppins_medium
@@ -47,20 +43,11 @@ import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.network.apiResponse.schedule.Service
-import com.example.carware.screens.CalenderBox
-import com.example.carware.screens.LoadingOverlay
-import com.example.carware.screens.SelectDateBox
-import com.example.carware.screens.SelectDropdown
-import com.example.carware.screens.ShimmerScheduleScreen
-import com.example.carware.screens.UsersCar
-import com.example.carware.screens.appButtonBack
 import com.example.carware.util.storage.PreferencesManager
-import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
-import kotlinx.coroutines.awaitCancellation
 import org.jetbrains.compose.resources.Font
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
@@ -68,20 +55,19 @@ import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
-import carware.composeapp.generated.resources.arrow_1
 import carware.composeapp.generated.resources.arrow_left
-import carware.composeapp.generated.resources.home_line
 import carware.composeapp.generated.resources.poppins
 import carware.composeapp.generated.resources.reminder_note_resize
-import carware.composeapp.generated.resources.schedule
-import carware.composeapp.generated.resources.success
+import com.example.carware.viewModel.defaultSlots
+import com.example.carware.viewModel.reminder.ReminderScreenViewModel
+import com.example.carware.viewModel.schedule.screen.TimeSlot
 import org.jetbrains.compose.resources.painterResource
 
 
 @Composable
 fun ReminderScreen(
     navController: NavController,
-    viewModel: ScheduleScreenViewModel,
+    viewModel: ReminderScreenViewModel,
     preferencesManager: PreferencesManager,
 
     ) {
@@ -98,16 +84,15 @@ fun ReminderScreen(
     val pageScrollState = rememberScrollState()
     val selectCarScrollState = rememberScrollState()
     val strings = LocalStrings.current
-    val lifecycleOwner = LocalLifecycleOwner.current
 
-//    LaunchedEffect(Unit) {
-//        viewModel.loadInitialData()
-//        viewModel.loadInitialTimeSlots()
-//    }
 
     if (state.isTimePickerVisible) {
         Column(m.fillMaxSize()) {
-            SelectDateBox(viewModel = viewModel)
+            SelectDateBox(
+                availableSlots = state.availableSlots,
+                onSlotClick = { viewModel.selectTimeSlot(it) },
+                onConfirm = { viewModel.confirmTimeSelection() }
+            )
         }
     } else if (state.isLoading) {
         ShimmerScheduleScreen()
@@ -227,15 +212,27 @@ fun ReminderScreen(
                 }
 
                 Spacer(m.height(18.dp))
+                val intervals = listOf(3, 6, 9)
 
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    intervals.forEach { interval ->
+                        FilterChip(
+                            selected = state.repeatInterval == interval,
+                            onClick = { viewModel.selectRepeatInterval(interval) },
+                            label = { Text("Every $interval months") }
+                        )
+                    }
+                }
+                Spacer(m.height(18.dp))
                 // ============ NOTES  SECTION ============
 
-                var note by remember { mutableStateOf("") }
                 var noteBoxHeight by remember { mutableStateOf(110.dp) }
                 val minHeight = 80.dp
                 val maxHeight = 300.dp
 
-// ── "Note" label ──────────────────────────────────────────────────────
+//                   ── "Note" label ──────────────────────────────────────────────────────
                 Text(
                     text = strings.get("NOTE_LABEL"),
                     fontFamily = popSemi,
@@ -252,7 +249,7 @@ fun ReminderScreen(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
 
-// ── Text field box ────────────────────────────────────────────────────
+//                   ── Text field box ────────────────────────────────────────────────────
                 val density = LocalDensity.current
 
                 Box(
@@ -269,8 +266,8 @@ fun ReminderScreen(
                         )
                 ) {
                     BasicTextField(
-                        value = note,
-                        onValueChange = { note = it },
+                        value = state.note,
+                        onValueChange = { viewModel.updateNote(it) },
                         textStyle = TextStyle(
                             fontFamily = popMid,
                             fontSize = 13.sp,
@@ -280,7 +277,7 @@ fun ReminderScreen(
                             .fillMaxSize()
                             .padding(12.dp),
                         decorationBox = { innerTextField ->
-                            if (note.isEmpty()) {
+                            if (state.note.isEmpty()) {
                                 Text(
                                     text = strings.get("ADD_NOTE_PLACEHOLDER"),
                                     fontFamily = popMid,
@@ -316,8 +313,13 @@ fun ReminderScreen(
 
                 // ============ CALENDAR SECTION ============
                 CalenderBox(
-                    viewModel,
-                    preferencesManager = preferencesManager
+                    currentMonthIndex = state.currentMonthIndex,
+                    currentYear = state.currentYear,
+                    selectedDay = state.selectedDay,
+                    preferencesManager = preferencesManager,
+                    onChangeMonth = { viewModel.changeMonth(it) },
+                    onChangeYear = { viewModel.changeYear(it) },
+                    onSelectDay = { viewModel.selectDay(it) }
                 )
 
                 Spacer(m.height(20.dp))
@@ -354,7 +356,7 @@ fun ReminderScreen(
                     // Confirm Button
                     Card(
                         onClick = {
-                            viewModel.confirmAppointment()
+                            viewModel.setReminder()
                         },
                         modifier = m
                             .fillMaxWidth(0.8f)
@@ -382,11 +384,89 @@ fun ReminderScreen(
                         }
                     }
 
+                    // Reservation Details
+                    Text(
+                        strings.get("RESERVATION_DETAILS"),
+                        fontFamily = popSemi,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W600,
+                        color = Color(194, 0, 0, 255)
+                    )
+
+                    Spacer(m.height(8.dp))
+
+                    // Date & Time
+                    val months = listOf(
+                        "January",
+                        "February",
+                        "March",
+                        "April",
+                        "May",
+                        "June",
+                        "July",
+                        "August",
+                        "September",
+                        "October",
+                        "November",
+                        "December"
+                    )
+                    val summaryDate = if (state.selectedDay != null && state.selectedTime != null) {
+                        "${months[state.currentMonthIndex]} ${state.selectedDay}, ${state.currentYear} at ${state.selectedTime}"
+                    } else null
+
+                    Text(
+                        text = summaryDate ?: strings.get("no_date/time_selected"),
+                        fontFamily = popMid,
+                        fontSize = 12.sp,
+                        color = if (summaryDate != null) Color.DarkGray else Color.Gray
+                    )
+
+                    Spacer(m.height(4.dp))
+
+
+                    // Selected Service
+                    Text(
+                        text = state.selectedServiceName?.let { strings.get("SERVICE") + it }
+                            ?: strings.get("SERVICE_NOT_SELECTED"),
+                        fontFamily = popMid,
+                        fontSize = 12.sp,
+                        color = if (state.selectedServiceName != null) Color.DarkGray else Color.Gray
+                    )
+                    Spacer(m.height(4.dp))
+
 
 
                     Spacer(m.height(4.dp))
 
+                    // Selected Car
+                    state.availableCars.find { it.id == state.selectedCarId }?.let { car ->
+                        Text(
+                            text = "Car: ${car.brandName} ${car.modelName}",
+                            fontFamily = popMid,
+                            fontSize = 12.sp,
+                            color = Color.DarkGray
+                        )
+                    } ?: run {
+                        Text(
+                            text = strings.get("CAR_NOT_SELECTED"),
+                            fontFamily = popMid,
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
+                    }
                 }
+                // Repeat Interval
+                Text(
+                    text = "Repeat: Every ${state.repeatInterval} ${state.repeatUnit.lowercase().replaceFirstChar { it.uppercase() }}(s), ${state.repeatCount} time(s)",
+                    fontFamily = popMid,
+                    fontSize = 12.sp,
+                    color = Color.DarkGray
+                )
+
+                Spacer(m.height(120.dp))
+
+                Spacer(m.height(4.dp))
+
             }
         }
     }

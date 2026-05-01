@@ -32,9 +32,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.poppins_medium
@@ -52,7 +50,6 @@ import com.example.carware.screens.UsersCar
 import com.example.carware.screens.appButtonBack
 import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
-import kotlinx.coroutines.awaitCancellation
 import org.jetbrains.compose.resources.Font
 
 @Composable
@@ -83,8 +80,11 @@ fun ScheduleScreen(
 
     if (state.isTimePickerVisible) {
         Column(m.fillMaxSize()) {
-            SelectDateBox(viewModel = viewModel)
-        }
+            SelectDateBox(
+                availableSlots = state.availableSlots,
+                onSlotClick = { viewModel.selectTimeSlot(it) },
+                onConfirm = { viewModel.confirmTimeSelection() }
+            )        }
     } else if (state.isLoading) {
         ShimmerScheduleScreen()
     } else {
@@ -224,8 +224,13 @@ fun ScheduleScreen(
 
                 // ============ CALENDAR SECTION ============
                 CalenderBox(
-                    viewModel,
-                    preferencesManager = preferencesManager
+                    currentMonthIndex = state.currentMonthIndex,
+                    currentYear = state.currentYear,
+                    selectedDay = state.selectedDay,
+                    preferencesManager = preferencesManager,
+                    onChangeMonth = { viewModel.changeMonth(it) },
+                    onChangeYear = { viewModel.changeYear(it) },
+                    onSelectDay = { viewModel.selectDay(it) }
                 )
 
                 Spacer(m.height(20.dp))

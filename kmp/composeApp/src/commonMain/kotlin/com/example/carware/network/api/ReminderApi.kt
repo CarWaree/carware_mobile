@@ -1,8 +1,8 @@
 package com.example.carware.network.api
 
 import com.example.carware.network.apiRequests.reminder.ReminderRequest
-import com.example.carware.network.apiResponse.reminderr.GetReminderResponse
-import com.example.carware.network.apiResponse.reminderr.ReminderResponse
+import com.example.carware.network.apiResponse.reminder.GetReminderResponse
+import com.example.carware.network.apiResponse.reminder.ReminderResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -13,30 +13,25 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
+import kotlinx.serialization.json.Json
 
 suspend fun setReminder(client: HttpClient, request: ReminderRequest): ReminderResponse {
-    val response: HttpResponse = client.post("$baseUrl/api/maintenancereminder")
-    {
+    println("📤 Sending request: ${Json.encodeToString(request)}")
+
+    val response: HttpResponse = client.post("$baseUrl/api/maintenancereminder") {
         contentType(ContentType.Application.Json)
         setBody(request)
     }
+
     val rawBody = response.bodyAsText()
-    println("📥 Raw  reminder response: $rawBody")
+    println("📥 Raw response: $rawBody")
 
-     return try{
-        // Check HTTP status code first
-        if (!response.status.isSuccess()) {
-            val errorResponse = response.body<ReminderResponse>()
-            throw Exception(errorResponse.message )
-        }
-         response.body<ReminderResponse>()
-
-    } catch (e: Exception) {
-        println("❌ set reminder  failed: ${e.message}")
-        throw Exception(e.message ?: "reminder failed")
+    if (!response.status.isSuccess()) {
+        throw Exception("HTTP ${response.status.value}: $rawBody")
     }
-}
 
+    return Json.decodeFromString<ReminderResponse>(rawBody)
+}
 suspend fun getReminder(client: HttpClient): GetReminderResponse{
     val response: HttpResponse=client.get("$baseUrl/api/maintenancereminder/my")
     val rawBody = response.bodyAsText()
