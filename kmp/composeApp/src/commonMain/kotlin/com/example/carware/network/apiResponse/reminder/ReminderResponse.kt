@@ -21,10 +21,10 @@ data class Reminder (
     val vehicleName: String,
     val note: String,
 
-    // fields  to schedule local notifications later
-    val repeatInterval: Int,
-    val repeatUnit: String,
-    val repeatCount: Int
+//    // fields  to schedule local notifications later
+//    val repeatInterval: Int,
+//    val repeatUnit: String,
+//    val repeatCount: Int
 
 
     )

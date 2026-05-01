@@ -1113,7 +1113,7 @@ fun SelectDateBox(
 
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 Card(
-                    onClick = { onConfirm },
+                    onClick = { onConfirm() },
                     modifier = Modifier
                         .fillMaxWidth(0.8f)
                         .height(45.dp)

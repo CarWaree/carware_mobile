@@ -78,6 +78,7 @@ import com.example.carware.viewModel.history.HistoryScreenViewModel
 import com.example.carware.viewModel.home.HomeScreenViewModel
 import com.example.carware.viewModel.notification.NotificationViewModel
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
+import com.example.carware.viewModel.reminder.ReminderScreenViewModel
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
 import com.example.carware.viewModel.vehicle.editCar.EditCarViewModel
 import org.koin.compose.koinInject
@@ -261,11 +262,11 @@ fun MainScreen() {
             }
 
             composable<ReminderScreen> {
-                val scheduleViewModel: ScheduleScreenViewModel = koinInject()
+                val reminderViewModel: ReminderScreenViewModel = koinInject()
 
                 ReminderScreen(
                     navController,
-                    scheduleViewModel,
+                    reminderViewModel,
                     preferencesManager
                 )
             }

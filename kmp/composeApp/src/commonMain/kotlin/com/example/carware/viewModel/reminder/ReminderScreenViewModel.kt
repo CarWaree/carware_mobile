@@ -2,6 +2,7 @@ package com.example.carware.viewModel.reminder
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.carware.network.apiRequests.reminder.ReminderRequest
 import com.example.carware.repository.ReminderRepository
 import com.example.carware.repository.ServiceRepository
 import com.example.carware.repository.VehicleRepository
@@ -53,7 +54,13 @@ class ReminderScreenViewModel(
             }
         }
     }
+    fun selectRepeatInterval(interval: Int) {
+        _state.update { it.copy(repeatInterval = interval) }
+    }
 
+    fun updateNote(note: String) {
+        _state.update { it.copy(note = note) }
+    }
     fun selectServiceType(serviceId: Int, serviceName: String) {
         _state.update {
             it.copy(selectedServiceId = serviceId, selectedServiceName = serviceName, error = null)
@@ -68,27 +75,23 @@ class ReminderScreenViewModel(
             _state.update { it.copy(error = "Car not found") }
         }
     }
+    val availableSlots: List<TimeSlot> = emptyList()
 
+    // Initialize slots on selectDay
     fun selectDay(day: Int) {
         _state.update {
             it.copy(
                 selectedDay = day,
                 selectedTime = null,
-                availableSlots = defaultSlots(), // reset slots per day until real endpoint exists
+                availableSlots = defaultSlots().map { it.copy(isAvailable = true) },
                 isTimePickerVisible = true,
                 error = null
             )
         }
     }
 
+    // Update isSelected on click
     fun selectTimeSlot(time: String) {
-        val slot = _state.value.availableSlots.find { it.time == time }
-
-        if (slot == null || !slot.isAvailable) {
-            _state.update { it.copy(error = "This time slot is not available") }
-            return
-        }
-
         _state.update { current ->
             current.copy(
                 selectedTime = time,
@@ -99,7 +102,6 @@ class ReminderScreenViewModel(
             )
         }
     }
-
     fun confirmTimeSelection() {
         if (_state.value.selectedDay != null && _state.value.selectedTime != null) {
             _state.update { it.copy(isTimePickerVisible = false) }
@@ -191,7 +193,37 @@ class ReminderScreenViewModel(
     )
 
     fun setReminder() {
-        TODO("Not yet implemented")
+        val current = _state.value
+
+        if (!isValid(current)) {
+            _state.update { it.copy(error = "Please complete all required fields") }
+            return
+        }
+
+        val request = ReminderRequest(
+            notificationDate = formatToISO8601(
+                current.currentYear,
+                current.currentMonthIndex + 1,
+                current.selectedDay!!,
+                current.selectedTime!!
+            ),
+            repeatInterval = current.repeatInterval,
+            repeatUnit = current.repeatUnit,
+            repeatCount = current.repeatCount,
+            note = current.note,
+            typeId = current.selectedServiceId!!,
+            vehicleId = current.selectedCarId!!
+        )
+
+        viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, error = null) }
+            try {
+                reminderRepo.setReminderRepo(request)
+                _state.update { it.copy(isLoading = false, isBookingSuccess = true) }
+            } catch (e: Exception) {
+                _state.update { it.copy(isLoading = false, error = e.message) }
+            }
+        }
     }
 
 }

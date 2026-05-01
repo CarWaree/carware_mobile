@@ -3,6 +3,7 @@ package com.example.carware.viewModel.reminder
 import com.example.carware.network.apiResponse.reminder.ReminderResponse
 import com.example.carware.network.apiResponse.schedule.Service
 import com.example.carware.network.apiResponse.vehicle.Vehicles
+import com.example.carware.viewModel.schedule.screen.TimeSlot
 import kotlin.time.ExperimentalTime
 
 data class ReminderScreenState @OptIn(ExperimentalTime::class) constructor(
@@ -35,5 +36,6 @@ data class ReminderScreenState @OptIn(ExperimentalTime::class) constructor(
     // Date & time
     val selectedDay: Int? = null,
     val selectedTime: String? = null,
+    val availableSlots: List<TimeSlot> = emptyList()
 
     )
