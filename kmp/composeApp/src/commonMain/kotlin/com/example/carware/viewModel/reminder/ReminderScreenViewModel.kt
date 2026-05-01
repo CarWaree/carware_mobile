@@ -8,6 +8,8 @@ import com.example.carware.network.apiRequests.reminder.ReminderRequest
 import com.example.carware.repository.ReminderRepository
 import com.example.carware.repository.ServiceRepository
 import com.example.carware.repository.VehicleRepository
+import com.example.carware.util.CalendarLauncher
+import com.example.carware.viewModel.defaultSlots
 import com.example.carware.viewModel.schedule.screen.TimeSlot
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,14 +23,15 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 class ReminderScreenViewModel(
     private val reminderRepo: ReminderRepository,
     private val vehicleRepo: VehicleRepository,
     private val serviceRepo: ServiceRepository,
-) : ViewModel() {
+    private val calendarLauncher: CalendarLauncher,
 
-
+    ) : ViewModel() {
 
 
     private val _state = MutableStateFlow(ReminderScreenState())
@@ -84,13 +87,16 @@ class ReminderScreenViewModel(
                 }
             }
         }
-    }    fun selectRepeatInterval(interval: Int) {
+    }
+
+    fun selectRepeatInterval(interval: Int) {
         _state.update { it.copy(repeatInterval = interval) }
     }
 
     fun updateNote(note: String) {
         _state.update { it.copy(note = note) }
     }
+
     fun selectServiceType(serviceId: Int, serviceName: String) {
         _state.update {
             it.copy(selectedServiceId = serviceId, selectedServiceName = serviceName, error = null)
@@ -105,6 +111,7 @@ class ReminderScreenViewModel(
             _state.update { it.copy(error = "Car not found") }
         }
     }
+
     val availableSlots: List<TimeSlot> = emptyList()
 
     // Initialize slots on selectDay
@@ -132,6 +139,7 @@ class ReminderScreenViewModel(
             )
         }
     }
+
     fun confirmTimeSelection() {
         if (_state.value.selectedDay != null && _state.value.selectedTime != null) {
             _state.update { it.copy(isTimePickerVisible = false) }
@@ -146,9 +154,13 @@ class ReminderScreenViewModel(
             var year = current.currentYear
 
             if (forward) {
-                if (month < 11) month++ else { month = 0; year++ }
+                if (month < 11) month++ else {
+                    month = 0; year++
+                }
             } else {
-                if (month > 0) month-- else { month = 11; year-- }
+                if (month > 0) month-- else {
+                    month = 11; year--
+                }
             }
 
             current.copy(
@@ -192,35 +204,15 @@ class ReminderScreenViewModel(
         }
     }
 
-    private fun defaultSlots() = listOf(
-        TimeSlot("10:00 AM", isAvailable = false),
-        TimeSlot("10:30 AM"),
-        TimeSlot("11:00 AM"),
-        TimeSlot("11:30 AM", isAvailable = false),
-        TimeSlot("12:00 PM"),
-        TimeSlot("12:30 PM"),
-        TimeSlot("1:30 PM"),
-        TimeSlot("2:00 PM", isAvailable = false),
-        TimeSlot("3:00 PM"),
-        TimeSlot("3:30 PM"),
-        TimeSlot("4:00 PM"),
-        TimeSlot("4:30 PM"),
-        TimeSlot("5:00 PM", isAvailable = false),
-        TimeSlot("5:30 PM"),
-        TimeSlot("6:00 PM", isAvailable = false),
-        TimeSlot("6:30 PM"),
-        TimeSlot("7:00 PM"),
-        TimeSlot("7:30 PM"),
-        TimeSlot("8:00 PM"),
-        TimeSlot("8:30 PM", isAvailable = false),
-        TimeSlot("9:00 PM"),
-        TimeSlot("9:30 PM"),
-        TimeSlot("10:00 PM", isAvailable = false),
-        TimeSlot("10:30 PM"),
-        TimeSlot("11:00 PM"),
-        TimeSlot("11:30 PM", isAvailable = false),
-        TimeSlot("12:00 AM"),
-    )
+    @OptIn(ExperimentalTime::class)
+    private fun parseISO8601ToMillis(year: Int, month: Int, day: Int, time: String): Long {
+        return try {
+            val iso = formatToISO8601(year, month, day, time)
+            Instant.parse(iso).toEpochMilliseconds()
+        } catch (e: Exception) {
+            Clock.System.now().toEpochMilliseconds()
+        }
+    }
 
     fun setReminder() {
         val current = _state.value
@@ -230,30 +222,52 @@ class ReminderScreenViewModel(
             return
         }
 
-        val request = ReminderRequest(
-            notificationDate = formatToISO8601(
-                current.currentYear,
-                current.currentMonthIndex + 1,
-                current.selectedDay!!,
-                current.selectedTime!!
-            ),
-            repeatInterval = current.repeatInterval,
-            repeatUnit = current.repeatUnit,
-            repeatCount = current.repeatCount,
-            note = current.note,
-            typeId = current.selectedServiceId!!,
-            vehicleId = current.selectedCarId!!
+        val startMillis = parseISO8601ToMillis(
+            current.currentYear,
+            current.currentMonthIndex + 1,
+            current.selectedDay!!,
+            current.selectedTime!!
         )
 
+        val title = "Vehicle: ${
+            current.availableCars.find { it.id == current.selectedCarId }
+                ?.let { "${it.brandName} ${it.modelName}" } ?: ""
+        }: ${current.selectedServiceName ?: "Service"}"
+
+        val description = "\n${current.note}"
+
+        // 1. Always open calendar — no network needed
+        calendarLauncher.openCalendarWithEvent(
+            title = title,
+            description = description,
+            startTimeMillis = startMillis
+        )
+
+        // 2. Try to sync to server in background — failure is silent
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             try {
-                reminderRepo.setReminderRepo(request)
+                val request = ReminderRequest(
+                    notificationDate = formatToISO8601(
+                        current.currentYear,
+                        current.currentMonthIndex + 1,
+                        current.selectedDay!!,
+                        current.selectedTime!!
+                    ),
+                    repeatInterval = current.repeatInterval,
+                    repeatUnit = current.repeatUnit,
+                    repeatCount = current.repeatCount,
+                    note = current.note,
+                    typeId = current.selectedServiceId!!,
+                    vehicleId = current.selectedCarId!!
+                )
+                val response = reminderRepo.setReminderRepo(request)
+
                 _state.update { it.copy(isLoading = false, isBookingSuccess = true) }
             } catch (e: Exception) {
-                _state.update { it.copy(isLoading = false, error = e.message) }
+                // Silent fail — calendar was already opened
+                _state.update { it.copy(isLoading = false, isBookingSuccess = true) }
             }
         }
     }
-
 }

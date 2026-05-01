@@ -9,6 +9,7 @@ import com.example.carware.repository.ReminderRepository
 import com.example.carware.repository.ServiceRepository
 import com.example.carware.repository.VehicleRepository
 import com.example.carware.repository.auth.AuthRepository
+import com.example.carware.util.CalendarLauncher
 import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.vehicle.addcar.AddCarViewModel
 import com.example.carware.viewModel.auth.emailVerification.EmailVerificationViewModel
@@ -32,7 +33,7 @@ fun appModule(preferencesManager: PreferencesManager) = module {
     single { preferencesManager }
     single { createHttpClient(get()) }
     single { getPushTokenProvider() }
-
+    single<CalendarLauncher> { CalendarLauncher() }
     // Repositories
     single { VehicleRepository(get()) }
     single { AuthRepository(get()) }
@@ -41,7 +42,6 @@ fun appModule(preferencesManager: PreferencesManager) = module {
     single { ServiceRepository(get()) }
     single { NotificationsRepository(get()) }
     single { ReminderRepository(get()) }
-
 
     // ViewModels
     factory { HomeScreenViewModel(get()) }
@@ -57,7 +57,7 @@ fun appModule(preferencesManager: PreferencesManager) = module {
     factory { ForgotPasswordViewModel(get(), get()) }
     factory { NotificationViewModel(get(),get()) }
     factory { EditCarViewModel(get()) }
-    factory{ ReminderScreenViewModel(get(),get(),get()) }
+    factory{ ReminderScreenViewModel(get(),get(),get(),get()) }
     // AppFonts.kt
 
 }
