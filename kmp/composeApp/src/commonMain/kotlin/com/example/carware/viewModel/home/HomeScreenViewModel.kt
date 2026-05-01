@@ -2,6 +2,7 @@ package com.example.carware.viewModel.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.carware.cache.reminderStore
 import com.example.carware.cache.vehiclesStore
 import com.example.carware.network.api.deleteVehicle
 import com.example.carware.repository.VehicleRepository
@@ -12,8 +13,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 
 class HomeScreenViewModel(
@@ -25,12 +29,16 @@ class HomeScreenViewModel(
     private val _state = MutableStateFlow<HomeScreenState>(HomeScreenState.Loading)
     val state: StateFlow<HomeScreenState> = _state.asStateFlow()
 
+    private val _nextReminderMillis = MutableStateFlow<Long?>(null)
+    val nextReminderMillis: StateFlow<Long?> = _nextReminderMillis.asStateFlow()
     val cachedVehicles = vehiclesStore.updates
         .filterNotNull()
         .map { it.vehicles }
 
     init {
         loadVehicles()
+        loadNextReminder()
+
     }
 
 
@@ -72,6 +80,22 @@ class HomeScreenViewModel(
         val id = currentCarId ?: return
         viewModelScope.launch {
             repository.deleteVehicleRepo(id)
+        }
+    }
+
+    @OptIn(ExperimentalTime::class)
+    fun loadNextReminder() {
+        viewModelScope.launch {
+            val now = Clock.System.now().toEpochMilliseconds()
+            val next = reminderStore.get()?.reminders
+                ?.mapNotNull {
+                    runCatching {
+                        Instant.parse(it.notificationDate).toEpochMilliseconds()
+                    }.getOrNull()
+                }
+                ?.filter { it > now }
+                ?.minOrNull()
+            _nextReminderMillis.update { next }
         }
     }
 }

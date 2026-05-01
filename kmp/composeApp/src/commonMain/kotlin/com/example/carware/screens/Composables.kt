@@ -42,7 +42,9 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -91,12 +93,15 @@ import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.home.HomeScreenViewModel
 import com.example.carware.viewModel.schedule.screen.TimeSlot
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 
 fun Modifier.appGradBack(): Modifier = this.then(
@@ -521,49 +526,98 @@ fun OBDCard(onClick: () -> Unit) {
     }
 }
 
+@OptIn(ExperimentalTime::class)
+@Composable
+fun rememberCountdown(targetMillis: Long): Triple<Long, Long, Long> {
+    var now by remember { mutableLongStateOf(Clock.System.now().toEpochMilliseconds()) }
+
+    LaunchedEffect(targetMillis) {
+        while (true) {
+            delay(1000L)
+            now = Clock.System.now().toEpochMilliseconds()
+        }
+    }
+
+    val diff = (targetMillis - now).coerceAtLeast(0L)
+    return Triple(
+        diff / (1000 * 60 * 60 * 24),
+        (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+        (diff % (1000 * 60 * 60)) / (1000 * 60)
+    )
+}
+
 @Composable
 fun UpcomingReminder(
-    navController: NavController
+    navController: NavController,
+    nextReminderMillis: Long?
 ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val strings = LocalStrings.current
 
     @Composable
-    fun TimerUpcomingMaintenance(time: String) {
-        val popSemi = FontFamily(Font(Res.font.poppins_semibold))
-
+    fun TimerBox(value: String) {
         Column(
-            m.size(40.dp).border(
-                shape = RoundedCornerShape(8.dp), width = 1.dp, color = Color(30, 30, 30, 110)
-            ).clip(shape = RoundedCornerShape(8.dp)).background(Color(217, 217, 217, 255)),
+            modifier = m
+                .size(40.dp)
+                .border(
+                    shape = RoundedCornerShape(8.dp),
+                    width = 1.dp,
+                    color = Color(30, 30, 30, 110)
+                )
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color(217, 217, 217, 255)),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                time,
+                text = value.padStart(2, '0'),
                 fontFamily = popSemi,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(118, 118, 118, 255)
             )
-
         }
-
     }
+
+    @Composable
+    fun TimerUnit(value: String, label: String) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            TimerBox(value)
+            Spacer(m.height(2.dp))
+            Text(
+                text = label,
+                fontFamily = popSemi,
+                fontSize = 12.sp,
+                color = Color(217, 217, 217, 255)
+            )
+        }
+    }
+
+    @Composable
+    fun Separator() {
+        Spacer(m.width(4.dp))
+        Text(
+            text = ":",
+            fontFamily = popSemi,
+            fontSize = 20.sp,
+            color = Color(217, 217, 217, 255)
+        )
+        Spacer(m.width(4.dp))
+    }
+
     Row(
-        m.appButtonBack()
+        modifier = m
+            .appButtonBack()
             .padding(vertical = 18.dp, horizontal = 10.dp)
             .fillMaxWidth()
             .height(54.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
-
-    )
-
-    {
+    ) {
+        // Left column — title + create button (always shown)
         Column {
             Text(
-                strings.get("UP_COMING_REMINDER"),
+                text = strings.get("UP_COMING_REMINDER"),
                 fontFamily = popSemi,
                 fontSize = 19.sp,
                 fontWeight = FontWeight.W600,
@@ -571,100 +625,44 @@ fun UpcomingReminder(
             )
             Spacer(m.height(2.dp))
             Row(
-                m
+                modifier = m
                     .fillMaxWidth(0.5f)
                     .clickable { navController.navigate(ReminderScreen) },
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    strings.get("CREATE_REMINDER"),
+                    text = strings.get("CREATE_REMINDER"),
                     fontFamily = popSemi,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.W500,
                     color = Color(217, 217, 217, 255)
                 )
                 Spacer(m.width(4.dp))
-
                 Icon(
                     painter = painterResource(Res.drawable.x_time_slot),
                     contentDescription = null,
                     tint = Color(229, 174, 65, 255),
-                    modifier = m.size(20.dp)
-
+                    modifier = m
+                        .size(20.dp)
                         .rotate(45f)
-                        .size(4.dp)
-
-
                 )
-
-
             }
         }
 
+        // Right side — countdown or nothing
+        if (nextReminderMillis != null) {
+            val (days, hours, minutes) = rememberCountdown(nextReminderMillis)
 
-        Spacer(m.padding(horizontal = 2.dp))
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TimerUpcomingMaintenance("10")
-            Text(
-                strings.get("DAY"),
-                fontFamily = popSemi,
-                fontSize = 12.sp,
-                color = Color(217, 217, 217, 255)
-            )
-            Spacer(m.padding(horizontal = 2.dp))
+            Spacer(m.width(8.dp))
 
+            TimerUnit(days.toString(), strings.get("DAY"))
+            Separator()
+            TimerUnit(hours.toString(), strings.get("HOUR"))
+            Separator()
+            TimerUnit(minutes.toString(), strings.get("MINUTE"))
         }
-        Spacer(m.padding(horizontal = 4.dp))
-
-        Text(
-            ":",
-            fontFamily = popSemi,
-            fontSize = 20.sp,
-            color = Color(217, 217, 217, 255)
-        ) // two dots
-        Spacer(m.padding(horizontal = 4.dp))
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TimerUpcomingMaintenance("25")
-            Text(
-                strings.get("HOUR"),
-                fontFamily = popSemi,
-                fontSize = 12.sp,
-                color = Color(217, 217, 217, 255)
-            )
-            Spacer(m.padding(horizontal = 2.dp))
-
-        }
-        Spacer(m.padding(horizontal = 4.dp))
-
-        Text(
-            ":",
-            fontFamily = popSemi,
-            fontSize = 20.sp,
-            color = Color(217, 217, 217, 255)
-        ) // two dots
-        Spacer(m.padding(horizontal = 4.dp))
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TimerUpcomingMaintenance("50")
-            Text(
-                strings.get("MINUTE"),
-                fontFamily = popSemi,
-                fontSize = 12.sp,
-                color = Color(217, 217, 217, 255)
-            )
-            Spacer(m.width(width = 50.dp))
-
-        }
-
+        // null → nothing rendered on the right, create button is the only CTA
     }
-
 }
 
 

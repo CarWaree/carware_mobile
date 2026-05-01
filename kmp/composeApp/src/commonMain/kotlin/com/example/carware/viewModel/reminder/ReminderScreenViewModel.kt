@@ -2,9 +2,11 @@ package com.example.carware.viewModel.reminder
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.carware.cache.reminderStore
 import com.example.carware.cache.servicesStore
 import com.example.carware.cache.vehiclesStore
 import com.example.carware.network.apiRequests.reminder.ReminderRequest
+import com.example.carware.network.cache.ReminderCacheData
 import com.example.carware.repository.ReminderRepository
 import com.example.carware.repository.ServiceRepository
 import com.example.carware.repository.VehicleRepository
@@ -38,6 +40,7 @@ class ReminderScreenViewModel(
     val state: StateFlow<ReminderScreenState> = _state.asStateFlow()
 
     init {
+        loadNextReminder()
         loadInitialData()
     }
 
@@ -243,7 +246,6 @@ class ReminderScreenViewModel(
             startTimeMillis = startMillis
         )
 
-        // 2. Try to sync to server in background — failure is silent
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
             try {
@@ -261,8 +263,16 @@ class ReminderScreenViewModel(
                     typeId = current.selectedServiceId!!,
                     vehicleId = current.selectedCarId!!
                 )
+                val current_cache = reminderStore.get()
                 val response = reminderRepo.setReminderRepo(request)
 
+                val updatedReminders = (current_cache?.reminders ?: emptyList()) + response.data
+                reminderStore.set(
+                    ReminderCacheData(
+                        reminders = updatedReminders,
+                        userId = current_cache?.userId ?: 0
+                    )
+                )
                 _state.update { it.copy(isLoading = false, isBookingSuccess = true) }
             } catch (e: Exception) {
                 // Silent fail — calendar was already opened
@@ -270,4 +280,18 @@ class ReminderScreenViewModel(
             }
         }
     }
+    @OptIn(ExperimentalTime::class)
+    fun loadNextReminder() {
+        viewModelScope.launch {
+            val now = Clock.System.now().toEpochMilliseconds()
+            val next = reminderStore.get()?.reminders
+                ?.mapNotNull { runCatching { Instant.parse(it.notificationDate).toEpochMilliseconds() }.getOrNull() }
+                ?.filter { it > now }
+                ?.minOrNull()
+            _state.update { it.copy(nextReminderMillis = next) }
+        }
+    }
+
+
+
 }

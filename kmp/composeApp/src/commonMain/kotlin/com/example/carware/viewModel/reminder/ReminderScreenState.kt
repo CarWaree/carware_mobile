@@ -36,6 +36,9 @@ data class ReminderScreenState @OptIn(ExperimentalTime::class) constructor(
     // Date & time
     val selectedDay: Int? = null,
     val selectedTime: String? = null,
-    val availableSlots: List<TimeSlot> = emptyList()
+    val availableSlots: List<TimeSlot> = emptyList(),
+    val nextReminderMillis: Long? = null
 
-    )
+
+)
+

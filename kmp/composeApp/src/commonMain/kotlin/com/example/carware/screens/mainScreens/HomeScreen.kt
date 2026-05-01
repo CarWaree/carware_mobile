@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.audi
@@ -244,7 +245,9 @@ fun HomeScreen(
             }
             Spacer(modifier = m.padding(vertical = 16.dp))
 
-                UpcomingReminder (navController)
+            val nextReminder by viewModel.nextReminderMillis.collectAsStateWithLifecycle()
+
+                UpcomingReminder (navController,nextReminder)
             Spacer(modifier = m.padding(vertical = 12.dp))
             Text(
                 strings.get("SCHEDULED_SERVICES"),
