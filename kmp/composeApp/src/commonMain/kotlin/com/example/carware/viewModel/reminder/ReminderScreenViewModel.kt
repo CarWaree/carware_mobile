@@ -2,6 +2,8 @@ package com.example.carware.viewModel.reminder
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.carware.cache.servicesStore
+import com.example.carware.cache.vehiclesStore
 import com.example.carware.network.apiRequests.reminder.ReminderRequest
 import com.example.carware.repository.ReminderRepository
 import com.example.carware.repository.ServiceRepository
@@ -10,6 +12,8 @@ import com.example.carware.viewModel.schedule.screen.TimeSlot
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
@@ -24,6 +28,9 @@ class ReminderScreenViewModel(
     private val serviceRepo: ServiceRepository,
 ) : ViewModel() {
 
+
+
+
     private val _state = MutableStateFlow(ReminderScreenState())
     val state: StateFlow<ReminderScreenState> = _state.asStateFlow()
 
@@ -34,12 +41,31 @@ class ReminderScreenViewModel(
     private fun loadInitialData() {
         _state.update { it.copy(isLoading = true, error = null) }
 
-
         viewModelScope.launch {
+            // 1. Load from cache first — show UI immediately
+            val cachedVehicles = vehiclesStore.get()?.vehicles ?: emptyList()
+            val cachedServices = servicesStore.get()?.services ?: emptyList()
+
+            if (cachedVehicles.isNotEmpty() || cachedServices.isNotEmpty()) {
+                _state.update {
+                    it.copy(
+                        availableCars = cachedVehicles,
+                        availableServicesTypes = cachedServices,
+                        isLoading = false
+                    )
+                }
+            }
+
+            // 2. Try to fetch fresh data from server
             try {
                 val services = serviceRepo.getServiceTypeRepo()
                 val cars = vehicleRepo.getVehiclesRepo()
 
+                // 3. Update cache
+                servicesStore.update { it?.copy(services = services) }
+                vehiclesStore.update { it?.copy(vehicles = cars) }
+
+                // 4. Update UI with fresh data
                 _state.update {
                     it.copy(
                         availableServicesTypes = services,
@@ -48,13 +74,17 @@ class ReminderScreenViewModel(
                     )
                 }
             } catch (e: Exception) {
-                _state.update {
-                    it.copy(isLoading = false, error = "Failed to load data: ${e.message}")
+                // 5. If fetch fails, cache is already shown — just show error if cache was empty
+                if (cachedVehicles.isEmpty() && cachedServices.isEmpty()) {
+                    _state.update {
+                        it.copy(isLoading = false, error = "Failed to load data: ${e.message}")
+                    }
+                } else {
+                    _state.update { it.copy(isLoading = false) }
                 }
             }
         }
-    }
-    fun selectRepeatInterval(interval: Int) {
+    }    fun selectRepeatInterval(interval: Int) {
         _state.update { it.copy(repeatInterval = interval) }
     }
 
