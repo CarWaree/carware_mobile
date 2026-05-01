@@ -5,21 +5,38 @@ import platform.EventKit.EKEntityType
 import platform.EventKit.EKEvent
 import platform.EventKit.EKEventStore
 import platform.EventKit.EKSpan
+import platform.EventKitUI.EKEventEditViewAction
 import platform.EventKitUI.EKEventEditViewController
+import platform.EventKitUI.EKEventEditViewDelegateProtocol
 import platform.Foundation.NSDate
 import platform.Foundation.NSURL
 import platform.Foundation.dateWithTimeIntervalSince1970
 import platform.UIKit.UIApplication
+import platform.darwin.NSObject
 import platform.darwin.dispatch_async
 import platform.darwin.dispatch_get_main_queue
+// Place delegate class here, outside CalendarLauncher
+private class EventEditDelegate : NSObject(), EKEventEditViewDelegateProtocol {
+    override fun eventEditViewController(
+        controller: EKEventEditViewController,
+        didCompleteWithAction: EKEventEditViewAction
+    ) {
+        controller.dismissViewControllerAnimated(true, completion = null)
+    }
+}
 
 actual class CalendarLauncher actual constructor() {
     @OptIn(ExperimentalForeignApi::class)
+
+    private var delegate: EventEditDelegate? = null
+
     actual fun openCalendarWithEvent(
         title: String,
         description: String,
         startTimeMillis: Long
     ) {
+
+
         val store = EKEventStore()
         store.requestAccessToEntityType(EKEntityType.EKEntityTypeEvent) { granted, _ ->
             if (!granted) return@requestAccessToEntityType
@@ -35,6 +52,9 @@ actual class CalendarLauncher actual constructor() {
                 val editVC = EKEventEditViewController()
                 editVC.event = event
                 editVC.eventStore = store
+
+                delegate = EventEditDelegate()
+                editVC.editViewDelegate = delegate
 
                 val rootVC = UIApplication.sharedApplication.keyWindow?.rootViewController
                 rootVC?.presentViewController(editVC, animated = true, completion = null)
