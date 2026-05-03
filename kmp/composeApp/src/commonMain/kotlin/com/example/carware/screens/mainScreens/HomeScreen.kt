@@ -52,6 +52,7 @@ import com.example.carware.Notification.RequestNotificationPermission
 import com.example.carware.m
 import com.example.carware.navigation.EditCarScreen
 import com.example.carware.navigation.NotificationScreen
+import com.example.carware.navigation.ProfileScreen
 import com.example.carware.navigation.ReminderScreen
 import com.example.carware.network.apiResponse.appointment.Appointments
 import com.example.carware.network.apiResponse.vehicle.Vehicles
@@ -189,6 +190,7 @@ fun HomeScreen(
                         contentDescription = null,
                         tint = Color.Unspecified,
                         modifier = m.size(25.dp)
+                            .clickable{navController.navigate(ProfileScreen)}
                     ) //profile icon
                     Spacer(modifier = m.padding(horizontal = 4.dp))
                     Text(

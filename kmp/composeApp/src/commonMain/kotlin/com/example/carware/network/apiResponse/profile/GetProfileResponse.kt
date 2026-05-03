@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 data class GetProfileResponse(
     val data: ProfileDetails,
-    val statusCode: String,
+    val statusCode: Int,
     val message: String
 
 )
