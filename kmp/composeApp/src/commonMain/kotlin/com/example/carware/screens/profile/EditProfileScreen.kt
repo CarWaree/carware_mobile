@@ -41,7 +41,6 @@ fun EditProfileScreen(
     viewModel: ProfileScreenViewModel
 ) {
     val strings = LocalStrings.current
-    val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
     val pop = FontFamily(Font(Res.font.poppins))
 

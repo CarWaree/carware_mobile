@@ -65,7 +65,6 @@ fun HistoryScreen(
 )
 {
     val strings = LocalStrings.current
-    val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
 
     val pageScrollState = rememberScrollState()

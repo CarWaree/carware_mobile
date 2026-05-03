@@ -22,6 +22,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.example.carware.Notification.RequestNotificationPermission
 import com.example.carware.navigation.AddCarScreen
 import com.example.carware.navigation.EditCarScreen
 import com.example.carware.navigation.EditProfileScreen
@@ -31,6 +32,7 @@ import com.example.carware.navigation.HomeScreen
 import com.example.carware.navigation.LanguageSelectionScreen
 import com.example.carware.navigation.LoginScreen
 import com.example.carware.navigation.NewPasswordScreen
+import com.example.carware.navigation.NotificationScreen
 import com.example.carware.navigation.OnboardingScreen
 import com.example.carware.navigation.ProfileScreen
 import com.example.carware.navigation.ReminderScreen
@@ -46,6 +48,7 @@ import com.example.carware.navigation.VerificationCodeScreen
 import com.example.carware.network.apiResponse.vehicle.Vehicles
 import com.example.carware.screens.vehicle.AddCarScreen
 import com.example.carware.screens.BottomNavBar
+import com.example.carware.screens.NotificationScreen
 import com.example.carware.screens.ReminderScreen
 import com.example.carware.screens.SelectLanguageScreen
 import com.example.carware.screens.SplashScreen
@@ -107,12 +110,18 @@ fun MainScreen() {
     val layoutDirection =
         if (currentLanguage == AppLanguage.AR) LayoutDirection.Rtl else LayoutDirection.Ltr
 
+    val notificationViewModel: NotificationViewModel=koinInject( )
+
     // ✅ Get all ViewModels from Koin once
 
     CompositionLocalProvider(
         LocalStrings provides localizedStrings,
         LocalLayoutDirection provides layoutDirection
     ) {
+        RequestNotificationPermission {  granted ->
+            notificationViewModel.onPermissionResult(granted)
+            if (granted) notificationViewModel.testPushNotification()
+        }
         NavHost(navController = navController, startDestination = SplashScreen) {
 
             composable<HomeScreen> {
@@ -292,6 +301,16 @@ fun MainScreen() {
                 }
 
                 EditCarScreen(navController = navController, viewModel = viewModel)
+            }
+
+
+
+            composable<NotificationScreen> {
+                val notificationViewModel: NotificationViewModel = koinInject()
+                NotificationScreen(
+                    navController,
+                    notificationViewModel
+                )
             }
         }
     }

@@ -9,6 +9,7 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.example.carware.Notification.SavedNotification
 import com.example.carware.network.apiRequests.notifications.RegisterTokenRequest
 import com.example.carware.repository.NotificationsRepository
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -18,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.java.KoinJavaComponent.inject
+import java.util.UUID
 
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
@@ -44,6 +46,18 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val body = message.notification?.body ?: ""
 
         showNotification(title, body)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val notification = SavedNotification(
+                id = UUID.randomUUID().toString(),
+                title = title,
+                body = body,
+                timestamp = System.currentTimeMillis()
+            )
+            Log.d("FCM_SAVE", "Saving notification: $notification")
+            notificationsRepository.saveNotificationRepo(notification)
+            Log.d("FCM_SAVE", "Notification saved")
+        }
     }
 
     private fun showNotification(title: String, body: String) {

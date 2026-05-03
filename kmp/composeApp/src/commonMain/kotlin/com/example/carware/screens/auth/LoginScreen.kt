@@ -384,7 +384,7 @@ fun LoginScreen(
                         onGoogleSignInResult = { googleUser ->
                             val idToken = googleUser?.idToken
                             if (idToken != null) {
-                                viewModel.googleSignIn(idToken)  // ← pass it here
+                                viewModel.googleSignIn(idToken)
                             }
                         }
                     ) {

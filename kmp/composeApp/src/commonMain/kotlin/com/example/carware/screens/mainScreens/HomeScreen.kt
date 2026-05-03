@@ -2,6 +2,7 @@ package com.example.carware.screens.mainScreens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -50,6 +51,7 @@ import com.example.carware.LocalStrings
 import com.example.carware.Notification.RequestNotificationPermission
 import com.example.carware.m
 import com.example.carware.navigation.EditCarScreen
+import com.example.carware.navigation.NotificationScreen
 import com.example.carware.navigation.ReminderScreen
 import com.example.carware.network.apiResponse.appointment.Appointments
 import com.example.carware.network.apiResponse.vehicle.Vehicles
@@ -63,9 +65,11 @@ import com.example.carware.screens.shimmerEffect
 import com.example.carware.viewModel.home.HomeScreenState
 import com.example.carware.viewModel.home.HomeScreenViewModel
 import com.example.carware.viewModel.notification.NotificationViewModel
+import com.example.carware.viewModel.notification.NotificationsUiState
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 
+@Suppress("SuspiciousIndentation")
 @Composable
 fun HomeScreen(
     navController: NavController,
@@ -80,17 +84,18 @@ fun HomeScreen(
 
     val _state by viewModel.state.collectAsState()
     val state = _state
+    val uiState by notificationViewModel.notificationsUiState.collectAsState()
 
     val username = when (state) {
         is HomeScreenState.Success -> state.cars.firstOrNull()?.userName ?: "User"
         else -> "Guest"
     }
-    RequestNotificationPermission {  granted ->
-        notificationViewModel.onPermissionResult(granted)
-        if (granted) notificationViewModel.testPushNotification()
-    }
+//    RequestNotificationPermission { granted ->
+//        notificationViewModel.onPermissionResult(granted)
+//        if (granted) notificationViewModel.testPushNotification()
+//    }
     @Composable
-    fun SuccessCarPagerContent(cars: List<Vehicles>,navController: NavController) {
+    fun SuccessCarPagerContent(cars: List<Vehicles>, navController: NavController) {
         val pagerState = rememberPagerState(pageCount = { cars.size })
 
         LaunchedEffect(pagerState.currentPage) {
@@ -117,10 +122,10 @@ fun HomeScreen(
                         navController = navController,
                         viewModel = viewModel,
                         onEditClick = {
-                            navController.navigate(EditCarScreen( carId = car.id))
+                            navController.navigate(EditCarScreen(carId = car.id))
                         },
 
-                    )
+                        )
                 }
             }
 
@@ -138,7 +143,11 @@ fun HomeScreen(
                             .padding(4.dp)
                             .clip(shape = CircleShape)
                             .background(color).size(10.dp)
-                            .border(shape = CircleShape, width = 1.dp, color = Color(194, 0, 0, 255))
+                            .border(
+                                shape = CircleShape,
+                                width = 1.dp,
+                                color = Color(194, 0, 0, 255)
+                            )
                     )
                 }
             }
@@ -151,8 +160,9 @@ fun HomeScreen(
             .appGradBack()
 
     ) {
-        Box(m.fillMaxWidth()
-        ){
+        Box(
+            m.fillMaxWidth()
+        ) {
             Icon(
                 painter = painterResource(Res.drawable.home_line),
                 contentDescription = null,
@@ -166,43 +176,64 @@ fun HomeScreen(
                         scaleY = 1.5f  // Flattens it to 80% height
                     )
             )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 32.dp, vertical = 50.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    painter = painterResource(Res.drawable.person),
-                    contentDescription = null,
-                    tint = Color.Unspecified,
-                    modifier = m.size(25.dp)
-                ) //profile icon
-                Spacer(modifier = m.padding(horizontal = 4.dp))
-                Text(
-                    text = strings.get("WELCOME_BACK_HOME") + " \n $username",
-                    fontFamily = popSemi,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(217, 217, 217, 255)
-                ) // welcome back
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp, vertical = 50.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        painter = painterResource(Res.drawable.person),
+                        contentDescription = null,
+                        tint = Color.Unspecified,
+                        modifier = m.size(25.dp)
+                    ) //profile icon
+                    Spacer(modifier = m.padding(horizontal = 4.dp))
+                    Text(
+                        text = strings.get("WELCOME_BACK_HOME") + " \n $username",
+                        fontFamily = popSemi,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(217, 217, 217, 255)
+                    ) // welcome back
+                }
+                Spacer(modifier = m.padding(horizontal = 8.dp))
+
+                Box {
+                    Icon(
+                        painter = painterResource(Res.drawable.notification),
+                        contentDescription = null,
+                        tint = Color.Unspecified,
+                        modifier = Modifier
+                            .size(26.dp)
+                            .clickable { navController.navigate(NotificationScreen) }
+                    )
+
+                    if (uiState is NotificationsUiState.Success) {
+                        val unreadCount = (uiState as NotificationsUiState.Success).unreadCount
+                        if (unreadCount > 0) {
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .background(Color(235, 169, 39, 255), shape = CircleShape)
+                                    .size(12.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = unreadCount.toString(),
+                                    color = Color.White,
+                                    fontSize = 8.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+                }
+
+
             }
-            Spacer(modifier = m.padding(horizontal = 8.dp))
-
-            Icon(
-                painter = painterResource(Res.drawable.notification),
-                contentDescription = null,
-                tint = Color.Unspecified,
-                modifier = m
-                    .size(25.dp)
-
-            ) //notifications
-        }
-
-
-
         }
         val isRefreshing = state is HomeScreenState.Loading
 
@@ -211,118 +242,119 @@ fun HomeScreen(
             onRefresh = { viewModel.loadVehicles() } // ✅ user pulls → fresh data
         ) {
 
-        Column(
-            m.fillMaxSize()
-                .clip(RoundedCornerShape(70.dp, 70.dp, 0.dp, 0.dp))
-                .verticalScroll(scrollState)
-                .background(Color(217, 217, 217, 255)),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Box {
-                when (state) {
-                    is HomeScreenState.Loading -> {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Spacer(modifier = m.padding(vertical = 16.dp))
-                            ShimmerCarCard()
+            Column(
+                m.fillMaxSize()
+                    .clip(RoundedCornerShape(70.dp, 70.dp, 0.dp, 0.dp))
+                    .verticalScroll(scrollState)
+                    .background(Color(217, 217, 217, 255)),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Box {
+                    when (state) {
+                        is HomeScreenState.Loading -> {
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Spacer(modifier = m.padding(vertical = 16.dp))
+                                ShimmerCarCard()
+                            }
                         }
-                    }
 
-                    is HomeScreenState.Error -> {
-                        Spacer(modifier = m.padding(vertical = 50.dp))
-                        Text("Error: ${state.message}", color = Color.Red)
-                    }
+                        is HomeScreenState.Error -> {
+                            Spacer(modifier = m.padding(vertical = 50.dp))
+                            Text("Error: ${state.message}", color = Color.Red)
+                        }
 
-                    is HomeScreenState.Success -> {
-                        // Get cached vehicles for auto-update
-                        val cachedVehicles by viewModel.cachedVehicles.collectAsState(initial = emptyList())
+                        is HomeScreenState.Success -> {
+                            // Get cached vehicles for auto-update
+                            val cachedVehicles by viewModel.cachedVehicles.collectAsState(initial = emptyList())
 
-                        // Use cached if available, otherwise use state vehicles
-                        val vehiclesToDisplay = if (cachedVehicles.isNotEmpty()) cachedVehicles else state.cars
+                            // Use cached if available, otherwise use state vehicles
+                            val vehiclesToDisplay =
+                                if (cachedVehicles.isNotEmpty()) cachedVehicles else state.cars
 
-                        SuccessCarPagerContent(vehiclesToDisplay, navController)
+                            SuccessCarPagerContent(vehiclesToDisplay, navController)
+                        }
                     }
                 }
-            }
-            Spacer(modifier = m.padding(vertical = 16.dp))
+                Spacer(modifier = m.padding(vertical = 16.dp))
 
-            val nextReminder by viewModel.nextReminderMillis.collectAsStateWithLifecycle()
+                val nextReminder by viewModel.nextReminderMillis.collectAsStateWithLifecycle()
 
-                UpcomingReminder (navController,nextReminder)
-            Spacer(modifier = m.padding(vertical = 12.dp))
-            Text(
-                strings.get("SCHEDULED_SERVICES"),
-                fontFamily = popSemi,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                style = TextStyle(
-                    brush = Brush.linearGradient(
-                        listOf(
-                            Color(194, 0, 0, 255),
-                            Color(92, 0, 0, 255)
-                        )
-                    ),
-                ),
-                modifier = m
-                    .padding(start = 8.dp)
-                    .align(alignment = Alignment.Start)
-            ) // Secluded Services
-            Spacer(modifier = m.padding(vertical = 4.dp))
-
-            Box {
-                when (state) {
-                    is HomeScreenState.Success -> {
-                        if (state.appointments.isNotEmpty()) {
-                            SuccessServicePagerContent(state.appointments)
-
-                        } else {
-                            Spacer(modifier = m.padding(vertical = 50.dp))
-                            Text(
-                                strings.get("NO_UPCOMING_APPOINTMENTS"),
-                                fontFamily = popMid,
-                                fontSize = 14.sp,
-                                color = Color.Gray
+                UpcomingReminder(navController, nextReminder)
+                Spacer(modifier = m.padding(vertical = 12.dp))
+                Text(
+                    strings.get("SCHEDULED_SERVICES"),
+                    fontFamily = popSemi,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    style = TextStyle(
+                        brush = Brush.linearGradient(
+                            listOf(
+                                Color(194, 0, 0, 255),
+                                Color(92, 0, 0, 255)
                             )
-                        }
-                    }
-                    is HomeScreenState.Loading -> {
-                        Row(
-                            modifier = m
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp, horizontal = 4.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            repeat(3) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(120.dp, 80.dp)
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .shimmerEffect()
+                        ),
+                    ),
+                    modifier = m
+                        .padding(start = 8.dp)
+                        .align(alignment = Alignment.Start)
+                ) // Secluded Services
+                Spacer(modifier = m.padding(vertical = 4.dp))
+
+                Box {
+                    when (state) {
+                        is HomeScreenState.Success -> {
+                            if (state.appointments.isNotEmpty()) {
+                                SuccessServicePagerContent(state.appointments)
+
+                            } else {
+                                Spacer(modifier = m.padding(vertical = 50.dp))
+                                Text(
+                                    strings.get("NO_UPCOMING_APPOINTMENTS"),
+                                    fontFamily = popMid,
+                                    fontSize = 14.sp,
+                                    color = Color.Gray
                                 )
                             }
                         }
-                    }
 
-                    else -> {
-                        Spacer(modifier = m.padding(vertical = 16.dp))
+                        is HomeScreenState.Loading -> {
+                            Row(
+                                modifier = m
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp, horizontal = 4.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                repeat(3) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(120.dp, 80.dp)
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .shimmerEffect()
+                                    )
+                                }
+                            }
+                        }
+
+                        else -> {
+                            Spacer(modifier = m.padding(vertical = 16.dp))
+                        }
                     }
                 }
+
+                Spacer(modifier = m.padding(vertical = 12.dp))
+
+                Row(m.padding(horizontal = 12.dp))
+                {
+                    OBDCard(onClick = {/* more details logic*/ })
+                }
+
+                Spacer(modifier = m.padding(vertical = 64.dp))
+
+
             }
-
-            Spacer(modifier = m.padding(vertical = 12.dp))
-
-            Row(m.padding(horizontal = 12.dp))
-            { 
-                OBDCard(onClick = {/* more details logic*/ }) 
-            }
-
-            Spacer(modifier = m.padding(vertical = 64.dp))
-
-
         }
     }
-    }
-    }
-
+}
 
 
 @Composable
