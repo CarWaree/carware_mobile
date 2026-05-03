@@ -71,3 +71,6 @@ data class EditCarScreen(val carId: Int)
 
 @Serializable
 object NotificationScreen
+
+@Serializable
+object MyCarsScreen

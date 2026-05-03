@@ -31,6 +31,7 @@ import com.example.carware.navigation.HistoryScreen
 import com.example.carware.navigation.HomeScreen
 import com.example.carware.navigation.LanguageSelectionScreen
 import com.example.carware.navigation.LoginScreen
+import com.example.carware.navigation.MyCarsScreen
 import com.example.carware.navigation.NewPasswordScreen
 import com.example.carware.navigation.NotificationScreen
 import com.example.carware.navigation.OnboardingScreen
@@ -45,8 +46,6 @@ import com.example.carware.navigation.SignUpScreen
 import com.example.carware.navigation.SplashScreen
 import com.example.carware.navigation.TestScreen
 import com.example.carware.navigation.VerificationCodeScreen
-import com.example.carware.network.apiResponse.vehicle.Vehicles
-import com.example.carware.screens.vehicle.AddCarScreen
 import com.example.carware.screens.BottomNavBar
 import com.example.carware.screens.NotificationScreen
 import com.example.carware.screens.ReminderScreen
@@ -66,13 +65,14 @@ import com.example.carware.screens.mainScreens.SettingsScreen
 import com.example.carware.screens.onBoarding.LanguageSelectionScreen
 import com.example.carware.screens.onBoarding.OnBoardingScreen
 import com.example.carware.screens.profile.EditProfileScreen
+import com.example.carware.screens.profile.MyCarsScreen
 import com.example.carware.screens.profile.ProfileScreen
+import com.example.carware.screens.vehicle.AddCarScreen
 import com.example.carware.screens.vehicle.EditCarScreen
 import com.example.carware.util.lang.AppLanguage
 import com.example.carware.util.lang.LocalizedStrings
 import com.example.carware.util.navBar.bottomTabs
 import com.example.carware.util.storage.PreferencesManager
-import com.example.carware.viewModel.vehicle.addcar.AddCarViewModel
 import com.example.carware.viewModel.auth.emailVerification.EmailVerificationViewModel
 import com.example.carware.viewModel.auth.forgotPassword.ForgotPasswordViewModel
 import com.example.carware.viewModel.auth.logIn.LogInViewModel
@@ -81,13 +81,14 @@ import com.example.carware.viewModel.auth.otpVerification.OTPViewModel
 import com.example.carware.viewModel.auth.signUp.SignUpViewModel
 import com.example.carware.viewModel.history.HistoryScreenViewModel
 import com.example.carware.viewModel.home.HomeScreenViewModel
+import com.example.carware.viewModel.mycars.MyCarsScreenViewModel
 import com.example.carware.viewModel.notification.NotificationViewModel
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
 import com.example.carware.viewModel.reminder.ReminderScreenViewModel
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
+import com.example.carware.viewModel.vehicle.addcar.AddCarViewModel
 import com.example.carware.viewModel.vehicle.editCar.EditCarViewModel
 import org.koin.compose.koinInject
-import kotlin.reflect.typeOf
 
 val m = Modifier
 val LocalStrings = staticCompositionLocalOf<LocalizedStrings> {
@@ -303,13 +304,18 @@ fun MainScreen() {
                 EditCarScreen(navController = navController, viewModel = viewModel)
             }
 
-
-
             composable<NotificationScreen> {
                 val notificationViewModel: NotificationViewModel = koinInject()
                 NotificationScreen(
                     navController,
                     notificationViewModel
+                )
+            }
+            composable<MyCarsScreen> {
+                val myCarsScreenViewModel: MyCarsScreenViewModel = koinInject()
+                MyCarsScreen(
+                    navController,
+                    myCarsScreenViewModel
                 )
             }
         }

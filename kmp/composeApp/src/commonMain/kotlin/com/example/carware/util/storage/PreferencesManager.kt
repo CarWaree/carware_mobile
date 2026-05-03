@@ -22,6 +22,9 @@ class PreferencesManager(
         private const val KEY_LANGUAGE_SELECTED = "is_lang_selected"
         private const val KEY_EXPIRES_ON = "expires_on"
         private const val KEY_EMAIL_VERIFIED = "is_email_verified"
+
+        private const val KEY_PRIMARY_CAR_ID = "primary_car_id"
+
     }
 
     /* -------------------- Expires On -------------------- */
@@ -128,7 +131,10 @@ class PreferencesManager(
         settings.remove(KEY_EMAIL_VERIFIED)
         settings.remove(KEY_RESET_TOKEN)
         settings.remove(KEY_CAR_ADDED)
+        settings.remove(KEY_PRIMARY_CAR_ID)  // ← Add this
+
         // Add any other user-specific keys here
+
     }
 
     /* ------------------language ---------------*/
@@ -151,4 +157,18 @@ class PreferencesManager(
         settings.putString(LANG_KEY, code)
     }
 
+
+    /* -------------------- Primary Car -------------------- */
+
+    fun setPrimaryCarId(carId: Int?) {
+        if (carId != null) {
+            settings[KEY_PRIMARY_CAR_ID] = carId
+        } else {
+            settings.remove(KEY_PRIMARY_CAR_ID)
+        }
+    }
+
+    fun getPrimaryCarId(): Int {
+        return settings.getInt(KEY_PRIMARY_CAR_ID, 0)  // Default to 0
+    }
 }

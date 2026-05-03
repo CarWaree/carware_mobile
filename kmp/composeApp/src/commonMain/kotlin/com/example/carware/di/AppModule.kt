@@ -20,6 +20,7 @@ import com.example.carware.viewModel.auth.otpVerification.OTPViewModel
 import com.example.carware.viewModel.auth.signUp.SignUpViewModel
 import com.example.carware.viewModel.history.HistoryScreenViewModel
 import com.example.carware.viewModel.home.HomeScreenViewModel
+import com.example.carware.viewModel.mycars.MyCarsScreenViewModel
 import com.example.carware.viewModel.notification.NotificationViewModel
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
 import com.example.carware.viewModel.reminder.ReminderScreenViewModel
@@ -58,6 +59,7 @@ fun appModule(preferencesManager: PreferencesManager) = module {
     factory { NotificationViewModel(get(),get()) }
     factory { EditCarViewModel(get()) }
     factory{ ReminderScreenViewModel(get(),get(),get(),get()) }
+    factory { MyCarsScreenViewModel(get(),get()) }
     // AppFonts.kt
 
 }

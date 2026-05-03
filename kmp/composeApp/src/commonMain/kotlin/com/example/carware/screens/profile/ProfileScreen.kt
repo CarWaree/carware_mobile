@@ -35,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -61,11 +62,15 @@ import carware.composeapp.generated.resources.poppins_semibold
 import carware.composeapp.generated.resources.pp
 import carware.composeapp.generated.resources.settings_logout
 import carware.composeapp.generated.resources.visa
+import carware.composeapp.generated.resources.x_time_slot
 import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.navigation.EditProfileScreen
+import com.example.carware.navigation.MyCarsScreen
 import com.example.carware.navigation.SignUpScreen
+import com.example.carware.screens.ToastMessage
 import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.viewModel.mycars.MyCarsScreenState
 import com.example.carware.viewModel.profile.ProfileScreenState
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
 import org.jetbrains.compose.resources.Font
@@ -113,7 +118,8 @@ fun ProfileScreen(
         is ProfileScreenState.Success -> {
             val profile = (state as ProfileScreenState.Success).profile
             val cars = (state as ProfileScreenState.Success).cars
-            val car = if (cars.isNotEmpty()) cars[0] else null
+            val primaryCarId = preferencesManager.getPrimaryCarId()
+            val primaryCar = cars.find { it.id == primaryCarId } ?: cars.firstOrNull()
             Column(
                 modifier = m
                     .fillMaxSize()
@@ -222,12 +228,12 @@ fun ProfileScreen(
                         Spacer(modifier = Modifier.height(12.dp))
 
                         // Primary Vehicle Card
-                        if (car != null) {
+                        if (primaryCar != null) {
                             PrimaryCarCard(
-                                modelName = car.modelName,
-                                brandName = car.brandName,
-                                modelYear = car.modelName, // Using modelName as placeholder for year if not available separately
-                                color = car.color,
+                                modelName = primaryCar.modelName,
+                                brandName = primaryCar.brandName,
+                                modelYear = primaryCar.year.toString(), // Using modelName as placeholder for year if not available separately
+                                color = primaryCar.color,
                             )
                         }
                     }
@@ -245,7 +251,7 @@ fun ProfileScreen(
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(12.dp))
                                 .background(Color(204, 204, 204, 191))
-                                .clickable { }
+                                .clickable { navController.navigate(MyCarsScreen) }
                                 .padding(16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -348,7 +354,7 @@ fun ProfileScreen(
 
                     // Logout Button
                     Button(
-                        onClick = { 
+                        onClick = {
                             preferencesManager.performLogout()
                             navController.navigate(SignUpScreen) {
                                 popUpTo(0) { inclusive = true }
@@ -392,7 +398,9 @@ fun PrimaryCarCard(
     modelName: String,
     brandName: String,
     modelYear: String,
-    color: String
+    color: String,
+    isPrimary: Boolean = true,
+    onMakePrimary: () -> Unit = {}
 ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
 
@@ -413,9 +421,11 @@ fun PrimaryCarCard(
                 modifier = m.size(150.dp, 110.dp)
 
             ) //car image
+
             Row(
                 modifier = m.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     brandName,
@@ -424,8 +434,12 @@ fun PrimaryCarCard(
                     fontWeight = FontWeight.Bold,
                     color = Color(102, 102, 102, 255)
                 )
+
+
             } //car brand
+
             Spacer(modifier = m.padding(vertical = 2.dp))
+
             Row(
                 modifier = m.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
@@ -433,14 +447,12 @@ fun PrimaryCarCard(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically
-
                 ) {
                     Icon(
                         painter = painterResource(Res.drawable.car),
                         contentDescription = null,
                         tint = Color.Unspecified,
                         modifier = m.size(18.dp)
-
                     ) //car icon
                     Spacer(modifier = m.padding(horizontal = 2.dp))
                     Text(
@@ -459,7 +471,6 @@ fun PrimaryCarCard(
                         contentDescription = null,
                         tint = Color.Unspecified,
                         modifier = m.size(20.dp)
-
                     ) //model year icon
                     Spacer(modifier = m.padding(horizontal = 2.dp))
                     Text(
@@ -468,7 +479,6 @@ fun PrimaryCarCard(
                         fontSize = 14.sp,
                         color = Color(102, 102, 102, 255)
                     ) //model year
-
                 }
                 Spacer(modifier = m.padding(horizontal = 4.dp))
                 Row(
@@ -479,7 +489,6 @@ fun PrimaryCarCard(
                         contentDescription = null,
                         tint = Color.Unspecified,
                         modifier = m.size(20.dp)
-
                     ) //color icon
                     Spacer(modifier = m.padding(horizontal = 2.dp))
                     Text(
@@ -488,10 +497,34 @@ fun PrimaryCarCard(
                         fontSize = 14.sp,
                         color = Color(102, 102, 102, 255)
                     ) //color
-
                 }
-
             } //car details
+
+            if (!isPrimary) {
+                Spacer(modifier = m.height(8.dp))
+                Row(m.clickable {
+                    onMakePrimary()
+                }
+                    .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(Res.drawable.x_time_slot),
+                        contentDescription = null,
+                        tint = Color(194, 0, 0, 171),
+                        modifier = m.size(18.dp)
+                            .rotate(45f)
+                    )
+                    Spacer(m.width(6.dp))
+                    Text(
+                        "Make as my primary vehicle ",
+                        fontFamily = popSemi,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.W400,
+                        color=Color(102, 102, 102, 255)
+                    )
+                }
+            }
         } //card content
     }
 }

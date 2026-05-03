@@ -15,7 +15,6 @@ import kotlinx.coroutines.launch
 
 class ProfileScreenViewModel(
     private val vehiclesRepository: VehicleRepository,
-
     private val repository: ProfileRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow<ProfileScreenState>(ProfileScreenState.Loading)
@@ -30,11 +29,9 @@ class ProfileScreenViewModel(
     fun onFullNameChange(value: String) {
         _editState.value = _editState.value.copy(fullName = value)
     }
-
     fun onEmailChange(value: String) {
         _editState.value = _editState.value.copy(email = value)
     }
-
     fun onPhoneChange(value: String) {
         _editState.value = _editState.value.copy(phone = value)
     }
@@ -80,7 +77,6 @@ class ProfileScreenViewModel(
                 val profileDetails = profile.data
 
                 val vehicleList = vehiclesRepository.getVehiclesRepo()
-
                 _state.value = ProfileScreenState.Success(profileDetails, vehicleList) // always set success
 
                 loadEditState()
@@ -91,4 +87,6 @@ class ProfileScreenViewModel(
             }
         }
     }
+
+
 }
