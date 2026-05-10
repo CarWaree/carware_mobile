@@ -12,6 +12,7 @@
 		3FC86E792F94DCF700D19256 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3FC86E782F94DCF200D19256 /* GoogleService-Info.plist */; };
 		3FEA45762F94E95D004C1E49 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 3FEA45752F94E95D004C1E49 /* FirebaseCore */; };
 		3FEA45782F94E9D5004C1E49 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 3FEA45772F94E9D5004C1E49 /* FirebaseMessaging */; };
+		3FEA459F2FB0DD7E004C1E49 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 3FEA459E2FB0DD7E004C1E49 /* Lottie */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3FEA459F2FB0DD7E004C1E49 /* Lottie in Frameworks */,
 				3FEA45782F94E9D5004C1E49 /* FirebaseMessaging in Frameworks */,
 				3FC86DC02F94077500D19256 /* GoogleSignIn in Frameworks */,
 				3FEA45762F94E95D004C1E49 /* FirebaseCore in Frameworks */,
@@ -111,6 +113,7 @@
 				3FC86DC12F94077500D19256 /* GoogleSignInSwift */,
 				3FEA45752F94E95D004C1E49 /* FirebaseCore */,
 				3FEA45772F94E9D5004C1E49 /* FirebaseMessaging */,
+				3FEA459E2FB0DD7E004C1E49 /* Lottie */,
 			);
 			productName = iosApp;
 			productReference = 0CBA2F5A01F0ED70A86EDD3A /* CareWare.app */;
@@ -143,6 +146,7 @@
 			packageReferences = (
 				3FC86DBE2F94077500D19256 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				3FC86E772F94DC8E00D19256 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				3FEA459D2FB0DD7E004C1E49 /* XCRemoteSwiftPackageReference "lottie-spm" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A113F95BE4607E7154904F49 /* Products */;
@@ -280,6 +284,7 @@
 				);
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "iosApp/iosApp-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -308,6 +313,7 @@
 				);
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "iosApp/iosApp-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -419,6 +425,14 @@
 				minimumVersion = 12.12.1;
 			};
 		};
+		3FEA459D2FB0DD7E004C1E49 /* XCRemoteSwiftPackageReference "lottie-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-spm";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.6.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -441,6 +455,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 3FC86E772F94DC8E00D19256 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseMessaging;
+		};
+		3FEA459E2FB0DD7E004C1E49 /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3FEA459D2FB0DD7E004C1E49 /* XCRemoteSwiftPackageReference "lottie-spm" */;
+			productName = Lottie;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
