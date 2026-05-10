@@ -1,4 +1,4 @@
-package com.example.carware.screens
+package com.example.carware.screens.reminder
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -35,7 +35,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.poppins_medium
@@ -56,11 +55,17 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import carware.composeapp.generated.resources.arrow_left
+import carware.composeapp.generated.resources.history
 import carware.composeapp.generated.resources.poppins
 import carware.composeapp.generated.resources.reminder_note_resize
-import com.example.carware.viewModel.defaultSlots
-import com.example.carware.viewModel.reminder.ReminderScreenViewModel
-import com.example.carware.viewModel.schedule.screen.TimeSlot
+import com.example.carware.navigation.ReminderHistoryScreen
+import com.example.carware.screens.CalenderBox
+import com.example.carware.screens.SelectDateBox
+import com.example.carware.screens.SelectDropdown
+import com.example.carware.screens.ShimmerScheduleScreen
+import com.example.carware.screens.UsersCar
+import com.example.carware.screens.appButtonBack
+import com.example.carware.viewModel.reminder.reminderScreen.ReminderScreenViewModel
 import org.jetbrains.compose.resources.painterResource
 
 
@@ -109,7 +114,9 @@ fun ReminderScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = 8.dp)
                     .padding(10.dp),
+
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
@@ -134,6 +141,20 @@ fun ReminderScreen(
                     style = TextStyle(brush = primaryGradientBrush)
                 )
                 Spacer(modifier = Modifier.weight(1.2f))
+
+                Icon(
+                    painter = painterResource(Res.drawable.history),
+                    contentDescription = strings.get("HISTORY"),
+                    modifier = Modifier
+                        .size(28.dp)
+                        .clickable { navController.navigate(ReminderHistoryScreen) }
+                        .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+                        .drawWithContent {
+                            drawContent()
+                            drawRect(primaryGradientBrush, blendMode = BlendMode.SrcIn)
+                        },
+                    tint = Color.Unspecified
+                )
             }
 
             Spacer(m.height(32.dp))
@@ -457,7 +478,9 @@ fun ReminderScreen(
                 }
                 // Repeat Interval
                 Text(
-                    text = "Repeat: Every ${state.repeatInterval} ${state.repeatUnit.lowercase().replaceFirstChar { it.uppercase() }}(s), ${state.repeatCount} time(s)",
+                    text = "Repeat: Every ${state.repeatInterval} ${
+                        state.repeatUnit.lowercase().replaceFirstChar { it.uppercase() }
+                    }(s), ${state.repeatCount} time(s)",
                     fontFamily = popMid,
                     fontSize = 12.sp,
                     color = Color.DarkGray

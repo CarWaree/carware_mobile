@@ -36,6 +36,7 @@ import com.example.carware.navigation.NewPasswordScreen
 import com.example.carware.navigation.NotificationScreen
 import com.example.carware.navigation.OnboardingScreen
 import com.example.carware.navigation.ProfileScreen
+import com.example.carware.navigation.ReminderHistoryScreen
 import com.example.carware.navigation.ReminderScreen
 import com.example.carware.navigation.ResetPasswordScreen
 import com.example.carware.navigation.ScheduleScreen
@@ -48,7 +49,8 @@ import com.example.carware.navigation.TestScreen
 import com.example.carware.navigation.VerificationCodeScreen
 import com.example.carware.screens.BottomNavBar
 import com.example.carware.screens.NotificationScreen
-import com.example.carware.screens.ReminderScreen
+import com.example.carware.screens.reminder.ReminderHistoryScreen
+import com.example.carware.screens.reminder.ReminderScreen
 import com.example.carware.screens.SelectLanguageScreen
 import com.example.carware.screens.SplashScreen
 import com.example.carware.screens.auth.EmailVerificationScreen
@@ -84,7 +86,8 @@ import com.example.carware.viewModel.home.HomeScreenViewModel
 import com.example.carware.viewModel.mycars.MyCarsScreenViewModel
 import com.example.carware.viewModel.notification.NotificationViewModel
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
-import com.example.carware.viewModel.reminder.ReminderScreenViewModel
+import com.example.carware.viewModel.reminder.reminderHistory.ReminderHistoryViewModel
+import com.example.carware.viewModel.reminder.reminderScreen.ReminderScreenViewModel
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
 import com.example.carware.viewModel.vehicle.addcar.AddCarViewModel
 import com.example.carware.viewModel.vehicle.editCar.EditCarViewModel
@@ -316,6 +319,14 @@ fun MainScreen() {
                 MyCarsScreen(
                     navController,
                     myCarsScreenViewModel
+                )
+            }
+            composable<ReminderHistoryScreen> {
+                val reminderHistoryViewModel: ReminderHistoryViewModel = koinInject()
+                ReminderHistoryScreen(
+                    navController,
+                    reminderHistoryViewModel
+
                 )
             }
         }

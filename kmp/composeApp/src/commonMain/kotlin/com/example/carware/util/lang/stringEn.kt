@@ -182,5 +182,9 @@ val StringsEn = mapOf(
     "REMINDER" to "Reminder",
     "ADD_REMINDER" to "Add Reminder",
     "NOTE_LABEL" to "Note",
-    "ADD_NOTE_PLACEHOLDER" to "Add your Note"
-)
+    "ADD_NOTE_PLACEHOLDER" to "Add your Note",
+    // Reminder History
+    "REMINDER_HISTORY" to "Reminder History",
+    "REMINDER_SUBTITLE" to "View and manage your Reminder records for all your vehicles.",
+
+    )

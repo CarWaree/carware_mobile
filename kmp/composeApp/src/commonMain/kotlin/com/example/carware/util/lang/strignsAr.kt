@@ -1,4 +1,5 @@
 package com.example.carware.util.lang
+
 val StringsAr = mapOf(
 
     "CHOOSE_LANG" to "اختر لغتك",
@@ -7,9 +8,8 @@ val StringsAr = mapOf(
     "ARABIC" to "العربية",
     "CONTINUE" to "متابعة",
     "CHANGE_LANG" to "يمكنك تغيير ذلك لاحقًا من الإعدادات",
-    "HEADER_TITLE"  to "لغه التطبيق",
-    "SAVE_CHANGES"  to "حفظ التغييرات",
-
+    "HEADER_TITLE" to "لغه التطبيق",
+    "SAVE_CHANGES" to "حفظ التغييرات",
 
 
     // Onboarding
@@ -117,7 +117,7 @@ val StringsAr = mapOf(
     // schedule screen
     "SCHEDULE_SERVICE" to "خدمه الحجز ",
     "SELECT_CAR" to "اختر سيارتك",
-    "SELECT_SERVICE"  to "اخنر الخدمه",
+    "SELECT_SERVICE" to "اخنر الخدمه",
     "SELECT_SERVICES" to "اختر الخدمات",
     "SELECT_YOUR_PROVIDER" to "اختر موفر الخدمه",
     "PROCESSING" to "قيد المعالجة",
@@ -179,5 +179,9 @@ val StringsAr = mapOf(
     "REMINDER" to "تذكير",
     "ADD_REMINDER" to "إضافة تذكير",
     "NOTE_LABEL" to "ملاحظة",
-    "ADD_NOTE_PLACEHOLDER" to "أضف ملاحظتك"
-)
+    "ADD_NOTE_PLACEHOLDER" to "أضف ملاحظتك",
+    // Reminder History
+    "REMINDER_HISTORY" to "سجل التذكيرات",
+    "REMINDER_SUBTITLE" to "عرض وإدارة سجل التذكيرات لجميع مركباتك.",
+
+    )

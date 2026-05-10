@@ -1,4 +1,4 @@
-package com.example.carware.viewModel.reminder
+package com.example.carware.viewModel.reminder.reminderScreen
 
 import com.example.carware.network.apiResponse.reminder.ReminderResponse
 import com.example.carware.network.apiResponse.schedule.Service

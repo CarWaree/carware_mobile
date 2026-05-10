@@ -23,7 +23,8 @@ import com.example.carware.viewModel.home.HomeScreenViewModel
 import com.example.carware.viewModel.mycars.MyCarsScreenViewModel
 import com.example.carware.viewModel.notification.NotificationViewModel
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
-import com.example.carware.viewModel.reminder.ReminderScreenViewModel
+import com.example.carware.viewModel.reminder.reminderHistory.ReminderHistoryViewModel
+import com.example.carware.viewModel.reminder.reminderScreen.ReminderScreenViewModel
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
 import com.example.carware.viewModel.vehicle.editCar.EditCarViewModel
 import org.koin.dsl.module
@@ -60,6 +61,7 @@ fun appModule(preferencesManager: PreferencesManager) = module {
     factory { EditCarViewModel(get()) }
     factory{ ReminderScreenViewModel(get(),get(),get(),get()) }
     factory { MyCarsScreenViewModel(get(),get()) }
+    factory { ReminderHistoryViewModel(get()) }
     // AppFonts.kt
 
 }

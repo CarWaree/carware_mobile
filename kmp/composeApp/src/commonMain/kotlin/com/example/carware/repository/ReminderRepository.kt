@@ -15,7 +15,7 @@ class ReminderRepository(private val  client: HttpClient) {
         return setReminder(client,request)
 
     }
-    suspend fun getReminderRepo(client: HttpClient): List<Reminder> {
+    suspend fun getReminderRepo(): List<Reminder> {
         return try {
             val response = getReminder(client)
             val reminders = response.data
