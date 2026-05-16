@@ -5,6 +5,9 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.client.statement.request
 import io.ktor.http.isSuccess
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 suspend inline fun <reified T> safeApiCall(
     crossinline request: suspend () -> HttpResponse
@@ -20,13 +23,11 @@ suspend inline fun <reified T> safeApiCall(
                 ApiLogger.logSuccess("Parsed response successfully")
                 ApiResult.Success(body)
             } catch (e: Exception) {
-                // Parsing failed - response was successful but body couldn't be parsed
                 ApiLogger.logError("Failed to parse response body: ${e.message}")
                 ApiResult.Exception(e)
             }
         }
         response.status.value == 401 -> {
-            // Unauthorized - handle auth errors specifically
             val body = response.bodyAsText()
             ApiLogger.logError("Unauthorized (401): $body")
             ApiResult.Error(
@@ -36,18 +37,25 @@ suspend inline fun <reified T> safeApiCall(
             )
         }
         else -> {
-            // Other HTTP errors (4xx, 5xx)
             val body = response.bodyAsText()
             ApiLogger.logError("HTTP Error ${response.status.value}: $body")
+
+            // Try to extract message from JSON response
+            val errorMessage = try {
+                val errorJson = Json.parseToJsonElement(body).jsonObject
+                errorJson["message"]?.jsonPrimitive?.content ?: response.status.description
+            } catch (e: Exception) {
+                response.status.description
+            }
+
             ApiResult.Error(
                 code = response.status.value,
-                message = response.status.description,
+                message = errorMessage,
                 body = body
             )
         }
     }
 } catch (e: Exception) {
-    // Network error or request failed
     ApiLogger.logError("Network error: ${e.message}")
     ApiResult.Exception(e)
 }

@@ -4,6 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.carware.network.apiRequests.auth.GoogleSignInRequest
 import com.example.carware.network.apiRequests.auth.LoginRequest
+import com.example.carware.network.apiResponse.auth.AuthResponse
+import com.example.carware.network.apiResponse.auth.GoogleSignInResponse
+import com.example.carware.network.apiResponse.auth.SignUpResponse
+import com.example.carware.network.core.UiResult
 import com.example.carware.repository.VehicleRepository
 import com.example.carware.repository.auth.AuthRepository
 import com.example.carware.util.storage.PreferencesManager
@@ -59,78 +63,94 @@ class LogInViewModel(
         }
 
         viewModelScope.launch {
-            try {
-                _state.update { it.copy(isLoading = true, errorMessage = null) }
+            _state.update { it.copy(isLoading = true, errorMessage = null) }
 
-                val request = LoginRequest(
-                    emailOrUsername = _state.value.emailOrUsername,
-                    password = _state.value.pass
+            val request = LoginRequest(
+                emailOrUsername = _state.value.emailOrUsername,
+                password = _state.value.pass
 
-                )
-                val response = repository.logInRepo(request)
+            )
 
-                val token = response.data?.accessToken
-                    ?: throw IllegalStateException("Token missing in response")
+            when (val result: UiResult<AuthResponse> = repository.logInRepo(request)) {
+                is UiResult.Success -> {
+                    val response = result.data
+                    val token = response.data?.accessToken
 
-                preferencesManager.performLogin(token)
-                val expireToken=response.data.refreshTokenExpiration
-                preferencesManager.saveExpiresOn(expireToken)
+                    if (token == null) {
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                errorMessage = "Token missing from server response"
+                            )
+                        }
+                        return@launch
+                    }
 
-                val isEmailVerified = response.data?.isAuthenticated ?: false
-                preferencesManager.saveEmailVerified(isEmailVerified)
+                    preferencesManager.performLogin(token)
+                    val expireToken = response.data.refreshTokenExpiration
+                    preferencesManager.saveExpiresOn(expireToken)
 
-                val vehicles = vehicleRepository.getVehiclesRepo()
-                val hasAddedCar = vehicles.isNotEmpty()
-                preferencesManager.setCarAdded(hasAddedCar)
+                    val isEmailVerified = response.data?.isAuthenticated ?: false
+                    preferencesManager.saveEmailVerified(isEmailVerified)
 
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        isCarAdded = hasAddedCar,
-                        isSuccess = true
-                    )
+                    val vehicles = vehicleRepository.getVehiclesRepo()
+                    val hasAddedCar = vehicles.isNotEmpty()
+                    preferencesManager.setCarAdded(hasAddedCar)
+
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            isCarAdded = hasAddedCar,
+                            isSuccess = true
+                        )
+                    }
                 }
 
-
-            } catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = e.message ?: "An error occurred"
-                    )
+                is UiResult.Error -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = result.message
+                        )
+                    }
                 }
             }
+
         }
     }
 
     fun googleSignIn(idToken: String) {
         viewModelScope.launch {
-            try {
-                _state.update { it.copy(isLoading = true, errorMessage = null) }
-                val request = GoogleSignInRequest(idToken)
-                val response = repository.googleSignInRepo(request)
+            _state.update { it.copy(isLoading = true, errorMessage = null) }
+            val request = GoogleSignInRequest(idToken)
 
-                preferencesManager.performLogin(token = response.accessToken)
-                preferencesManager.saveEmailVerified(true)
+            when (val result: UiResult<GoogleSignInResponse> =
+                repository.googleSignInRepo(request)) {
+                is UiResult.Success -> {
+                    val response = result.data
+                    preferencesManager.performLogin(token = response.accessToken)
+                    preferencesManager.saveEmailVerified(true)
 
-                val vehicles = vehicleRepository.getVehiclesRepo()
-                val hasAddedCar = vehicles.isNotEmpty()
-                preferencesManager.setCarAdded(hasAddedCar)
+                    val vehicles = vehicleRepository.getVehiclesRepo()
+                    val hasAddedCar = vehicles.isNotEmpty()
+                    preferencesManager.setCarAdded(hasAddedCar)
 
-                // ADD THIS:
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        isCarAdded = hasAddedCar,  // ADD THIS LINE
-                        isSuccess = true
-                    )
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            isCarAdded = hasAddedCar,
+                            isSuccess = true
+                        )
+                    }
                 }
-            } catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = e.message ?: "GoogleSignIn failed"
-                    )
+
+                is UiResult.Error -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = result.message
+                        )
+                    }
                 }
             }
         }

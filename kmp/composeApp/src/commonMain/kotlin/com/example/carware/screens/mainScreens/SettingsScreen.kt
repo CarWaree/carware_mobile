@@ -70,7 +70,6 @@ fun SettingsScreen(
     Column(
         m
             .fillMaxSize()
-            .verticalScroll(scrollState)
             .background(Color(217, 217, 217, 255))
             .padding(vertical = 42.dp),
     ) {
@@ -101,6 +100,8 @@ fun SettingsScreen(
         Column(
             m
                 .fillMaxWidth()
+                .verticalScroll(scrollState)
+
                 .padding(horizontal = 26.dp)
         ) {
 

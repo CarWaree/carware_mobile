@@ -66,14 +66,13 @@ fun HistoryScreen(
 {
     val strings = LocalStrings.current
     val popMid = FontFamily(Font(Res.font.poppins_medium))
-
     val pageScrollState = rememberScrollState()
     val state by viewModel.historyState.collectAsState()
     val currentState = state  // add this
 
     Column(
-        m.fillMaxSize()
-            .verticalScroll(pageScrollState)
+        modifier = Modifier
+            .fillMaxSize()
             .background(Color(217, 217, 217, 255)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -123,25 +122,29 @@ fun HistoryScreen(
         )
 
         Spacer(m.height(32.dp))
-        
-        Column(m.fillMaxSize()) {
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)  // ← Add this
+                .verticalScroll(pageScrollState)
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
             when (currentState) {
                 is HistoryScreenState.Loading -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        repeat(5) {
-                            ShimmerHistoryCard()
-                        }
+                    repeat(5) {
+                        ShimmerHistoryCard()
                     }
                 }
 
                 is HistoryScreenState.Error -> {
-                    Spacer(modifier = m.padding(vertical = 50.dp))
-                    Text("Error: ${currentState.message}", color = Color.Red, modifier = Modifier.align(Alignment.CenterHorizontally))
+                    Spacer(modifier = Modifier.padding(vertical = 50.dp))
+                    Text(
+                        "Error: ${currentState.message}",
+                        color = Color.Red,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
                 }
 
                 is HistoryScreenState.Success -> {

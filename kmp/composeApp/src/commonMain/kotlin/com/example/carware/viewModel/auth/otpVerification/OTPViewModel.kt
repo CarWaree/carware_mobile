@@ -3,6 +3,8 @@ package com.example.carware.viewModel.auth.otpVerification
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.carware.network.apiRequests.auth.OTPRequest
+import com.example.carware.network.apiResponse.auth.OTPResponse
+import com.example.carware.network.core.UiResult
 import com.example.carware.repository.auth.AuthRepository
 import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,29 +54,40 @@ class OTPViewModel(
         }
 
         viewModelScope.launch {
-            try {
-                _state.update { it.copy(isLoading = true, errorMessage = null) }
-                val request = OTPRequest(
-                    email = email,
-                    otp = _state.value.otp
-                )
-                val response = repository.otpVerificationRepo(request)
+            _state.update { it.copy(isLoading = true, errorMessage = null) }
+            val request = OTPRequest(
+                email = email,
+                otp = _state.value.otp
+            )
 
-                val token = response.data?.token
-                    ?: throw IllegalStateException("Token missing in response")
-                preferencesManager.saveResetToken(token)
-                _state.update {
-                    it.copy(isLoading = false, isSuccess = true)
+            when (val result: UiResult<OTPResponse> = repository.otpVerificationRepo(request)) {
+                is UiResult.Success -> {
+                    val response = result.data
+                    val token = response.data?.token
 
+                    if (token == null) {
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                errorMessage = "Token missing from server response"
+                            )
+                        }
+                        return@launch
+                    }
+
+                    preferencesManager.saveResetToken(token)
+                    _state.update {
+                        it.copy(isLoading = false, isSuccess = true)
+                    }
                 }
-            } catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = e.message ?: "An error occurred"
-                    )
+                is UiResult.Error -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = result.message
+                        )
+                    }
                 }
             }
-        }
-    }
+        }    }
 }

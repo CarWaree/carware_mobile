@@ -21,6 +21,7 @@ import com.example.carware.network.apiResponse.vehicle.VehicleResponse
 import com.example.carware.network.apiResponse.vehicle.Vehicles
 import com.example.carware.network.cache.VehiclesCacheData
 import com.example.carware.network.core.ApiResult
+import com.example.carware.network.core.UiResult
 import com.example.carware.util.storage.PreferencesManager
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.flow.Flow
@@ -95,7 +96,7 @@ class VehicleRepository(
 
     suspend fun deleteVehicleRepo(id: Int): DeleteVehicleResponse {
         return when (val result = deleteVehicle(client, id)) {
-            is ApiResult.Success -> result.data
+            is ApiResult.Success -> (result.data)
             is ApiResult.Error -> throw Exception("Delete vehicle failed: ${result.message}")
             is ApiResult.Exception -> throw Exception("Delete vehicle error: ${result.throwable.message}")
         }

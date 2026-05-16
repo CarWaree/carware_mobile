@@ -22,6 +22,7 @@ import com.example.carware.network.apiResponse.auth.OTPResponse
 import com.example.carware.network.apiResponse.auth.ResetPasswordResponse
 import com.example.carware.network.apiResponse.auth.SignUpResponse
 import com.example.carware.network.core.ApiResult
+import com.example.carware.network.core.UiResult
 import com.example.carware.util.storage.PreferencesManager
 import io.ktor.client.HttpClient
 
@@ -29,120 +30,118 @@ class AuthRepository(
     private val client: HttpClient
 ) {
 
-    suspend fun signUpRepo(request: SignUpRequest): SignUpResponse {
-        return when (val result = signupUser(request, client)) {
-            is ApiResult.Success -> {
-                result.data
-            }
-
-            is ApiResult.Error -> {
-                throw Exception("Sign up failed: ${result.message} (${result.code})")
-            }
-
-            is ApiResult.Exception -> {
-                throw Exception("Sign up error: ${result.throwable.message}")
+        suspend fun signUpRepo(request: SignUpRequest): UiResult<SignUpResponse> {
+            return when (val result = signupUser(request, client)) {
+                is ApiResult.Success -> {
+                    UiResult.Success(result.data)
+                }
+                is ApiResult.Error -> {
+                    UiResult.Error(result.message)
+                }
+                is ApiResult.Exception -> {
+                    UiResult.Error(result.throwable.message ?: "Unknown error occurred")
+                }
             }
         }
-    }
 
-    suspend fun logInRepo(request: LoginRequest): AuthResponse {
+    suspend fun logInRepo(request: LoginRequest): UiResult<AuthResponse> {
 
         return when (val result = loginUser(request, client)) {
             is ApiResult.Success -> {
-                result.data
+                UiResult.Success(result.data)
             }
 
             is ApiResult.Error -> {
-                throw Exception("Log in failed: ${result.message} (${result.code})")
+                UiResult.Error(result.message)
             }
 
             is ApiResult.Exception -> {
-                throw Exception("Log in error: ${result.throwable.message}")
+                UiResult.Error(result.throwable.message ?: "Unknown error occurred")
             }
         }
 
     }
 
-    suspend fun forgotPasswordRepo(request: ForgotPasswordRequest): ForgotPasswordResponse {
+    suspend fun forgotPasswordRepo(request: ForgotPasswordRequest): UiResult<ForgotPasswordResponse> {
         return when (val result = forgotPasswordUser(request, client)) {
             is ApiResult.Success -> {
-                result.data
+                UiResult.Success(result.data)
             }
 
             is ApiResult.Error -> {
-                throw Exception("forgot Password failed: ${result.message} (${result.code})")
+                UiResult.Error(result.message)
             }
 
             is ApiResult.Exception -> {
-                throw Exception("forgot Password error: ${result.throwable.message}")
+                UiResult.Error("forgot Password error: ${result.throwable.message}")
             }
 
         }
     }
 
-    suspend fun otpVerificationRepo(request: OTPRequest): OTPResponse {
+    suspend fun otpVerificationRepo(request: OTPRequest):  UiResult<OTPResponse> {
         return when (val result = otpVerificationUser(request, client)) {
             is ApiResult.Success -> {
-                result.data
+                UiResult.Success(result.data)
             }
 
             is ApiResult.Error -> {
-                throw Exception("otp Verification failed: ${result.message} (${result.code})")
+                UiResult.Error(result.message)
             }
 
             is ApiResult.Exception -> {
-                throw Exception("otp Verification error: ${result.throwable.message}")
+                UiResult.Error("otp Verification error: ${result.throwable.message}")
             }
 
         }
     }
 
-    suspend fun resetPasswordRepo(request: ResetPasswordRequest): ResetPasswordResponse {
+    suspend fun resetPasswordRepo(request: ResetPasswordRequest): UiResult<ResetPasswordResponse> {
         return when (val result = resetPasswordUser(request, client)) {
             is ApiResult.Success -> {
-                result.data
+                UiResult.Success(result.data)
             }
 
             is ApiResult.Error -> {
-                throw Exception("reset Password failed: ${result.message} (${result.code})")
+                UiResult.Error(result.message)
             }
 
             is ApiResult.Exception -> {
-                throw Exception("reset Password error: ${result.throwable.message}")
+                UiResult.Error("reset Password error: ${result.throwable.message}")
             }
 
         }
     }
 
-    suspend fun verifyEmailRepo(request: EmailVerificationRequest): EmailVerificationResponse {
+    suspend fun verifyEmailRepo(request: EmailVerificationRequest): UiResult<EmailVerificationResponse> {
         return when (val result = verifyEmailUser(request, client)) {
             is ApiResult.Success -> {
-                result.data
+                UiResult.Success(result.data)
             }
 
             is ApiResult.Error -> {
-                throw Exception("verify Email failed: ${result.message} (${result.code})")
+                UiResult.Error(result.message)
             }
 
             is ApiResult.Exception -> {
-                throw Exception("verify Email error: ${result.throwable.message}")
+                UiResult.Error("verify Email error: ${result.throwable.message}")
             }
 
         }
     }
 
-    suspend fun googleSignInRepo(request: GoogleSignInRequest): GoogleSignInResponse {
+    suspend fun googleSignInRepo(request: GoogleSignInRequest): UiResult<GoogleSignInResponse> {
         return when (val result = googleSignIn(request, client)) {
             is ApiResult.Success -> {
-                result.data
+              UiResult.Success( result.data)
             }
 
             is ApiResult.Error -> {
-                throw Exception("googleSign failed: ${result.message} (${result.code})")
+                UiResult.Error(result.message)
             }
 
             is ApiResult.Exception -> {
-                throw Exception("googleSign error: ${result.throwable.message}")
+                UiResult.Error(result.throwable.message ?: "Unknown error occurred")
             }
 
         }

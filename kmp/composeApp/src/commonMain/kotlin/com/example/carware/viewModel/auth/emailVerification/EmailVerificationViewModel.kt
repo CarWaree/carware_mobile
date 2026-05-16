@@ -1,9 +1,10 @@
 package com.example.carware.viewModel.auth.emailVerification
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.carware.network.apiRequests.auth.EmailVerificationRequest
+import com.example.carware.network.apiResponse.auth.EmailVerificationResponse
+import com.example.carware.network.core.UiResult
 import com.example.carware.repository.auth.AuthRepository
 import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +18,7 @@ class EmailVerificationViewModel
     private val repository: AuthRepository,
     private val preferencesManager: PreferencesManager,
 
-) : ViewModel() {
+    ) : ViewModel() {
     private val _state = MutableStateFlow(EmailVerificationState())
     val state: StateFlow<EmailVerificationState> = _state.asStateFlow()
 
@@ -52,36 +53,45 @@ class EmailVerificationViewModel
         }
 
         viewModelScope.launch {
-            try {
-                _state.update { it.copy(isLoading = true, errorMessage = null) }
-                val request = EmailVerificationRequest(
-                    email = email,
-                    otp = _state.value.otp
-                )
-                val response = repository.verifyEmailRepo(request)
+            _state.update { it.copy(isLoading = true, errorMessage = null) }
+            val request = EmailVerificationRequest(
+                email = email,
+                otp = _state.value.otp
+            )
 
-                val accessToken = response.data?.accessToken
-                    ?: throw IllegalStateException("accessToken missing in response")
-                preferencesManager.saveToken(accessToken)
+            when (val result: UiResult<EmailVerificationResponse> =
+                repository.verifyEmailRepo(request)) {
+                is UiResult.Success -> {
+                    val response = result.data
+                    val accessToken = response.data?.accessToken
+                    val refreshToken = response.data?.refreshToken
 
-                val refreshToken = response.data?.refreshToken
-                    ?: throw IllegalStateException(" refresh    Token missing in response")
-                preferencesManager.saveRefreshToken(refreshToken)
+                    if (accessToken == null || refreshToken == null) {
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                errorMessage = "Token missing from server response"
+                            )
+                        }
+                        return@launch
+                    }
 
-//                val expToken=response.data.expiresOn
-//                preferencesManager.saveExpiresOn(expToken)
-                preferencesManager.saveEmailVerified(true)
+                    preferencesManager.saveToken(accessToken)
+                    preferencesManager.saveRefreshToken(refreshToken)
+                    preferencesManager.saveEmailVerified(true)
 
-                _state.update {
-                    it.copy(isLoading = false, isSuccess = true)
-
+                    _state.update {
+                        it.copy(isLoading = false, isSuccess = true)
+                    }
                 }
-            } catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = e.message ?: "An error occurred"
-                    )
+
+                is UiResult.Error -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = result.message
+                        )
+                    }
                 }
             }
         }
