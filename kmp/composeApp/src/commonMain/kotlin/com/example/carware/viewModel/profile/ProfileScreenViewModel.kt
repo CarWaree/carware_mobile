@@ -66,6 +66,28 @@ class ProfileScreenViewModel(
             }
         }
     }
+    fun uploadPhoto(bytes: ByteArray) {
+        viewModelScope.launch {
+            _editState.value = _editState.value.copy(
+                isUploadingPhoto = true,
+                errorMessage = null,
+                uploadSuccess = false
+            )
+            try {
+                repository.uploadProfileImageRepo(bytes)
+                _editState.value = _editState.value.copy(
+                    isUploadingPhoto = false,
+                    uploadSuccess = true
+                )
+                loadProfile() // ✅ reuses your existing refresh logic
+            } catch (e: Exception) {
+                _editState.value = _editState.value.copy(
+                    isUploadingPhoto = false,
+                    errorMessage = e.message ?: "Photo upload failed"
+                )
+            }
+        }
+    }
 
     fun loadProfile() {
         viewModelScope.launch {

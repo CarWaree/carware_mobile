@@ -3,6 +3,7 @@ package com.example.carware.repository
 import com.example.carware.cache.profileStore
 import com.example.carware.network.api.getProfile
 import com.example.carware.network.api.updateProfile
+import com.example.carware.network.api.uploadProfileImage
 import com.example.carware.network.apiRequests.profile.UpdateProfileRequest
 import com.example.carware.network.apiResponse.profile.GetProfileResponse
 import com.example.carware.network.apiResponse.profile.ProfileDetails
@@ -53,5 +54,10 @@ class ProfileRepository(
 
     suspend fun updateProfileRepo(request: UpdateProfileRequest): UpdateProfileResponse {
         return updateProfile(request, client)
+    }
+
+    // Add this to your existing ProfileRepository
+    suspend fun uploadProfileImageRepo(imageBytes: ByteArray) {
+        uploadProfileImage(imageBytes, client)
     }
 }
