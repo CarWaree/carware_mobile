@@ -2,6 +2,7 @@ package com.example.carware.network.api
 
 import com.example.carware.network.apiRequests.profile.UpdateProfileRequest
 import com.example.carware.network.apiResponse.profile.GetProfileResponse
+import com.example.carware.network.apiResponse.profile.UpdatePictureResponse
 import com.example.carware.network.apiResponse.profile.UpdateProfileResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -38,7 +39,11 @@ suspend fun getProfile(
         throw Exception("API Error Profile (${response.status.value}): $rawBody")
     }
 }
-suspend fun updateProfile( request: UpdateProfileRequest,client: HttpClient): UpdateProfileResponse {
+
+suspend fun updateProfile(
+    request: UpdateProfileRequest,
+    client: HttpClient
+): UpdateProfileResponse {
     val response: HttpResponse = client.put { // Use .put for updates
         url("$baseUrl/api/Profile")
         contentType(ContentType.Application.Json)
@@ -54,10 +59,11 @@ suspend fun updateProfile( request: UpdateProfileRequest,client: HttpClient): Up
         throw Exception("Update Error Profile (${response.status.value}): $rawBody")
     }
 }
+
 suspend fun uploadProfileImage(
     imageBytes: ByteArray,
     client: HttpClient
-) {
+): UpdatePictureResponse {
     val response: HttpResponse = client.post {
         url("$baseUrl/api/Profile/upload-image")
         setBody(
@@ -82,5 +88,8 @@ suspend fun uploadProfileImage(
 
     if (!response.status.isSuccess()) {
         throw Exception("Upload Photo Error (${response.status.value}): $rawBody")
+    } else {
+        return response.body<UpdatePictureResponse>()
+
     }
 }

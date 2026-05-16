@@ -64,6 +64,8 @@ kotlin {
             implementation(libs.kstore.file)
             implementation("io.insert-koin:koin-compose:4.0.0")
             implementation(libs.koin.core)
+            implementation("io.coil-kt.coil3:coil-compose:3.1.0")
+            implementation("io.coil-kt.coil3:coil-network-ktor3:3.1.0")
 
 
             implementation("io.github.mirzemehdi:kmpauth-google:2.5.0-alpha01") //Google One Tap Sign-In

@@ -80,6 +80,11 @@ class ProfileScreenViewModel(
                     uploadSuccess = true
                 )
                 loadProfile() // ✅ reuses your existing refresh logic
+                val currentState = _state.value
+                println("--- STATE AFTER RELOAD: $currentState")
+                if (currentState is ProfileScreenState.Success) {
+                    println("--- IMAGE URL: ${currentState.profile.profileImageUrl}")
+                }
             } catch (e: Exception) {
                 _editState.value = _editState.value.copy(
                     isUploadingPhoto = false,
@@ -87,6 +92,7 @@ class ProfileScreenViewModel(
                 )
             }
         }
+
     }
 
     fun loadProfile() {

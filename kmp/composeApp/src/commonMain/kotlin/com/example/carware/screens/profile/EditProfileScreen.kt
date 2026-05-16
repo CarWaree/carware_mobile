@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -28,7 +29,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.*
+import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.request.CachePolicy
+import coil3.request.ImageRequest
 import com.example.carware.LocalStrings
+import com.example.carware.util.rememberImagePickerLauncher
 import com.example.carware.viewModel.profile.ProfileScreenState
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
 import org.jetbrains.compose.resources.DrawableResource
@@ -51,6 +57,10 @@ fun EditProfileScreen(
     val state by viewModel.state.collectAsState()
     val editState by viewModel.editState.collectAsState()
 
+    // Image picker — forwards bytes straight to the ViewModel
+    val imagePicker = rememberImagePickerLauncher { bytes ->
+        bytes?.let { viewModel.uploadPhoto(it) }
+    }
     when (state) {
         is ProfileScreenState.Loading -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -97,6 +107,7 @@ fun EditProfileScreen(
                             },
                         tint = Color.White
                     )
+
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
                         text = strings.get("EDIT_PROFILE"),
@@ -122,14 +133,31 @@ fun EditProfileScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Box(contentAlignment = Alignment.BottomEnd) {
-                        Image(
-                            painter = painterResource(Res.drawable.pp),
-                            contentDescription = strings.get("PROFILE"),
-                            modifier = Modifier
-                                .size(140.dp)
-                                .clip(CircleShape)
-                                .background(Color.LightGray)
-                        )
+                        if (profile.profileImageUrl.isNotBlank()) {
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalPlatformContext.current)
+                                    .data(profile.profileImageUrl)
+                                    .diskCachePolicy(CachePolicy.DISABLED)
+                                    .memoryCachePolicy(CachePolicy.DISABLED)
+                                    .build(),
+                                contentDescription = strings.get("PROFILE"),
+                                modifier = Modifier
+                                    .size(140.dp)
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop,
+                                placeholder = painterResource(Res.drawable.pp),
+                                error = painterResource(Res.drawable.pp)
+                            )
+                        } else {
+                            Image(
+                                painter = painterResource(Res.drawable.pp),
+                                contentDescription = strings.get("PROFILE"),
+                                modifier = Modifier
+                                    .size(140.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.LightGray)
+                            )
+                        }
                         // The edit icon already contains the background and white pencil
                         Icon(
                             painter = painterResource(Res.drawable.edit),
@@ -138,7 +166,8 @@ fun EditProfileScreen(
                             modifier = Modifier
                                 .size(34.dp)
                                 .offset(x = (-4).dp, y = (-4).dp) // Adjust position slightly
-                                .clickable { /* Action */ }
+                                .clickable (enabled = !editState.isUploadingPhoto) {
+                                    imagePicker.launch() }
                         )
                     }
 
@@ -159,6 +188,31 @@ fun EditProfileScreen(
                         color = Color.Gray,
                         modifier = Modifier.clickable { /* Action */ }
                     )
+                    if (editState.isUploadingPhoto) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = Color(194, 0, 0, 255),
+                            strokeWidth = 2.dp
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "Uploading photo...",
+                            fontFamily = popMid,
+                            fontSize = 13.sp,
+                            color = Color(0xFF767676)
+                        )
+                    }
+
+                    editState.errorMessage?.let { error ->
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = error,
+                            fontFamily = popMid,
+                            fontSize = 13.sp,
+                            color = Color(194, 0, 0, 255)
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(32.dp))

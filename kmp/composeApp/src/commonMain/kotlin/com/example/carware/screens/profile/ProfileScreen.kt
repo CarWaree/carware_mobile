@@ -66,6 +66,7 @@ import carware.composeapp.generated.resources.visa
 import carware.composeapp.generated.resources.x_time_slot
 import com.example.carware.LocalStrings
 import com.example.carware.m
+import com.example.carware.navigation.EditProfileScreen
 import com.example.carware.navigation.MyCarsScreen
 import com.example.carware.navigation.SignUpScreen
 import com.example.carware.util.rememberImagePickerLauncher
@@ -102,10 +103,7 @@ fun ProfileScreen(
         listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
     )
 
-    // Image picker — forwards bytes straight to the ViewModel
-    val imagePicker = rememberImagePickerLauncher { bytes ->
-        bytes?.let { viewModel.uploadPhoto(it) }
-    }
+
 
     when (state) {
         is ProfileScreenState.Loading -> {
@@ -191,40 +189,9 @@ fun ProfileScreen(
                             modifier = Modifier
                                 .size(34.dp)
                                 .offset(x = (-4).dp, y = (-4).dp)
-                                .clickable(enabled = !editState.isUploadingPhoto) {
-                                    imagePicker.launch()
-                                }
+                                .clickable{navController.navigate(EditProfileScreen)}
                         )
                     }
-
-                    // Upload progress indicator
-                    if (editState.isUploadingPhoto) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = Color(194, 0, 0, 255),
-                            strokeWidth = 2.dp
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = "Uploading photo...",
-                            fontFamily = popMid,
-                            fontSize = 13.sp,
-                            color = Color(0xFF767676)
-                        )
-                    }
-
-                    // Upload error
-                    editState.errorMessage?.let { error ->
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = error,
-                            fontFamily = popMid,
-                            fontSize = 13.sp,
-                            color = Color(194, 0, 0, 255)
-                        )
-                    }
-
                     Spacer(modifier = Modifier.height(12.dp))
 
                     Text(
