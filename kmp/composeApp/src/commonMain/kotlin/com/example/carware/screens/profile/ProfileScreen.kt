@@ -69,9 +69,8 @@ import com.example.carware.m
 import com.example.carware.navigation.EditProfileScreen
 import com.example.carware.navigation.MyCarsScreen
 import com.example.carware.navigation.SignUpScreen
-import com.example.carware.screens.ToastMessage
+import com.example.carware.util.rememberImagePickerLauncher
 import com.example.carware.util.storage.PreferencesManager
-import com.example.carware.viewModel.mycars.MyCarsScreenState
 import com.example.carware.viewModel.profile.ProfileScreenState
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
 import kotlinx.coroutines.launch
@@ -95,13 +94,16 @@ fun ProfileScreen(
     val strings = LocalStrings.current
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
-    val redWithAlpha = Color(0x80C20000) // #C2000080
+    val redWithAlpha = Color(0x80C20000)
 
     val state by viewModel.state.collectAsState()
+    val editState by viewModel.editState.collectAsState()
 
     val primaryGradientBrush = Brush.linearGradient(
         listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
     )
+
+
 
     when (state) {
         is ProfileScreenState.Loading -> {
@@ -122,6 +124,7 @@ fun ProfileScreen(
             val cars = (state as ProfileScreenState.Success).cars
             val primaryCarId = preferencesManager.getPrimaryCarId()
             val primaryCar = cars.find { it.id == primaryCarId } ?: cars.firstOrNull()
+
             Column(
                 modifier = m
                     .fillMaxSize()
@@ -150,18 +153,17 @@ fun ProfileScreen(
                         fontFamily = popSemi,
                         fontSize = 25.sp,
                         fontWeight = FontWeight.Medium,
-                        style = TextStyle(
-                            brush = primaryGradientBrush
-                        )
+                        style = TextStyle(brush = primaryGradientBrush)
                     )
                     Spacer(modifier = m.weight(1.2f))
                 }
+
                 HorizontalDivider(
                     thickness = 1.dp,
                     color = Color(0x33666666)
                 )
 
-                // Profile Picture Section
+                // Scrollable Content
                 Column(
                     modifier = m
                         .fillMaxWidth()
@@ -170,7 +172,7 @@ fun ProfileScreen(
                 ) {
                     Spacer(modifier = m.height(12.dp))
 
-
+                    // Avatar with edit icon
                     Box(contentAlignment = Alignment.BottomEnd) {
                         Image(
                             painter = painterResource(Res.drawable.pp),
@@ -180,29 +182,24 @@ fun ProfileScreen(
                                 .clip(CircleShape)
                                 .background(Color.LightGray)
                         )
-                        // The edit icon already contains the background and white pencil
                         Icon(
                             painter = painterResource(Res.drawable.edit),
                             contentDescription = strings.get("EDIT_PROFILE"),
                             tint = Color.Unspecified,
                             modifier = Modifier
                                 .size(34.dp)
-                                .offset(x = (-4).dp, y = (-4).dp) // Adjust position slightly
-                                .clickable {
-                                    navController.navigate(EditProfileScreen)
-                                }
+                                .offset(x = (-4).dp, y = (-4).dp)
+                                .clickable{navController.navigate(EditProfileScreen)}
                         )
                     }
-
                     Spacer(modifier = Modifier.height(12.dp))
+
                     Text(
                         text = profile.fullName,
                         fontFamily = popSemi,
                         fontSize = 24.sp,
                         fontWeight = FontWeight.W500,
-                        style = TextStyle(
-                            brush = primaryGradientBrush
-                        )
+                        style = TextStyle(brush = primaryGradientBrush)
                     )
 
                     Text(
@@ -213,7 +210,6 @@ fun ProfileScreen(
                         color = Color(0xCC767676)
                     )
 
-
                     Spacer(modifier = Modifier.height(32.dp))
 
                     // My Primary Vehicle Section
@@ -223,18 +219,15 @@ fun ProfileScreen(
                             fontFamily = popSemi,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Medium,
-                            style = TextStyle(
-                                brush = primaryGradientBrush
-                            )
-                        ) // primary text
+                            style = TextStyle(brush = primaryGradientBrush)
+                        )
                         Spacer(modifier = Modifier.height(12.dp))
 
-                        // Primary Vehicle Card
                         if (primaryCar != null) {
                             PrimaryCarCard(
                                 modelName = primaryCar.modelName,
                                 brandName = primaryCar.brandName,
-                                modelYear = primaryCar.year.toString(), // Using modelName as placeholder for year if not available separately
+                                modelYear = primaryCar.year.toString(),
                                 color = primaryCar.color,
                             )
                         }
@@ -247,7 +240,7 @@ fun ProfileScreen(
                         modifier = Modifier.padding(horizontal = 20.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        // My Cars Item
+                        // My Cars
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -260,7 +253,9 @@ fun ProfileScreen(
                             Icon(
                                 painter = painterResource(Res.drawable.car),
                                 contentDescription = null,
-                                modifier = Modifier.size(24.dp).iconGradient(primaryGradientBrush),
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .iconGradient(primaryGradientBrush),
                                 tint = Color.White
                             )
                             Spacer(modifier = Modifier.width(16.dp))
@@ -269,9 +264,7 @@ fun ProfileScreen(
                                 fontFamily = popSemi,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Medium,
-                                style = TextStyle(
-                                    brush = primaryGradientBrush
-                                ),
+                                style = TextStyle(brush = primaryGradientBrush),
                                 modifier = Modifier.weight(1f)
                             )
                             Icon(
@@ -281,7 +274,7 @@ fun ProfileScreen(
                             )
                         }
 
-                        // Payment Card Item
+                        // Payment Card
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -302,10 +295,7 @@ fun ProfileScreen(
                                     fontFamily = popSemi,
                                     fontSize = 19.sp,
                                     fontWeight = FontWeight.Medium,
-                                    style = TextStyle(
-                                        brush = primaryGradientBrush
-                                    )
-
+                                    style = TextStyle(brush = primaryGradientBrush)
                                 )
                                 Text(
                                     "${strings.get("EXPIRES")} 12/26",
@@ -317,12 +307,14 @@ fun ProfileScreen(
                             Icon(
                                 painter = painterResource(Res.drawable.check_onboard),
                                 contentDescription = null,
-                                modifier = Modifier.size(24.dp).iconGradient(primaryGradientBrush),
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .iconGradient(primaryGradientBrush),
                                 tint = Color.White
                             )
                         }
 
-                        // Add new method
+                        // Add new payment method
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -344,15 +336,14 @@ fun ProfileScreen(
                                     fontFamily = popSemi,
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Medium,
-                                    style = TextStyle(
-                                        brush = primaryGradientBrush
-                                    )
+                                    style = TextStyle(brush = primaryGradientBrush)
                                 )
                             }
                         }
                     }
 
                     Spacer(modifier = Modifier.height(40.dp))
+
                     val scope = rememberCoroutineScope()
 
                     // Logout Button
@@ -387,15 +378,12 @@ fun ProfileScreen(
                             )
                         }
                     }
+
                     Spacer(modifier = m.height(100.dp))
-
                 }
-
             }
         }
     }
-
-
 }
 
 @Composable
@@ -418,14 +406,12 @@ fun PrimaryCarCard(
         Column(
             modifier = m.padding(horizontal = 20.dp, vertical = 18.dp),
             horizontalAlignment = Alignment.CenterHorizontally
-
         ) {
             Image(
                 painter = painterResource(Res.drawable.audi),
                 contentDescription = null,
                 modifier = m.size(150.dp, 110.dp)
-
-            ) //car image
+            )
 
             Row(
                 modifier = m.fillMaxWidth(),
@@ -439,9 +425,7 @@ fun PrimaryCarCard(
                     fontWeight = FontWeight.Bold,
                     color = Color(102, 102, 102, 255)
                 )
-
-
-            } //car brand
+            }
 
             Spacer(modifier = m.padding(vertical = 2.dp))
 
@@ -450,15 +434,13 @@ fun PrimaryCarCard(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         painter = painterResource(Res.drawable.car),
                         contentDescription = null,
                         tint = Color.Unspecified,
                         modifier = m.size(18.dp)
-                    ) //car icon
+                    )
                     Spacer(modifier = m.padding(horizontal = 2.dp))
                     Text(
                         modelName,
@@ -468,61 +450,58 @@ fun PrimaryCarCard(
                     )
                 }
                 Spacer(modifier = m.padding(horizontal = 4.dp))
-                Row(
-                    modifier = m
-                ) {
+                Row {
                     Icon(
                         painter = painterResource(Res.drawable.modelyear),
                         contentDescription = null,
                         tint = Color.Unspecified,
                         modifier = m.size(20.dp)
-                    ) //model year icon
+                    )
                     Spacer(modifier = m.padding(horizontal = 2.dp))
                     Text(
                         modelYear,
                         fontFamily = popSemi,
                         fontSize = 14.sp,
                         color = Color(102, 102, 102, 255)
-                    ) //model year
+                    )
                 }
                 Spacer(modifier = m.padding(horizontal = 4.dp))
-                Row(
-                    modifier = m
-                ) {
+                Row {
                     Icon(
                         painter = painterResource(Res.drawable.color),
                         contentDescription = null,
                         tint = Color.Unspecified,
                         modifier = m.size(20.dp)
-                    ) //color icon
+                    )
                     Spacer(modifier = m.padding(horizontal = 2.dp))
                     Text(
                         color,
                         fontFamily = popSemi,
                         fontSize = 14.sp,
                         color = Color(102, 102, 102, 255)
-                    ) //color
+                    )
                 }
-            } //car details
+            }
 
             if (!isPrimary) {
                 Spacer(modifier = m.height(8.dp))
-                Row(m.clickable {
-                    onMakePrimary()
-                }
-                    .fillMaxWidth(),
+                Row(
+                    modifier = m
+                        .clickable { onMakePrimary() }
+                        .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         painter = painterResource(Res.drawable.x_time_slot),
                         contentDescription = null,
                         tint = Color(194, 0, 0, 171),
-                        modifier = m.size(18.dp)
+                        modifier = m
+                            .size(18.dp)
                             .rotate(45f)
                     )
                     Spacer(m.width(6.dp))
                     Text(
-                        "Make as my primary vehicle ",
+                        "Make as my primary vehicle",
                         fontFamily = popSemi,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.W400,
@@ -530,6 +509,6 @@ fun PrimaryCarCard(
                     )
                 }
             }
-        } //card content
+        }
     }
 }

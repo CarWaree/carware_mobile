@@ -19,4 +19,7 @@ data class EditProfileState(
     val fullNameError: Boolean = false,
     val emailError: Boolean = false,
     val phoneError: Boolean = false,
+
+    val isUploadingPhoto: Boolean = false,
+    val uploadSuccess: Boolean = false
 )
