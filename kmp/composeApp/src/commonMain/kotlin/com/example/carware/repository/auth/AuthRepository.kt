@@ -21,40 +21,130 @@ import com.example.carware.network.apiResponse.auth.ForgotPasswordResponse
 import com.example.carware.network.apiResponse.auth.OTPResponse
 import com.example.carware.network.apiResponse.auth.ResetPasswordResponse
 import com.example.carware.network.apiResponse.auth.SignUpResponse
+import com.example.carware.network.core.ApiResult
 import com.example.carware.util.storage.PreferencesManager
 import io.ktor.client.HttpClient
 
 class AuthRepository(
-    private val client: HttpClient) {
+    private val client: HttpClient
+) {
 
     suspend fun signUpRepo(request: SignUpRequest): SignUpResponse {
+        return when (val result = signupUser(request, client)) {
+            is ApiResult.Success -> {
+                result.data
+            }
 
-        return signupUser(request,client)  // Calls your API function directly
+            is ApiResult.Error -> {
+                throw Exception("Sign up failed: ${result.message} (${result.code})")
+            }
+
+            is ApiResult.Exception -> {
+                throw Exception("Sign up error: ${result.throwable.message}")
+            }
+        }
     }
-
 
     suspend fun logInRepo(request: LoginRequest): AuthResponse {
 
-        return loginUser(request,client)
+        return when (val result = loginUser(request, client)) {
+            is ApiResult.Success -> {
+                result.data
+            }
+
+            is ApiResult.Error -> {
+                throw Exception("Log in failed: ${result.message} (${result.code})")
+            }
+
+            is ApiResult.Exception -> {
+                throw Exception("Log in error: ${result.throwable.message}")
+            }
+        }
+
     }
 
     suspend fun forgotPasswordRepo(request: ForgotPasswordRequest): ForgotPasswordResponse {
-        return forgotPasswordUser(request,client)
+        return when (val result = forgotPasswordUser(request, client)) {
+            is ApiResult.Success -> {
+                result.data
+            }
+
+            is ApiResult.Error -> {
+                throw Exception("forgot Password failed: ${result.message} (${result.code})")
+            }
+
+            is ApiResult.Exception -> {
+                throw Exception("forgot Password error: ${result.throwable.message}")
+            }
+
+        }
     }
 
     suspend fun otpVerificationRepo(request: OTPRequest): OTPResponse {
-        return otpVerificationUser(request,client)
+        return when (val result = otpVerificationUser(request, client)) {
+            is ApiResult.Success -> {
+                result.data
+            }
+
+            is ApiResult.Error -> {
+                throw Exception("otp Verification failed: ${result.message} (${result.code})")
+            }
+
+            is ApiResult.Exception -> {
+                throw Exception("otp Verification error: ${result.throwable.message}")
+            }
+
+        }
     }
 
     suspend fun resetPasswordRepo(request: ResetPasswordRequest): ResetPasswordResponse {
-        return resetPasswordUser(request,client)
+        return when (val result = resetPasswordUser(request, client)) {
+            is ApiResult.Success -> {
+                result.data
+            }
+
+            is ApiResult.Error -> {
+                throw Exception("reset Password failed: ${result.message} (${result.code})")
+            }
+
+            is ApiResult.Exception -> {
+                throw Exception("reset Password error: ${result.throwable.message}")
+            }
+
+        }
     }
-    suspend fun verifyEmailRepo(request: EmailVerificationRequest): EmailVerificationResponse{
-        return verifyEmailUser(request,client)
+
+    suspend fun verifyEmailRepo(request: EmailVerificationRequest): EmailVerificationResponse {
+        return when (val result = verifyEmailUser(request, client)) {
+            is ApiResult.Success -> {
+                result.data
+            }
+
+            is ApiResult.Error -> {
+                throw Exception("verify Email failed: ${result.message} (${result.code})")
+            }
+
+            is ApiResult.Exception -> {
+                throw Exception("verify Email error: ${result.throwable.message}")
+            }
+
+        }
     }
 
     suspend fun googleSignInRepo(request: GoogleSignInRequest): GoogleSignInResponse {
-        return googleSignIn(request,client)
-    }
+        return when (val result = googleSignIn(request, client)) {
+            is ApiResult.Success -> {
+                result.data
+            }
 
+            is ApiResult.Error -> {
+                throw Exception("googleSign failed: ${result.message} (${result.code})")
+            }
+
+            is ApiResult.Exception -> {
+                throw Exception("googleSign error: ${result.throwable.message}")
+            }
+
+        }
+    }
 }

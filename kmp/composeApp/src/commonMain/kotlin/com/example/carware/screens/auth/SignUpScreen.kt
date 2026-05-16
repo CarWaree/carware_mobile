@@ -316,7 +316,7 @@ fun SignUpScreen(
                             shape = RoundedCornerShape(8.dp),
                             colors = textFieldColors
 
-                        ) //user name field
+                        ) //username field
                         Spacer(modifier = m.padding(vertical = 8.dp))
                         OutlinedTextField(
                             modifier = m.size(280.dp, 55.dp),

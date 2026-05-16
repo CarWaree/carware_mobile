@@ -10,12 +10,10 @@ import com.example.carware.network.apiResponse.vehicle.Model
 import com.example.carware.network.apiResponse.vehicle.ModelResponse
 import com.example.carware.network.apiResponse.vehicle.UpdateVehicleResponse
 import com.example.carware.network.apiResponse.vehicle.VehicleResponse
-import com.example.carware.network.createHttpClient
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
-import io.ktor.client.request.header
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.request.put

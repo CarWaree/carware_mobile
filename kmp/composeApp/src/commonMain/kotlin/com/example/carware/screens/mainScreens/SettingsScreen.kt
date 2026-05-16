@@ -25,6 +25,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,6 +55,7 @@ import com.example.carware.navigation.SelectLanguageScreen
 import com.example.carware.navigation.SignUpScreen
 import com.example.carware.screens.auth.SignUpScreen
 import com.example.carware.util.storage.PreferencesManager
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 
@@ -160,7 +162,9 @@ fun SettingsScreen(
                                 .size(16.dp) // Set your fixed size here
                                 .background(
                                     // We manually color it to match your Green/Red logic
-                                    color = if (isReminderEnabled) Color(0xFF008000) else Color(0xFFB00000),
+                                    color = if (isReminderEnabled) Color(0xFF008000) else Color(
+                                        0xFFB00000
+                                    ),
                                     shape = CircleShape
                                 )
                         )
@@ -194,7 +198,9 @@ fun SettingsScreen(
                                 .size(16.dp) // Set your fixed size here
                                 .background(
                                     // We manually color it to match your Green/Red logic
-                                    color = if (isUpdateEnabled) Color(0xFF008000) else Color(0xFFB00000),
+                                    color = if (isUpdateEnabled) Color(0xFF008000) else Color(
+                                        0xFFB00000
+                                    ),
                                     shape = CircleShape
                                 )
                         )
@@ -225,7 +231,7 @@ fun SettingsScreen(
             SettingsRowButton(
                 painterResource(Res.drawable.settings_lang),
                 strings.get("CHANGE_LANGUAGE"),
-                onClick = {navController.navigate(SelectLanguageScreen) }
+                onClick = { navController.navigate(SelectLanguageScreen) }
             )
             Spacer(m.height(22.dp))
             Box(
@@ -245,10 +251,19 @@ fun SettingsScreen(
                 )
             }
             Spacer(m.height(32.dp))
+            val scope = rememberCoroutineScope()
 
             Card(
-                onClick = { preferencesManager.performLogout()
-                          navController.navigate(SignUpScreen)},
+                onClick = {
+                    scope.launch {
+                        preferencesManager.performLogout()
+                        navController.navigate(SignUpScreen){
+                            popUpTo(0) { inclusive = true }
+
+                        }
+
+                    }
+                },
 
                 modifier = m
                     .size(width = 240.dp, height = 55.dp)

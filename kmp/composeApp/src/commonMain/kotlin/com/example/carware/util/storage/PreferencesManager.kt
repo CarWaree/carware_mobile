@@ -1,6 +1,12 @@
 package com.example.carware.util.storage
 
 
+import com.example.carware.cache.historyStore
+import com.example.carware.cache.notificationStore
+import com.example.carware.cache.profileStore
+import com.example.carware.cache.reminderStore
+import com.example.carware.cache.servicesStore
+import com.example.carware.cache.vehiclesStore
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.set
 
@@ -123,7 +129,7 @@ class PreferencesManager(
         userId?.let { saveUserId(it) }
     }
 
-    fun performLogout() {
+    suspend fun performLogout() {
         clearToken()
         settings.remove(KEY_AUTH_TOKEN)
         settings.remove(KEY_USER_ID)
@@ -132,6 +138,16 @@ class PreferencesManager(
         settings.remove(KEY_RESET_TOKEN)
         settings.remove(KEY_CAR_ADDED)
         settings.remove(KEY_PRIMARY_CAR_ID)  // ← Add this
+
+        historyStore.reset()
+        notificationStore.reset()
+        profileStore.reset()
+        reminderStore.reset()
+        servicesStore.reset()
+        vehiclesStore.reset()
+
+
+
 
         // Add any other user-specific keys here
 

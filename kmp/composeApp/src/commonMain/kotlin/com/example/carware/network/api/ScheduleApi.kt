@@ -6,12 +6,9 @@ import com.example.carware.network.apiResponse.schedule.Service
 import com.example.carware.network.apiResponse.schedule.ServiceTypesResponse
 import com.example.carware.network.apiResponse.appointment.AppointmentResponse
 import com.example.carware.network.apiResponse.appointment.GetAppointmentResponse
-import com.example.carware.network.apiResponse.vehicle.GetVehicleResponse
-import com.example.carware.network.createHttpClient
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.request.url

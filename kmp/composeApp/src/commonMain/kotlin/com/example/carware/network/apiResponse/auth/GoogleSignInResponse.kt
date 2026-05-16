@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GoogleSignInResponse(
+
     val accessToken: String,
     val refreshToken: String,
     val accessTokenExpiration: String,

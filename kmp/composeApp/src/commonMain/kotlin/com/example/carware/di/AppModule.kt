@@ -1,7 +1,7 @@
 package com.example.carware.di
 
 import com.example.carware.Notification.getPushTokenProvider
-import com.example.carware.network.createHttpClient
+import com.example.carware.network.core.createHttpClient
 import com.example.carware.repository.HistoryRepository
 import com.example.carware.repository.NotificationsRepository
 import com.example.carware.repository.ProfileRepository

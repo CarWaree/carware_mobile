@@ -345,10 +345,10 @@ fun HomeScreen(
 
                 Spacer(modifier = m.padding(vertical = 12.dp))
 
-                Row(m.padding(horizontal = 12.dp))
-                {
-                    OBDCard(onClick = {/* more details logic*/ })
-                }
+//                Row(m.padding(horizontal = 12.dp))
+//                {
+//                    OBDCard(onClick = {/* more details logic*/ })
+//                }
 
                 Spacer(modifier = m.padding(vertical = 64.dp))
 

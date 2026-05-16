@@ -31,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -73,6 +74,7 @@ import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.mycars.MyCarsScreenState
 import com.example.carware.viewModel.profile.ProfileScreenState
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 
@@ -351,13 +353,16 @@ fun ProfileScreen(
                     }
 
                     Spacer(modifier = Modifier.height(40.dp))
+                    val scope = rememberCoroutineScope()
 
                     // Logout Button
                     Button(
                         onClick = {
-                            preferencesManager.performLogout()
-                            navController.navigate(SignUpScreen) {
-                                popUpTo(0) { inclusive = true }
+                            scope.launch {
+                                preferencesManager.performLogout()
+                                navController.navigate(SignUpScreen) {
+                                    popUpTo(0) { inclusive = true }
+                                }
                             }
                         },
                         modifier = Modifier
@@ -521,7 +526,7 @@ fun PrimaryCarCard(
                         fontFamily = popSemi,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.W400,
-                        color=Color(102, 102, 102, 255)
+                        color = Color(102, 102, 102, 255)
                     )
                 }
             }
