@@ -5,6 +5,8 @@ import com.example.carware.network.apiRequests.profile.UpdateProfileRequest
 import com.example.carware.network.apiResponse.history.GetHistoryResponse
 import com.example.carware.network.apiResponse.notifications.RegisterTokenResponse
 import com.example.carware.network.apiResponse.profile.UpdateProfileResponse
+import com.example.carware.network.core.ApiResult
+import com.example.carware.network.core.safeApiCall
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -19,28 +21,19 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 
-suspend fun registerFCMToken( request: RegisterTokenRequest,client: HttpClient): RegisterTokenResponse {
-    val response: HttpResponse = client.post { // Use .put for updates
-        url("$baseUrl/api/notifications/register-token")
-        contentType(ContentType.Application.Json)
-        setBody(request)
+suspend fun registerFCMToken(
+    request: RegisterTokenRequest,
+    client: HttpClient
+): ApiResult<RegisterTokenResponse> =
+    safeApiCall {
+        client.post { // Use .put for updates
+            url("$baseUrl/api/notifications/register-token")
+            contentType(ContentType.Application.Json)
+            setBody(request)
+        }
     }
-    println("--- RESPONSE DEBUG notification: Status: ${response.status.value}")
-    val rawBody = response.bodyAsText()
-    println("--- RAW BODY notification : $rawBody")
-    if (response.status.isSuccess()) {
-        return response.body()
-    } else {
-        throw Exception("Update Error (${response.status.value}): $rawBody")
+
+suspend fun testFcmNotification(client: HttpClient): ApiResult<Unit> =
+    safeApiCall {
+        client.get("$baseUrl/api/notifications/test-fcm")
     }
-}
-suspend fun testFcmNotification(client: HttpClient) {
-    val response: HttpResponse = client.get {
-        url("$baseUrl/api/notifications/test-fcm")
-    }
-    println("--- RESPONSE DEBUG test-fcm: Status: ${response.status.value}")
-    if (!response.status.isSuccess()) {
-        val rawBody = response.bodyAsText()
-        throw Exception("FCM Test Error (${response.status.value}): $rawBody")
-    }
-}
