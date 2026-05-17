@@ -7,57 +7,80 @@ import com.example.carware.network.api.uploadProfileImage
 import com.example.carware.network.apiRequests.profile.UpdateProfileRequest
 import com.example.carware.network.apiResponse.profile.GetProfileResponse
 import com.example.carware.network.apiResponse.profile.ProfileDetails
+import com.example.carware.network.apiResponse.profile.UpdatePictureResponse
 import com.example.carware.network.apiResponse.profile.UpdateProfileResponse
 import com.example.carware.network.cache.ProfileCacheData
+import com.example.carware.network.core.ApiResult
+import com.example.carware.network.core.UiResult
 import com.example.carware.util.storage.PreferencesManager
 import io.ktor.client.HttpClient
 
 class ProfileRepository(
     private val client: HttpClient
 ) {
-
     suspend fun getProfileRepo(): GetProfileResponse {
-        return try {
-            val response = getProfile(client)
-
-            // Cache the profile data
-            response.data?.let { profile ->
-                profileStore.set(ProfileCacheData(profile))
+        return when (val result = getProfile(client)) {
+            is ApiResult.Success -> {
+                val response = result.data
+                response.data?.let { profile ->
+                    profileStore.set(ProfileCacheData(profile))
+                }
+                response
             }
-
-            response
-
-        } catch (e: Exception) {
-            val cached = profileStore.get()
-
-            if (cached?.profile != null) {
-                // Return cached data with success status
-                GetProfileResponse(
-                    data = cached.profile,
-                    statusCode = 200,
-                    message = "Loaded from cache"
-                )
-            } else {
-                // No cache, return error response
-                GetProfileResponse(
-                    data = ProfileDetails(
-                        fullName = "",
-                        email = "",
-                        profileImageUrl = ""
-                    ),
-                    statusCode = 500,
-                    message = "No internet connection"
-                )
+            is ApiResult.Error -> {
+                val cached = profileStore.get()
+                if (cached?.profile != null) {
+                    GetProfileResponse(
+                        data = cached.profile,
+                        statusCode = 200,
+                        message = "Loaded from cache"
+                    )
+                } else {
+                    throw Exception(result.message)
+                }
+            }
+            is ApiResult.Exception -> {
+                val cached = profileStore.get()
+                if (cached?.profile != null) {
+                    GetProfileResponse(
+                        data = cached.profile,
+                        statusCode = 200,
+                        message = "Loaded from cache"
+                    )
+                } else {
+                    throw Exception(result.throwable.message ?: "Unknown error occurred")
+                }
             }
         }
     }
 
-    suspend fun updateProfileRepo(request: UpdateProfileRequest): UpdateProfileResponse {
-        return updateProfile(request, client)
+    suspend fun updateProfileRepo(request: UpdateProfileRequest): UiResult<UpdateProfileResponse> {
+        return when(val result= updateProfile(request, client)){
+            is ApiResult.Success -> {
+                UiResult.Success(result.data)
+            }
+            is ApiResult.Error -> {
+                UiResult.Error(result.message)
+            }
+            is ApiResult.Exception -> {
+                UiResult.Error(result.throwable.message ?: "Unknown error occurred")
+            }
+        }
     }
 
     // Add this to your existing ProfileRepository
-    suspend fun uploadProfileImageRepo(imageBytes: ByteArray) {
-        uploadProfileImage(imageBytes, client)
+    suspend fun uploadProfileImageRepo(imageBytes: ByteArray):
+            UiResult<UpdatePictureResponse> {
+         return when ( val result =uploadProfileImage(imageBytes, client)){
+             is ApiResult.Success -> {
+                 UiResult.Success(result.data)
+             }
+             is ApiResult.Error -> {
+                 UiResult.Error(result.message)
+             }
+             is ApiResult.Exception -> {
+                 UiResult.Error(result.throwable.message ?: "Unknown error occurred")
+             }
+         }
     }
 }

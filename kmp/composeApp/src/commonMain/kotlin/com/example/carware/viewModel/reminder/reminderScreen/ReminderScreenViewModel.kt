@@ -6,7 +6,9 @@ import com.example.carware.cache.reminderStore
 import com.example.carware.cache.servicesStore
 import com.example.carware.cache.vehiclesStore
 import com.example.carware.network.apiRequests.reminder.ReminderRequest
+import com.example.carware.network.apiResponse.reminder.ReminderResponse
 import com.example.carware.network.cache.ReminderCacheData
+import com.example.carware.network.core.UiResult
 import com.example.carware.repository.ReminderRepository
 import com.example.carware.repository.ServiceRepository
 import com.example.carware.repository.VehicleRepository
@@ -237,7 +239,7 @@ class ReminderScreenViewModel(
 
         val description = "\n${current.note}"
 
-        // 1. Always open calendar — no network needed
+        // Always open calendar — no network needed
         calendarLauncher.openCalendarWithEvent(
             title = title,
             description = description,
@@ -246,39 +248,41 @@ class ReminderScreenViewModel(
 
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null) }
-            try {
-                val request = ReminderRequest(
-                    notificationDate = formatToISO8601(
-                        current.currentYear,
-                        current.currentMonthIndex + 1,
-                        current.selectedDay!!,
-                        current.selectedTime!!
-                    ),
-                    repeatInterval = current.repeatInterval,
-                    repeatUnit = current.repeatUnit,
-                    repeatCount = current.repeatCount,
-                    note = current.note,
-                    typeId = current.selectedServiceId!!,
-                    vehicleId = current.selectedCarId!!
-                )
-                val current_cache = reminderStore.get()
-                val response = reminderRepo.setReminderRepo(request)
 
-                val updatedReminders = (current_cache?.reminders ?: emptyList()) + response.data
-                reminderStore.set(
-                    ReminderCacheData(
-                        reminders = updatedReminders,
-                        userId = current_cache?.userId ?: 0
+            val request = ReminderRequest(
+                notificationDate = formatToISO8601(
+                    current.currentYear,
+                    current.currentMonthIndex + 1,
+                    current.selectedDay!!,
+                    current.selectedTime!!
+                ),
+                repeatInterval = current.repeatInterval,
+                repeatUnit = current.repeatUnit,
+                repeatCount = current.repeatCount,
+                note = current.note,
+                typeId = current.selectedServiceId!!,
+                vehicleId = current.selectedCarId!!
+            )
+
+            when (val result: UiResult<ReminderResponse> = reminderRepo.setReminderRepo(request)) {
+                is UiResult.Success -> {
+                    val current_cache = reminderStore.get()
+                    val updatedReminders = (current_cache?.reminders ?: emptyList()) + result.data.data
+                    reminderStore.set(
+                        ReminderCacheData(
+                            reminders = updatedReminders,
+                            userId = current_cache?.userId ?: 0
+                        )
                     )
-                )
-                _state.update { it.copy(isLoading = false, isBookingSuccess = true) }
-            } catch (e: Exception) {
-                // Silent fail — calendar was already opened
-                _state.update { it.copy(isLoading = false, isBookingSuccess = true) }
+                    _state.update { it.copy(isLoading = false, isBookingSuccess = true) }
+                }
+                is UiResult.Error -> {
+                    // Silent fail — calendar was already opened
+                    _state.update { it.copy(isLoading = false, isBookingSuccess = true) }
+                }
             }
         }
-    }
-    @OptIn(ExperimentalTime::class)
+    }    @OptIn(ExperimentalTime::class)
     fun loadNextReminder() {
         viewModelScope.launch {
             val now = Clock.System.now().toEpochMilliseconds()
@@ -289,6 +293,7 @@ class ReminderScreenViewModel(
             _state.update { it.copy(nextReminderMillis = next) }
         }
     }
+    fun clearErrorMessage() = _state.update { it.copy(error = null) }
 
 
 

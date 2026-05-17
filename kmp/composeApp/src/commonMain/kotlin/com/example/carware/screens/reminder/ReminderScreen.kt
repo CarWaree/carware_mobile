@@ -1,5 +1,10 @@
 package com.example.carware.screens.reminder
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -48,6 +53,7 @@ import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.CompositingStrategy
@@ -63,9 +69,11 @@ import com.example.carware.screens.CalenderBox
 import com.example.carware.screens.SelectDateBox
 import com.example.carware.screens.SelectDropdown
 import com.example.carware.screens.ShimmerScheduleScreen
+import com.example.carware.screens.ToastMessage
 import com.example.carware.screens.UsersCar
 import com.example.carware.screens.appButtonBack
 import com.example.carware.viewModel.reminder.reminderScreen.ReminderScreenViewModel
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
 
 
@@ -90,7 +98,21 @@ fun ReminderScreen(
     val selectCarScrollState = rememberScrollState()
     val strings = LocalStrings.current
 
+    AnimatedVisibility(
+        visible = state.error != null,
+        enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+        exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
+        modifier = Modifier.padding(top = 20.dp)
+    ) {
+        state.error?.let { msg ->
+            ToastMessage(message = msg, state = false)
 
+            LaunchedEffect(msg) {
+                delay(3000)
+                viewModel.clearErrorMessage()
+            }
+        }
+    }
     if (state.isTimePickerVisible) {
         Column(m.fillMaxSize()) {
             SelectDateBox(

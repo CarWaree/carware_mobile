@@ -5,9 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.example.carware.cache.reminderStore
 import com.example.carware.cache.vehiclesStore
 import com.example.carware.network.api.deleteVehicle
+import com.example.carware.network.apiResponse.vehicle.DeleteVehicleResponse
+import com.example.carware.network.apiResponse.vehicle.Vehicles
+import com.example.carware.network.core.UiResult
 import com.example.carware.repository.VehicleRepository
 import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.viewModel.home.HomeScreenState
 import com.example.carware.viewModel.profile.ProfileScreenState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,6 +34,8 @@ class HomeScreenViewModel(
     private val _state = MutableStateFlow<HomeScreenState>(HomeScreenState.Loading)
     val state: StateFlow<HomeScreenState> = _state.asStateFlow()
 
+    private val _selectedCar = MutableStateFlow<Vehicles?>(null)
+    val selectedCar: StateFlow<Vehicles?> = _selectedCar.asStateFlow()
     private val _nextReminderMillis = MutableStateFlow<Long?>(null)
     val nextReminderMillis: StateFlow<Long?> = _nextReminderMillis.asStateFlow()
     val cachedVehicles = vehiclesStore.updates
@@ -70,18 +77,47 @@ class HomeScreenViewModel(
             }
         }
     }
+
     private var currentCarId: Int? = null
-
     fun setCurrentCar(carId: Int) {
-        currentCarId = carId
-    }
+        currentCarId = carId  // keep this as is (for delete)
 
+        // just find and save the car for display
+        val state = _state.value
+        if (state is HomeScreenState.Success) {
+            _selectedCar.value = state.cars.find { it.id == carId }
+        }
+    }
     fun deleteCar() {
         val id = currentCarId ?: return
         viewModelScope.launch {
-            repository.deleteVehicleRepo(id)
+            when (val result: UiResult<DeleteVehicleResponse> = repository.deleteVehicleRepo(id)) {
+                is UiResult.Success -> {
+//                    loadVehicles()
+//                    delay(3000)
+                    _state.update {
+                        if (it is HomeScreenState.Success) {
+                            it.copy(successMessage = "Vehicle deleted successfully")
+                        } else {
+                            it
+                        }
+                    }
+                }
+                is UiResult.Error -> {
+                    _state.value = HomeScreenState.Error(result.message)
+                }
+            }
         }
     }
+
+    fun clearMessage() = _state.update {
+        if (it is HomeScreenState.Success) {
+            it.copy(successMessage = null)
+        } else {
+            it
+        }
+    }
+
 
     @OptIn(ExperimentalTime::class)
     fun loadNextReminder() {
@@ -98,4 +134,7 @@ class HomeScreenViewModel(
             _nextReminderMillis.update { next }
         }
     }
+
+
+
 }

@@ -1,5 +1,10 @@
 package com.example.carware.screens.mainScreens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -46,10 +51,12 @@ import com.example.carware.screens.LoadingOverlay
 import com.example.carware.screens.SelectDateBox
 import com.example.carware.screens.SelectDropdown
 import com.example.carware.screens.ShimmerScheduleScreen
+import com.example.carware.screens.ToastMessage
 import com.example.carware.screens.UsersCar
 import com.example.carware.screens.appButtonBack
 import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.Font
 
 @Composable
@@ -77,7 +84,21 @@ fun ScheduleScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
 
 
+    AnimatedVisibility(
+        visible = state.error != null,
+        enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+        exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
+        modifier = Modifier.padding(top = 20.dp)
+    ) {
+        state.error?.let { msg ->
+            ToastMessage(message = msg, state = false)
 
+            LaunchedEffect(msg) {
+                delay(3000)
+                viewModel.clearErrorMessage()
+            }
+        }
+    }
     if (state.isTimePickerVisible) {
         Column(m.fillMaxSize()) {
             SelectDateBox(

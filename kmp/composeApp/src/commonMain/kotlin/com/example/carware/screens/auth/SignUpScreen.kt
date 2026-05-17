@@ -87,7 +87,7 @@ fun SignUpScreen(
                 serverId = "676917884316-co7m5je6ba8ck8ve0074a2apk8fnda4b.apps.googleusercontent.com"
             )
         )
-        authReady = true // ← THIS was missing!
+        authReady = true //
 
     }
 
@@ -144,11 +144,15 @@ fun SignUpScreen(
             }
         }
     }
-    Column(modifier = m.verticalScroll(scrollState)) {
+    Column( m
+        .fillMaxSize()
+        .appGradBack()
+
+        .verticalScroll(scrollState)
+        ) {
         Column(
-            modifier = m
+             m
                 .fillMaxSize()
-                .appGradBack()
                 .padding(top = 54.dp)
 
 

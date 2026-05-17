@@ -4,7 +4,9 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.carware.network.apiRequests.schedule.SetAppointmentRequest
+import com.example.carware.network.apiResponse.appointment.AppointmentResponse
 import com.example.carware.network.apiResponse.schedule.Centers
+import com.example.carware.network.core.UiResult
 import com.example.carware.repository.ServiceRepository
 import com.example.carware.repository.VehicleRepository
 import com.example.carware.viewModel.defaultSlots
@@ -178,15 +180,18 @@ class ScheduleScreenViewModel(
             println("serviceId: ${request.serviceId}")
             println("centerId: ${request.serviceCenterId}")
 
-            try {
-                repository.setAppointmentRepo(request)
-                _state.update { it.copy(isLoading = false, isBookingSuccess = true) }
-            } catch (e: Exception) {
-                println("=== BOOKING ERROR: ${e.message}")
-                _state.update { it.copy(isLoading = false, error = e.message) }
+            when (val result: UiResult<AppointmentResponse> = repository.setAppointmentRepo(request)) {
+                is UiResult.Success -> {
+                    println("=== BOOKING SUCCESS ===")
+                    _state.update { it.copy(isLoading = false, isBookingSuccess = true) }
+                }
+                is UiResult.Error -> {
+                    println("=== BOOKING ERROR: ${result.message}")
+                    _state.update { it.copy(isLoading = false, error = result.message) }
+                }
             }
-        }    }
-
+        }
+    }
     fun onBookingSuccessConsumed() {
         _state.update { it.copy(isBookingSuccess = false) }
     }
@@ -217,5 +222,7 @@ class ScheduleScreenViewModel(
             Clock.System.now().toString()
         }
     }
+    fun clearErrorMessage() = _state.update { it.copy(error = null) }
+
 
 }

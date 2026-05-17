@@ -11,6 +11,8 @@ import com.example.carware.navigation.HomeScreen
 import com.example.carware.network.apiRequests.vehicle.VehicleRequest
 import com.example.carware.network.apiResponse.vehicle.Brand
 import com.example.carware.network.apiResponse.vehicle.Model
+import com.example.carware.network.apiResponse.vehicle.VehicleResponse
+import com.example.carware.network.core.UiResult
 import com.example.carware.repository.VehicleRepository
 import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.Dispatchers
@@ -127,6 +129,8 @@ class AddCarViewModel( private val repository: VehicleRepository,
         if (brandId == null || modelId == null || year == null || color.isNullOrEmpty()) return
 
         viewModelScope.launch {
+            _state.update { it.copy(isLoading = true, errorMessage = null) }
+
             val request = VehicleRequest(
                 brandId = brandId,
                 modelId = modelId,
@@ -134,34 +138,30 @@ class AddCarViewModel( private val repository: VehicleRepository,
                 color = color,
             )
 
-            try {
-                // Get token
-                val token = preferencesManager.getToken()
-                    ?: throw Exception("User not logged in")
+            when (val result: UiResult<VehicleResponse> = repository.addVehicleRepo(request)) {
+                is UiResult.Success -> {
+                    preferencesManager.setCarAdded(true)
 
-                // Call repository with token
-                val response = repository.addVehicleRepo(request)
+                    _state.update { it.copy(isLoading = false, isSuccess = true) }
 
-                // Mark car as added
-                preferencesManager.setCarAdded(true)
-
-
-                println("Vehicle added successfully: ${response.message}")
-
-                withContext(Dispatchers.Main) {
                     navController.navigate(HomeScreen) {
                         popUpTo(AddCarScreen) { inclusive = true }
                     }
                 }
-
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    println("Failed to add vehicle: ${e.message}")
-                    // Show error to user (Snackbar/Toast)
+                is UiResult.Error -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = result.message
+                        )
+                    }
+                    println("Failed to add vehicle: ${result.message}")
                 }
             }
         }
     }
+    fun clearErrorMessage() = _state.update { it.copy(errorMessage = null) }
+
 }
 
 

@@ -1,5 +1,10 @@
 package com.example.carware.screens.profile
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,9 +39,12 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import com.example.carware.LocalStrings
+import com.example.carware.network.api.baseUrl
+import com.example.carware.screens.ToastMessage
 import com.example.carware.util.rememberImagePickerLauncher
 import com.example.carware.viewModel.profile.ProfileScreenState
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
@@ -57,10 +65,28 @@ fun EditProfileScreen(
     val state by viewModel.state.collectAsState()
     val editState by viewModel.editState.collectAsState()
 
+    AnimatedVisibility(
+        visible = editState.errorMessage != null,
+        enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+        exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
+        modifier = Modifier.padding(top = 20.dp)
+    ) {
+        editState.errorMessage?.let { msg ->
+            ToastMessage(message = msg, state = false)
+
+            LaunchedEffect(msg) {
+                delay(3000)
+                viewModel.clearErrorMessage()
+            }
+        }
+    }
+
     // Image picker — forwards bytes straight to the ViewModel
     val imagePicker = rememberImagePickerLauncher { bytes ->
         bytes?.let { viewModel.uploadPhoto(it) }
     }
+
+
     when (state) {
         is ProfileScreenState.Loading -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -136,7 +162,7 @@ fun EditProfileScreen(
                         if (profile.profileImageUrl.isNotBlank()) {
                             AsyncImage(
                                 model = ImageRequest.Builder(LocalPlatformContext.current)
-                                    .data(profile.profileImageUrl)
+                                    .data("$baseUrl${profile.profileImageUrl}")
                                     .diskCachePolicy(CachePolicy.DISABLED)
                                     .memoryCachePolicy(CachePolicy.DISABLED)
                                     .build(),
@@ -146,7 +172,13 @@ fun EditProfileScreen(
                                     .clip(CircleShape),
                                 contentScale = ContentScale.Crop,
                                 placeholder = painterResource(Res.drawable.pp),
-                                error = painterResource(Res.drawable.pp)
+                                error = painterResource(Res.drawable.pp),
+                                onError = { error ->
+                                    println("--- COIL ERROR: ${error.result.throwable}")
+                                },
+                                onSuccess = {
+                                    println("--- COIL SUCCESS")
+                                }
                             )
                         } else {
                             Image(

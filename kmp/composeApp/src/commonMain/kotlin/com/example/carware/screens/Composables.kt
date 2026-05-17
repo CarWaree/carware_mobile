@@ -43,6 +43,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -50,14 +51,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -100,6 +105,7 @@ import kotlinx.datetime.LocalDateTime
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -260,6 +266,141 @@ fun BottomNavBar(
     }
 }
 
+@Composable
+fun ConfirmDeleteCar(
+    viewModel: HomeScreenViewModel,
+    onDismiss: () -> Unit
+
+) {
+    val popMid = FontFamily(Font(Res.font.poppins_medium))
+    val selectedCar by viewModel.selectedCar.collectAsState()
+
+
+    Box(modifier = Modifier.fillMaxSize()) {
+
+        // Just a semi-transparent scrim — no blur box needed
+        Column(
+            Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.5f)),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        )
+
+        {
+            Column(
+                modifier = m
+                    .clip(RoundedCornerShape(8.dp))
+                    .fillMaxWidth(0.7f)
+                    .fillMaxHeight(0.3f)
+                    .background(Color(204, 204, 204, 242))
+                    .padding(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+
+                Box(
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clip(CircleShape)
+                        .appGradBack(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(Res.drawable.recycle_bin),
+                        contentDescription = null,
+                        tint = Color(255, 255, 255, 201),
+                        modifier = m.size(25.dp)
+
+                    )
+                }
+                Spacer(m.height(6.dp))
+                Text(
+                    "Are you sure ?",
+                    fontFamily = popMid,
+                    fontSize = 15.sp,
+                    style = TextStyle(
+                        brush = Brush.linearGradient(
+                            listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
+                        )
+                    ),
+                    fontWeight = FontWeight.W600,
+                )
+                Spacer(m.height(6.dp))
+                Text(
+                    "This will permanently delete your car\n and all its data.",
+
+                    fontFamily = popMid,
+                    fontSize = 12.sp,
+                    color = Color(30, 30, 30, 161),
+                    fontWeight = FontWeight.W400,
+
+                    )
+                Spacer(m.height(12.dp))
+
+                selectedCar?.let { car ->
+
+                    Text(
+                        "${car.brandName} ${car.modelName} ${car.year}",
+                        fontFamily = popMid,
+                        fontSize = 14.sp,
+                        color = Color(30, 30, 30, 161),
+                        fontWeight = FontWeight.W500,
+                    )
+                }
+
+                Spacer(m.height(15.dp))
+
+                Card(
+                    onClick = {
+                        viewModel.deleteCar()
+                        onDismiss()
+                    },
+
+                    modifier = m
+                        .fillMaxWidth(0.9f)
+                        .fillMaxHeight(0.4f)
+                        .border(
+                            width = 0.8.dp,
+                            color = Color(30, 30, 30, 110),
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .clip(shape = RoundedCornerShape(8.dp))
+                        .appButtonBack(),
+                    colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+
+                    ) {
+
+                    Row(
+                        modifier = m.fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            "Delete",
+                            fontFamily = popMid,
+                            fontSize = 14.sp,
+                            color = Color(245, 245, 245, 255),
+                            fontWeight = FontWeight.W500
+                        )
+                    }
+
+
+                }
+                Spacer(m.height(12.dp))
+
+                Text(
+                    "Cancel",
+                    modifier = Modifier.clickable { onDismiss() },
+                    fontFamily = popMid,
+                    fontSize = 14.sp,
+                    color = Color(30, 30, 30, 161),
+                    fontWeight = FontWeight.W500,
+                )
+            }
+        }
+
+    }
+}
 
 // home Screen
 @Composable
@@ -272,6 +413,8 @@ fun CarCard(
     color: String,
     image: DrawableResource,
     onEditClick: () -> Unit,  // add this
+    onDeleteClick: () -> Unit,  // ← add this
+
 
 ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
@@ -279,6 +422,8 @@ fun CarCard(
     val cardMod = Modifier.size(width = 305.dp, height = 255.dp)
 
     var expanded by remember { mutableStateOf(false) }
+
+    var showDeleteDialog by remember { mutableStateOf(false) }
 
 
     Card(
@@ -319,49 +464,58 @@ fun CarCard(
                     DropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
-                        shape = RoundedCornerShape(12.dp),
                         containerColor = Color(217, 217, 217).copy(alpha = 0.8f),
-
+                        shape = RoundedCornerShape(8.dp),
                         modifier = Modifier
                             .border(
                                 width = 0.5.dp,
                                 color = Color.White.copy(alpha = 0.3f),
-                                shape = RoundedCornerShape(12.dp)
+                                shape = RoundedCornerShape(8.dp)
                             )
                     )
                     {
                         DropdownMenuItem(
-                            text = { Text("Add",
-                                fontSize = 14.sp,
-                                color=Color(30, 30, 30, 153),
-                                fontFamily = popSemi,
-                                fontWeight = FontWeight.W400
-                            ) },
+                            text = {
+                                Text(
+                                    "Add",
+                                    fontSize = 14.sp,
+                                    color = Color(30, 30, 30, 153),
+                                    fontFamily = popSemi,
+                                    fontWeight = FontWeight.W400
+                                )
+                            },
                             onClick = {
                                 navController.navigate(AddCarScreen)
-                                expanded = false}
+                                expanded = false
+                            }
                         )
                         DropdownMenuItem(
-                            text = { Text("Edit",
-                                fontSize = 14.sp,
-                                color=Color(30, 30, 30, 153),
-                                fontFamily = popSemi,
-                                fontWeight = FontWeight.W400
-                            ) },
+                            text = {
+                                Text(
+                                    "Edit",
+                                    fontSize = 14.sp,
+                                    color = Color(30, 30, 30, 153),
+                                    fontFamily = popSemi,
+                                    fontWeight = FontWeight.W400
+                                )
+                            },
                             onClick = {
                                 onEditClick()
-                                expanded = false }
+                                expanded = false
+                            }
                         )
                         DropdownMenuItem(
-                            text = { Text("Delete",
-                                fontSize = 14.sp,
-                                color=Color(30, 30, 30, 153),
-                                fontFamily = popSemi,
-                                fontWeight = FontWeight.W400
-                            ) },
+                            text = {
+                                Text(
+                                    "Delete",
+                                    fontSize = 14.sp,
+                                    color = Color(30, 30, 30, 153),
+                                    fontFamily = popSemi,
+                                    fontWeight = FontWeight.W400
+                                )
+                            },
                             onClick = {
-                                viewModel.deleteCar()
-                                viewModel.loadVehicles()
+                                onDeleteClick()  // ← was showDeleteDialog = true
                                 expanded = false
                             }
                         )
@@ -455,7 +609,9 @@ fun CarCard(
 
             } //car details
         } //card content
-    }  // car card
+    }  // car  card
+
+
 }
 
 @Composable
@@ -731,13 +887,11 @@ fun CurvedLineCanvas() {
 
 @Composable
 fun SelectDropdown(
-
     label: String,
     selectedValue: String?,
     options: List<String>,
     onSelect: (String) -> Unit,
-
-    ) {
+) {
 
     val textFieldColors = TextFieldDefaults.colors(
 

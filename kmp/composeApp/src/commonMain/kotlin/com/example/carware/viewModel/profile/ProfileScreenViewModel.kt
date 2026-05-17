@@ -4,13 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.carware.network.apiRequests.profile.UpdateProfileRequest
 import com.example.carware.network.apiResponse.profile.GetProfileResponse
+import com.example.carware.network.apiResponse.profile.UpdatePictureResponse
+import com.example.carware.network.apiResponse.profile.UpdateProfileResponse
 import com.example.carware.network.cache.VehiclesCacheData
+import com.example.carware.network.core.UiResult
 import com.example.carware.repository.ProfileRepository
 import com.example.carware.repository.VehicleRepository
 import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ProfileScreenViewModel(
@@ -49,50 +53,55 @@ class ProfileScreenViewModel(
 
     fun saveProfile() {
         viewModelScope.launch {
-            try {
-                repository.updateProfileRepo(
-                    UpdateProfileRequest(
-                        fullName = _editState.value.fullName,
-                        phoneNumber = _editState.value.phone,
-                        pendingEmail = _editState.value.email
-                    )
-                )
+            _editState.update { it.copy(isLoading = true, errorMessage = null) }
 
-                loadProfile() // refresh after save
-            } catch (e: Exception) {
-                _editState.value = _editState.value.copy(
-                    errorMessage = e.message ?: "Unknown error: ${e::class.simpleName}"
+            when (val result: UiResult<UpdateProfileResponse> = repository.updateProfileRepo(
+                UpdateProfileRequest(
+                    fullName = _editState.value.fullName,
+                    phoneNumber = _editState.value.phone,
+                    pendingEmail = _editState.value.email
                 )
+            )) {
+                is UiResult.Success -> {
+                    _editState.update { it.copy(isLoading = false) }
+                    loadProfile()  // refresh after save
+                }
+                is UiResult.Error -> {
+                    _editState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = result.message
+                        )
+                    }
+                }
             }
         }
     }
+
     fun uploadPhoto(bytes: ByteArray) {
         viewModelScope.launch {
-            _editState.value = _editState.value.copy(
-                isUploadingPhoto = true,
-                errorMessage = null,
-                uploadSuccess = false
-            )
-            try {
-                repository.uploadProfileImageRepo(bytes)
-                _editState.value = _editState.value.copy(
-                    isUploadingPhoto = false,
-                    uploadSuccess = true
-                )
-                loadProfile() // ✅ reuses your existing refresh logic
-                val currentState = _state.value
-                println("--- STATE AFTER RELOAD: $currentState")
-                if (currentState is ProfileScreenState.Success) {
-                    println("--- IMAGE URL: ${currentState.profile.profileImageUrl}")
+            _editState.update { it.copy(isUploadingPhoto = true, errorMessage = null, uploadSuccess = false) }
+
+            when (val result: UiResult<UpdatePictureResponse> = repository.uploadProfileImageRepo(bytes)) {
+                is UiResult.Success -> {
+                    _editState.update { it.copy(isUploadingPhoto = false, uploadSuccess = true) }
+                    loadProfile()  // refresh after upload
+                    val currentState = _state.value
+                    println("--- STATE AFTER RELOAD: $currentState")
+                    if (currentState is ProfileScreenState.Success) {
+                        println("--- IMAGE URL: ${currentState.profile.profileImageUrl}")
+                    }
                 }
-            } catch (e: Exception) {
-                _editState.value = _editState.value.copy(
-                    isUploadingPhoto = false,
-                    errorMessage = e.message ?: "Photo upload failed"
-                )
+                is UiResult.Error -> {
+                    _editState.update {
+                        it.copy(
+                            isUploadingPhoto = false,
+                            errorMessage = result.message
+                        )
+                    }
+                }
             }
         }
-
     }
 
     fun loadProfile() {
@@ -115,4 +124,6 @@ class ProfileScreenViewModel(
             }
         }
     }
+    fun clearErrorMessage() = _editState.update { it.copy(errorMessage = null) }
+
 }

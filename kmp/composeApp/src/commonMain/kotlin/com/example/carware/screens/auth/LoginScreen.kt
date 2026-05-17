@@ -8,7 +8,6 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -32,7 +31,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,39 +46,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
-import carware.composeapp.generated.resources.carware
 import carware.composeapp.generated.resources.eye_off
 import carware.composeapp.generated.resources.eyee
 import carware.composeapp.generated.resources.google_icon_logo_svgrepo_com
-import carware.composeapp.generated.resources.line_1
 import carware.composeapp.generated.resources.new_logo
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.navigation.AddCarScreen
-import com.example.carware.navigation.EmailVerificationScreen
 import com.example.carware.navigation.HomeScreen
 import com.example.carware.navigation.LoginScreen
 import com.example.carware.navigation.ResetPasswordScreen
 import com.example.carware.navigation.SignUpScreen
-import com.example.carware.network.apiRequests.auth.LoginRequest
-import com.example.carware.network.api.loginUser
 import com.example.carware.screens.LoadingOverlay
 import com.example.carware.screens.ToastMessage
 import com.example.carware.screens.appButtonBack
 import com.example.carware.screens.appGradBack
-import com.example.carware.util.lang.AppLanguage
-import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.auth.logIn.LogInViewModel
 import com.mmk.kmpauth.google.GoogleAuthCredentials
 import com.mmk.kmpauth.google.GoogleAuthProvider
 import com.mmk.kmpauth.google.GoogleButtonUiContainer
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
@@ -166,27 +153,27 @@ fun LoginScreen(
             .appGradBack()
             .padding(64.dp)
     ) {
+        AnimatedVisibility(
+            visible = state.errorMessage != null,
+            enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+            exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
+            modifier = Modifier
+                .padding(top = 20.dp) // Gap from the very top of the phone
+        ) {
+            state.errorMessage?.let { msg ->
+                ToastMessage(message = msg, state = false)
+
+                LaunchedEffect(msg) {
+                    delay(3000)
+                }
+            }
+        }
+
         Column(
             m
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            AnimatedVisibility(
-                visible = state.errorMessage != null,
-                enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
-                exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
-                modifier = Modifier
-                    .padding(top = 20.dp) // Gap from the very top of the phone
-            ) {
-                state.errorMessage?.let { msg ->
-                    ToastMessage(message = msg, state = false)
-
-                    LaunchedEffect(msg) {
-                        delay(3000)
-                        viewModel.clearErrorMessage()
-                    }
-                }
-            }
 
             Icon(
                 painter = painterResource(Res.drawable.new_logo),

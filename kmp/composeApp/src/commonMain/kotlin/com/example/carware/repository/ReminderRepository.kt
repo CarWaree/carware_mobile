@@ -8,20 +8,21 @@ import com.example.carware.network.apiResponse.reminder.Reminder
 import com.example.carware.network.apiResponse.reminder.ReminderResponse
 import com.example.carware.network.cache.ReminderCacheData
 import com.example.carware.network.core.ApiResult
+import com.example.carware.network.core.UiResult
 import io.ktor.client.HttpClient
 
 class ReminderRepository(private val  client: HttpClient) {
 
-    suspend fun setReminderRepo(request: ReminderRequest): ReminderResponse {
+    suspend fun setReminderRepo(request: ReminderRequest): UiResult<ReminderResponse> {
         return when (val result = setReminder(client, request)) {
             is ApiResult.Success -> {
-                result.data
+                UiResult.Success(result.data)
             }
             is ApiResult.Error -> {
-                throw Exception("Set reminder failed: ${result.message} (${result.code})")
+                UiResult.Error(result.message)
             }
             is ApiResult.Exception -> {
-                throw Exception("Set reminder error: ${result.throwable.message}")
+                UiResult.Error("Set reminder error: ${result.throwable.message}")
             }
         }
     }

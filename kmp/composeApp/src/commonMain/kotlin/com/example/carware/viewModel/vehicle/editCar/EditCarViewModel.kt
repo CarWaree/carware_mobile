@@ -9,17 +9,14 @@ import androidx.navigation.NavController
 import com.example.carware.network.apiRequests.vehicle.UpdateVehicleRequest
 import com.example.carware.network.apiResponse.vehicle.Brand
 import com.example.carware.network.apiResponse.vehicle.Model
-import com.example.carware.network.apiResponse.vehicle.Vehicles
+import com.example.carware.network.apiResponse.vehicle.UpdateVehicleResponse
+import com.example.carware.network.core.UiResult
 import com.example.carware.repository.VehicleRepository
-import com.example.carware.screens.vehicle.EditCarScreen
-import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.vehicle.addcar.AddCarScreenState
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class EditCarViewModel(
     private val repository: VehicleRepository,
@@ -132,8 +129,7 @@ class EditCarViewModel(
         }
     }
 
-    fun updateVehicle( navController: NavController) {
-
+    fun updateVehicle(navController: NavController) {
         val carId = _state.value.carId ?: return
         val brandId = _state.value.selectedBrandId
         val modelId = _state.value.selectedModelId
@@ -143,23 +139,35 @@ class EditCarViewModel(
         if (brandId == null || modelId == null || year == null || color.isNullOrEmpty()) return
 
         viewModelScope.launch {
-            try {
-                repository.updateVehicleRepo(
+            _state.update { it.copy(isLoading = true, errorMessage = null) }
+
+            when (val result: UiResult<UpdateVehicleResponse> = repository.updateVehicleRepo(
+                id = carId,
+                UpdateVehicleRequest(
                     id = carId,
-                    UpdateVehicleRequest(
-                        id = carId,
-                        brandName = _state.value.selectedBrand ?: "",
-                        modelName = _state.value.selectedModel ?: "",
-                        year = year,
-                        color = color
-                    )
+                    brandName = _state.value.selectedBrand ?: "",
+                    modelName = _state.value.selectedModel ?: "",
+                    year = year,
+                    color = color
                 )
-                withContext(Dispatchers.Main) {
-                    navController.popBackStack() // go back to home
+            )) {
+                is UiResult.Success -> {
+                    _state.update { it.copy(isLoading = false, isSuccess = true) }
+                    println("Vehicle updated successfully")
+                    navController.popBackStack()
                 }
-            } catch (e: Exception) {
-                println("Failed to update vehicle: ${e.message}")
+                is UiResult.Error -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = result.message
+                        )
+                    }
+                    println("Failed to update vehicle: ${result.message}")
+                }
             }
         }
     }
+    fun clearErrorMessage() = _state.update { it.copy(errorMessage = null) }
+
 }

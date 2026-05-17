@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -64,11 +65,16 @@ import carware.composeapp.generated.resources.pp
 import carware.composeapp.generated.resources.settings_logout
 import carware.composeapp.generated.resources.visa
 import carware.composeapp.generated.resources.x_time_slot
+import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.request.CachePolicy
+import coil3.request.ImageRequest
 import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.navigation.EditProfileScreen
 import com.example.carware.navigation.MyCarsScreen
 import com.example.carware.navigation.SignUpScreen
+import com.example.carware.network.api.baseUrl
 import com.example.carware.util.rememberImagePickerLauncher
 import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.profile.ProfileScreenState
@@ -182,15 +188,38 @@ fun ProfileScreen(
                                 .clip(CircleShape)
                                 .background(Color.LightGray)
                         )
-                        Icon(
-                            painter = painterResource(Res.drawable.edit),
-                            contentDescription = strings.get("EDIT_PROFILE"),
-                            tint = Color.Unspecified,
-                            modifier = Modifier
-                                .size(34.dp)
-                                .offset(x = (-4).dp, y = (-4).dp)
-                                .clickable{navController.navigate(EditProfileScreen)}
-                        )
+                        if (profile.profileImageUrl.isNotBlank()) {
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalPlatformContext.current)
+                                    .data("$baseUrl${profile.profileImageUrl}")
+                                    .diskCachePolicy(CachePolicy.DISABLED)
+                                    .memoryCachePolicy(CachePolicy.DISABLED)
+                                    .build(),
+                                contentDescription = strings.get("PROFILE"),
+                                modifier = Modifier
+                                    .size(140.dp)
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop,
+                                placeholder = painterResource(Res.drawable.pp),
+                                error = painterResource(Res.drawable.pp),
+                                onError = { error ->
+                                    println("--- COIL ERROR: ${error.result.throwable}")
+                                },
+                                onSuccess = {
+                                    println("--- COIL SUCCESS")
+                                }
+                            )
+                        } else {
+                            Image(
+                                painter = painterResource(Res.drawable.pp),
+                                contentDescription = strings.get("PROFILE"),
+                                modifier = Modifier
+                                    .size(140.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.LightGray)
+                            )
+                        }
+
                     }
                     Spacer(modifier = Modifier.height(12.dp))
 

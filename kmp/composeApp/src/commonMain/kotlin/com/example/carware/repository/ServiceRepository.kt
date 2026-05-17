@@ -8,6 +8,7 @@ import com.example.carware.network.apiResponse.appointment.AppointmentResponse
 import com.example.carware.network.apiResponse.schedule.Centers
 import com.example.carware.network.apiResponse.schedule.Service
 import com.example.carware.network.core.ApiResult
+import com.example.carware.network.core.UiResult
 import io.ktor.client.HttpClient
 
 class ServiceRepository(private val client: HttpClient) {
@@ -44,19 +45,17 @@ class ServiceRepository(private val client: HttpClient) {
         }
     }
 
-    suspend fun setAppointmentRepo(request: SetAppointmentRequest): AppointmentResponse {
+    suspend fun setAppointmentRepo(request: SetAppointmentRequest): UiResult<AppointmentResponse> {
         return when (val result = setAppointment(request, client)) {
 
             is ApiResult.Success -> {
-                result.data
+                UiResult.Success(result.data)
             }
-
             is ApiResult.Error -> {
-                throw Exception("Set Appointment failed: ${result.message}")
+                UiResult.Error(result.message)
             }
-
             is ApiResult.Exception -> {
-                throw Exception(" Set Appointment error: ${result.throwable.message}")
+                UiResult.Error(" Set Appointment error: ${result.throwable.message}")
             }
         }
     }

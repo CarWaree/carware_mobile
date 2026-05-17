@@ -76,15 +76,6 @@ class VehicleRepository(
         }
     }
 
-    suspend fun addVehicleRepo(
-        vehicleRequest: VehicleRequest,
-    ): VehicleResponse {
-        return when (val result = addVehicles(vehicleRequest, client)) {
-            is ApiResult.Success -> result.data
-            is ApiResult.Error -> throw Exception("Add vehicle failed: ${result.message}")
-            is ApiResult.Exception -> throw Exception("Add vehicle error: ${result.throwable.message}")
-        }
-    }
 
     suspend fun getAppointmentsRepo(): List<Appointments> {
         return when (val result = getAppointments(client)) {
@@ -94,22 +85,56 @@ class VehicleRepository(
         }
     }
 
-    suspend fun deleteVehicleRepo(id: Int): DeleteVehicleResponse {
+    suspend fun addVehicleRepo(
+        vehicleRequest: VehicleRequest,
+    ): UiResult<VehicleResponse> {
+        return when (val result = addVehicles(vehicleRequest, client)) {
+            is ApiResult.Success -> {
+                UiResult.Success(result.data)
+            }
+
+            is ApiResult.Error -> {
+                UiResult.Error(result.message)
+            }
+
+            is ApiResult.Exception -> {
+                UiResult.Error("Add vehicle error: ${result.throwable.message}")
+            }
+        }
+    }
+
+    suspend fun deleteVehicleRepo(id: Int): UiResult<DeleteVehicleResponse> {
         return when (val result = deleteVehicle(client, id)) {
-            is ApiResult.Success -> (result.data)
-            is ApiResult.Error -> throw Exception("Delete vehicle failed: ${result.message}")
-            is ApiResult.Exception -> throw Exception("Delete vehicle error: ${result.throwable.message}")
+            is ApiResult.Success -> {
+                UiResult.Success(result.data)
+            }
+
+            is ApiResult.Error -> {
+                UiResult.Error(result.message)
+            }
+
+            is ApiResult.Exception -> {
+                UiResult.Error("Delete vehicle error: ${result.throwable.message}")
+            }
         }
     }
 
     suspend fun updateVehicleRepo(
         id: Int,
         updateVehicleRequest: UpdateVehicleRequest
-    ): UpdateVehicleResponse {
+    ): UiResult<UpdateVehicleResponse> {
         return when (val result = updateVehicle(client, id, updateVehicleRequest)) {
-            is ApiResult.Success -> result.data
-            is ApiResult.Error -> throw Exception("Update vehicle failed: ${result.message}")
-            is ApiResult.Exception -> throw Exception("Update vehicle error: ${result.throwable.message}")
+            is ApiResult.Success -> {
+                UiResult.Success(result.data)
+            }
+
+            is ApiResult.Error -> {
+                UiResult.Error(result.message)
+            }
+
+            is ApiResult.Exception -> {
+                UiResult.Error("Update vehicle error: ${result.throwable.message}")
+            }
         }
     }
 }
