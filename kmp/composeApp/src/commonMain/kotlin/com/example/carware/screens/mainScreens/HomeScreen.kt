@@ -257,7 +257,8 @@ fun HomeScreen(
 
             PullToRefreshBox(
                 isRefreshing = isRefreshing,
-                onRefresh = { viewModel.loadVehicles() } // ✅ user pulls → fresh data
+                onRefresh = { viewModel.loadVehicles()
+                viewModel.loadNextReminder()}
             ) {
 
 

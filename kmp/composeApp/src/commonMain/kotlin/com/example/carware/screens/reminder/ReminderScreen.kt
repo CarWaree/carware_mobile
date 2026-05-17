@@ -98,21 +98,8 @@ fun ReminderScreen(
     val selectCarScrollState = rememberScrollState()
     val strings = LocalStrings.current
 
-    AnimatedVisibility(
-        visible = state.error != null,
-        enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
-        exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
-        modifier = Modifier.padding(top = 20.dp)
-    ) {
-        state.error?.let { msg ->
-            ToastMessage(message = msg, state = false)
 
-            LaunchedEffect(msg) {
-                delay(3000)
-                viewModel.clearErrorMessage()
-            }
-        }
-    }
+
     if (state.isTimePickerVisible) {
         Column(m.fillMaxSize()) {
             SelectDateBox(
@@ -133,6 +120,37 @@ fun ReminderScreen(
             horizontalAlignment = Alignment.CenterHorizontally
 
         ) {
+
+            AnimatedVisibility(
+                visible = state.error != null,
+                enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+                exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
+                modifier = Modifier.padding(top = 20.dp)
+            ) {
+                state.error?.let { msg ->
+                    ToastMessage(message = msg, state = false)
+
+                    LaunchedEffect(msg) {
+                        delay(3000)
+                        viewModel.clearErrorMessage()
+                    }
+                }
+            }
+            AnimatedVisibility(
+                visible = state.isBookingSuccessMessage != null,
+                enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+                exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
+                modifier = Modifier.padding(top = 50.dp)
+            ) {
+                state.error?.let { msg ->
+                    ToastMessage(message = "${state.isBookingSuccessMessage}", state = true)
+
+                    LaunchedEffect(msg) {
+                        delay(3000)
+                        viewModel.clearErrorMessage()
+                    }
+                }
+            }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()

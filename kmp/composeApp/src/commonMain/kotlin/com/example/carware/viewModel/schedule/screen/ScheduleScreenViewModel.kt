@@ -171,22 +171,15 @@ class ScheduleScreenViewModel(
         )
 
         viewModelScope.launch {
-            _state.update { it.copy(isLoading = true, error = null) }
-
-            println("=== REQUEST ===")
-            println("date: ${request.date}")
-            println("timeSlot: ${request.timeSlot}")
-            println("vehicleId: ${request.vehicleId}")
-            println("serviceId: ${request.serviceId}")
-            println("centerId: ${request.serviceCenterId}")
+            _state.update { it.copy(isLoading = true, error = null, isBookingSuccess = true) }
 
             when (val result: UiResult<AppointmentResponse> = repository.setAppointmentRepo(request)) {
                 is UiResult.Success -> {
-                    println("=== BOOKING SUCCESS ===")
-                    _state.update { it.copy(isLoading = false, isBookingSuccess = true) }
+                    _state.update { it.copy(isLoading = false,
+                        isBookingSuccess = true,
+                        bookingSuccessMessage = "Appointment Created Successfully") }
                 }
                 is UiResult.Error -> {
-                    println("=== BOOKING ERROR: ${result.message}")
                     _state.update { it.copy(isLoading = false, error = result.message) }
                 }
             }
@@ -222,7 +215,11 @@ class ScheduleScreenViewModel(
             Clock.System.now().toString()
         }
     }
-    fun clearErrorMessage() = _state.update { it.copy(error = null) }
+
+    fun clearErrorMessage() = _state.update { it.copy(error = null,
+        isBookingSuccess = false,
+        bookingSuccessMessage = null) }
+
 
 
 }

@@ -32,7 +32,6 @@ class ReminderScreenViewModel(
     private val vehicleRepo: VehicleRepository,
     private val serviceRepo: ServiceRepository,
     private val calendarLauncher: CalendarLauncher,
-
     ) : ViewModel() {
 
 
@@ -274,7 +273,7 @@ class ReminderScreenViewModel(
                             userId = current_cache?.userId ?: 0
                         )
                     )
-                    _state.update { it.copy(isLoading = false, isBookingSuccess = true) }
+                    _state.update { it.copy(isLoading = false, isBookingSuccess = true, isBookingSuccessMessage ="Reminder set successfully") }
                 }
                 is UiResult.Error -> {
                     // Silent fail — calendar was already opened

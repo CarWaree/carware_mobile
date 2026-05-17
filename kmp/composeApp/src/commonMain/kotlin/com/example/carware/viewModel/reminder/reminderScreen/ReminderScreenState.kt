@@ -31,6 +31,7 @@ data class ReminderScreenState @OptIn(ExperimentalTime::class) constructor(
     val currentYear: Int = 2026,
     val isLoading: Boolean = false,
     val isBookingSuccess: Boolean = false,
+    val isBookingSuccessMessage: String?=null,
     val error: String? = null,
 
     // Date & time

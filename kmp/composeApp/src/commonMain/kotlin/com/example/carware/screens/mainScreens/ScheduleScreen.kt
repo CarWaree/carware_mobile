@@ -69,12 +69,6 @@ fun ScheduleScreen(
 
     val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(state.isBookingSuccess) {
-        if (state.isBookingSuccess) {
-            viewModel.onBookingSuccessConsumed()
-            navController.navigate(HomeScreen)
-        }
-    }
 
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
@@ -84,37 +78,57 @@ fun ScheduleScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
 
 
-    AnimatedVisibility(
-        visible = state.error != null,
-        enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
-        exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
-        modifier = Modifier.padding(top = 20.dp)
-    ) {
-        state.error?.let { msg ->
-            ToastMessage(message = msg, state = false)
 
-            LaunchedEffect(msg) {
-                delay(3000)
-                viewModel.clearErrorMessage()
-            }
-        }
-    }
     if (state.isTimePickerVisible) {
         Column(m.fillMaxSize()) {
             SelectDateBox(
                 availableSlots = state.availableSlots,
                 onSlotClick = { viewModel.selectTimeSlot(it) },
                 onConfirm = { viewModel.confirmTimeSelection() }
-            )        }
+            )
+        }
     } else if (state.isLoading) {
         ShimmerScheduleScreen()
     } else {
+
+
         Column(
             m
                 .fillMaxSize()
-                .verticalScroll(pageScrollState)
                 .background(Color(217, 217, 217, 255)),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
+            AnimatedVisibility(
+                visible = state.error != null,
+                enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+                exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
+                modifier = Modifier.padding(top = 20.dp)
+            ) {
+                state.error?.let { msg ->
+                    ToastMessage(message = msg, state = false)
+
+                    LaunchedEffect(msg) {
+                        delay(3000)
+                        viewModel.clearErrorMessage()
+                    }
+                }
+            }
+            AnimatedVisibility(
+                visible = state.isBookingSuccess && state.bookingSuccessMessage != null,
+                enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+                exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
+                modifier = Modifier.padding(top = 20.dp)
+            ) {
+                state.bookingSuccessMessage?.let { msg ->
+                    ToastMessage(message = msg, state = true)
+                    LaunchedEffect( msg) {
+                        delay(3000)
+                        viewModel.clearErrorMessage()
+                    }
+                }
+
+            }
             Text(
                 strings.get("SCHEDULE_SERVICE"),
                 fontFamily = popSemi,
@@ -135,7 +149,12 @@ fun ScheduleScreen(
             )
             Spacer(m.height(32.dp))
 
-            Column(m.fillMaxSize()) {
+            Column(
+                m
+                    .fillMaxSize()
+                    .verticalScroll(pageScrollState),
+
+                ) {
                 // ============ SELECT CAR SECTION ============
                 Text(
                     strings.get("SELECT_CAR"),
@@ -274,23 +293,10 @@ fun ScheduleScreen(
                         )
                     }
 
-//                    // Display loading state
-//                    if (state.isLoading) {
-//                        Text(
-//                            text = strings.get("PROCESSING"),
-//                            fontFamily = popSemi,
-//                            fontSize = 14.sp,
-//                            color = Color(194, 0, 0, 255)
-//                        )
-//                        Spacer(m.height(8.dp))
-//                    }
-
-                    // Confirm Button
+//
                     Card(
                         onClick = {
-
-                                viewModel.confirmAppointment()
-
+                            viewModel.confirmAppointment()
                         },
                         modifier = m
                             .fillMaxWidth(0.8f)
@@ -332,7 +338,20 @@ fun ScheduleScreen(
                     Spacer(m.height(8.dp))
 
                     // Date & Time
-                    val months = listOf("January","February","March","April","May","June","July","August","September","October","November","December")
+                    val months = listOf(
+                        "January",
+                        "February",
+                        "March",
+                        "April",
+                        "May",
+                        "June",
+                        "July",
+                        "August",
+                        "September",
+                        "October",
+                        "November",
+                        "December"
+                    )
                     val summaryDate = if (state.selectedDay != null && state.selectedTime != null) {
                         "${months[state.currentMonthIndex]} ${state.selectedDay}, ${state.currentYear} at ${state.selectedTime}"
                     } else null
@@ -349,7 +368,8 @@ fun ScheduleScreen(
 
                     // Selected Service
                     Text(
-                        text = state.selectedServiceName?.let { strings.get("SERVICE") + it } ?: strings.get("SERVICE_NOT_SELECTED"),
+                        text = state.selectedServiceName?.let { strings.get("SERVICE") + it }
+                            ?: strings.get("SERVICE_NOT_SELECTED"),
                         fontFamily = popMid,
                         fontSize = 12.sp,
                         color = if (state.selectedServiceName != null) Color.DarkGray else Color.Gray
@@ -358,7 +378,8 @@ fun ScheduleScreen(
 
                     // Selected Center
                     Text(
-                        text = state.selectedCenterName?.let { strings.get("PROVIDER") + it } ?: strings.get("PROVIDER_NOT_SELECTED"),
+                        text = state.selectedCenterName?.let { strings.get("PROVIDER") + it }
+                            ?: strings.get("PROVIDER_NOT_SELECTED"),
                         fontFamily = popMid,
                         fontSize = 12.sp,
                         color = if (state.selectedCenterName != null) Color.DarkGray else Color.Gray

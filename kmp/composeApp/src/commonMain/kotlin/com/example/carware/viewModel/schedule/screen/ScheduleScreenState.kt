@@ -37,5 +37,6 @@ data class ScheduleScreenState @OptIn(ExperimentalTime::class) constructor(
     val isTimePickerVisible: Boolean = false,
     val isLoading: Boolean = false,
     val isBookingSuccess: Boolean = false,
+    val bookingSuccessMessage: String?=null,
     val error: String? = null
 )
