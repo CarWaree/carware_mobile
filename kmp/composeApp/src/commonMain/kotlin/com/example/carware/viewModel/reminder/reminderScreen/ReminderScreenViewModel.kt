@@ -182,12 +182,29 @@ class ReminderScreenViewModel(
     }
 
 
-    private fun isValid(state: ReminderScreenState): Boolean =
-        state.selectedServiceId != null &&
-                state.selectedCarId != null &&
-                state.selectedDay != null &&
-                state.selectedTime != null
+    fun isValid(): Boolean {
+        val state = _state.value
 
+        return when {
+            state.selectedCarId == null -> {
+                _state.update { it.copy(error = "Please select a vehicle") }
+                false
+            }
+            state.selectedServiceId == null -> {
+                _state.update { it.copy(error = "Please select a service type") }
+                false
+            }
+            state.selectedDay == null -> {
+                _state.update { it.copy(error = "Please select a day") }
+                false
+            }
+            state.selectedTime == null -> {
+                _state.update { it.copy(error = "Please select a time") }
+                false
+            }
+            else -> true
+        }
+    }
     @OptIn(ExperimentalTime::class)
     private fun formatToISO8601(year: Int, month: Int, day: Int, time: String): String {
         return try {
@@ -219,16 +236,17 @@ class ReminderScreenViewModel(
     fun setReminder() {
         val current = _state.value
 
-        if (!isValid(current)) {
-            _state.update { it.copy(error = "Please complete all required fields") }
-            return
-        }
+//        if (!isValid(current)) {
+//            _state.update { it.copy(error = "Please complete all required fields") }
+//            return
+//        }
 
         val startMillis = parseISO8601ToMillis(
             current.currentYear,
             current.currentMonthIndex + 1,
             current.selectedDay!!,
-            current.selectedTime!!
+            current.selectedTime!!,
+
         )
 
         val title = "Vehicle: ${
@@ -242,7 +260,11 @@ class ReminderScreenViewModel(
         calendarLauncher.openCalendarWithEvent(
             title = title,
             description = description,
-            startTimeMillis = startMillis
+            startTimeMillis = startMillis,
+            repeatInterval = current.repeatInterval,
+            repeatUnit = current.repeatUnit,
+            repeatCount = current.repeatCount
+
         )
 
         viewModelScope.launch {
@@ -281,7 +303,9 @@ class ReminderScreenViewModel(
                 }
             }
         }
-    }    @OptIn(ExperimentalTime::class)
+    }
+
+    @OptIn(ExperimentalTime::class)
     fun loadNextReminder() {
         viewModelScope.launch {
             val now = Clock.System.now().toEpochMilliseconds()
@@ -292,8 +316,20 @@ class ReminderScreenViewModel(
             _state.update { it.copy(nextReminderMillis = next) }
         }
     }
-    fun clearErrorMessage() = _state.update { it.copy(error = null) }
+    fun clearErrorMessage() = _state.update { it.copy(error = null,
+        isBookingSuccessMessage = null ) }
 
+    fun setRepeatInterval(interval: String) {
+        val validInterval = interval.toIntOrNull() ?: 0
+        _state.update { it.copy(repeatInterval = validInterval) }
+    }
+    fun setRepeatCount(interval: String) {
+        val validInterval = interval.toIntOrNull() ?: 0
+        _state.update { it.copy(repeatCount = validInterval) }
+    }
+    fun setRepeatUnit(unit: String) {
+        _state.update { it.copy(repeatUnit = unit) }
+    }
 
 
 }

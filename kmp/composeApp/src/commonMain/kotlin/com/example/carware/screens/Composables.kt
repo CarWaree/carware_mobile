@@ -65,6 +65,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.arrow_1
@@ -89,11 +90,14 @@ import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.navigation.AddCarScreen
 import com.example.carware.navigation.ReminderScreen
+import com.example.carware.repository.VehicleRepository
 import com.example.carware.util.navBar.TabItem
 import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.home.HomeScreenViewModel
+import com.example.carware.viewModel.reminder.reminderScreen.ReminderScreenViewModel
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
 import com.example.carware.viewModel.schedule.screen.TimeSlot
+import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -266,140 +270,10 @@ fun BottomNavBar(
 @Composable
 fun ConfirmDeleteCar(
     viewModel: HomeScreenViewModel,
-    onDismiss: () -> Unit
-
-) {
+    onDismiss: () -> Unit,
+    ) {
     val popMid = FontFamily(Font(Res.font.poppins_medium))
     val selectedCar by viewModel.selectedCar.collectAsState()
-
-        Column(
-            Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.5f)),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        )
-
-        {
-            Column(
-                modifier = m
-                    .clip(RoundedCornerShape(8.dp))
-                    .fillMaxWidth(0.7f)
-                    .fillMaxHeight(0.3f)
-                    .background(Color(204, 204, 204, 242))
-                    .padding(12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-
-                Box(
-                    modifier = Modifier
-                        .size(50.dp)
-                        .clip(CircleShape)
-                        .appGradBack(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        painter = painterResource(Res.drawable.recycle_bin),
-                        contentDescription = null,
-                        tint = Color(255, 255, 255, 201),
-                        modifier = m.size(25.dp)
-
-                    )
-                }
-                Spacer(m.height(6.dp))
-                Text(
-                    "Are you sure ?",
-                    fontFamily = popMid,
-                    fontSize = 15.sp,
-                    style = TextStyle(
-                        brush = Brush.linearGradient(
-                            listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
-                        )
-                    ),
-                    fontWeight = FontWeight.W600,
-                )
-                Spacer(m.height(6.dp))
-                Text(
-                    "This will permanently delete your car\n and all its data.",
-
-                    fontFamily = popMid,
-                    fontSize = 12.sp,
-                    color = Color(30, 30, 30, 161),
-                    fontWeight = FontWeight.W400,
-
-                    )
-                Spacer(m.height(12.dp))
-
-                selectedCar?.let { car ->
-
-                    Text(
-                        "${car.brandName} ${car.modelName} ${car.year}",
-                        fontFamily = popMid,
-                        fontSize = 14.sp,
-                        color = Color(30, 30, 30, 161),
-                        fontWeight = FontWeight.W500,
-                    )
-                }
-
-                Spacer(m.height(15.dp))
-
-                Card(
-                    onClick = {
-                        viewModel.deleteCar()
-                        onDismiss()
-                    },
-
-                    modifier = m
-                        .fillMaxWidth(0.9f)
-                        .fillMaxHeight(0.4f)
-                        .border(
-                            width = 0.8.dp,
-                            color = Color(30, 30, 30, 110),
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                        .clip(shape = RoundedCornerShape(8.dp))
-                        .appButtonBack(),
-                    colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-
-                    ) {
-
-                    Row(
-                        modifier = m.fillMaxSize(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            "Delete",
-                            fontFamily = popMid,
-                            fontSize = 14.sp,
-                            color = Color(245, 245, 245, 255),
-                            fontWeight = FontWeight.W500
-                        )
-                    }
-
-
-                }
-                Spacer(m.height(12.dp))
-
-                Text(
-                    "Cancel",
-                    modifier = Modifier.clickable { onDismiss() },
-                    fontFamily = popMid,
-                    fontSize = 14.sp,
-                    color = Color(30, 30, 30, 161),
-                    fontWeight = FontWeight.W500,
-                )
-            }
-        }
-
-    }
-@Composable
-fun ConfirmScheduleAppointment(
-//    viewModel: ScheduleScreenViewModel,
-    onDismiss: () -> Unit
-
-) {
-    val popMid = FontFamily(Font(Res.font.poppins_medium))
 
     Column(
         Modifier
@@ -407,14 +281,11 @@ fun ConfirmScheduleAppointment(
             .background(Color.Black.copy(alpha = 0.5f)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
-    )
-
-    {
+    ) {
         Column(
             modifier = m
                 .clip(RoundedCornerShape(8.dp))
                 .fillMaxWidth(0.7f)
-                .fillMaxHeight(0.3f)
                 .background(Color(204, 204, 204, 242))
                 .padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -428,7 +299,7 @@ fun ConfirmScheduleAppointment(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    painter = painterResource(Res.drawable.check_time_slot),
+                    painter = painterResource(Res.drawable.recycle_bin),
                     contentDescription = null,
                     tint = Color(255, 255, 255, 201),
                     modifier = m.size(25.dp)
@@ -459,19 +330,28 @@ fun ConfirmScheduleAppointment(
                 )
             Spacer(m.height(12.dp))
 
+            selectedCar?.let { car ->
+
+                Text(
+                    "${car.brandName} ${car.modelName} ${car.year}",
+                    fontFamily = popMid,
+                    fontSize = 14.sp,
+                    color = Color(30, 30, 30, 161),
+                    fontWeight = FontWeight.W500,
+                )
             }
 
             Spacer(m.height(15.dp))
 
             Card(
                 onClick = {
-//                    viewModel.confirmAppointment()
+                    viewModel.deleteCar()
                     onDismiss()
                 },
 
                 modifier = m
                     .fillMaxWidth(0.9f)
-                    .fillMaxHeight(0.4f)
+                    .height(40.dp)
                     .border(
                         width = 0.8.dp,
                         color = Color(30, 30, 30, 110),
@@ -497,7 +377,6 @@ fun ConfirmScheduleAppointment(
                     )
                 }
 
-
             }
             Spacer(m.height(12.dp))
 
@@ -512,12 +391,183 @@ fun ConfirmScheduleAppointment(
         }
     }
 
-@Preview
-@Composable
-fun prev(){
-    ConfirmScheduleAppointment ({})
 }
 
+@Composable
+fun ConfirmSchedule(
+    scheduleViewModel: ScheduleScreenViewModel? = null,
+    reminderViewmodel: ReminderScreenViewModel?=null,
+    onDismiss: () -> Unit,
+    carName: String,
+    selectedService: String,
+    selectedProvider: String?=null,
+    selectedDate: String,
+    selectedRepeatInterval: String?=null,
+    selectedRepeatUnit: String? = null,
+    selectedRepeatCount: String? = null,
+    onConfirm: () -> Unit,
+    
+
+    ) {
+            val popMid = FontFamily(Font(Res.font.poppins_medium))
+
+        Column(
+            Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.5f)),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Column(
+                modifier = m
+                    .clip(RoundedCornerShape(8.dp))
+                    .fillMaxWidth(0.7f)
+//                    .fillMaxHeight(0.32f)
+                    .background(Color(204, 204, 204, 242))
+                    .padding(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+
+                Box(
+                    modifier = Modifier
+                        .size(50.dp)
+                        .clip(CircleShape)
+                        .appGradBack(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(Res.drawable.check_time_slot),
+                        contentDescription = null,
+                        tint = Color(255, 255, 255, 201),
+                        modifier = m.size(25.dp)
+
+                    )
+                }
+                Spacer(m.height(6.dp))
+                Text(
+                    "Just one more step!",
+                    fontFamily = popMid,
+                    fontSize = 15.sp,
+                    style = TextStyle(
+                        brush = Brush.linearGradient(
+                            listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
+                        )
+                    ),
+                    fontWeight = FontWeight.W600,
+                )
+                Spacer(m.height(6.dp))
+                Text(
+                    "Review your appointment details before confirming",
+                    fontFamily = popMid,
+                    fontSize = 12.sp,
+                    color = Color(30, 30, 30, 161),
+                    fontWeight = FontWeight.W400,
+                )
+                Spacer(m.height(12.dp))
+                Text(
+                    carName,
+                    fontFamily = popMid,
+                    fontSize = 14.sp,
+                    color = Color(30, 30, 30, 161),
+                    fontWeight = FontWeight.W500,
+                )
+                Text(
+                    selectedService,
+                    fontFamily = popMid,
+                    fontSize = 14.sp,
+                    color = Color(30, 30, 30, 161),
+                    fontWeight = FontWeight.W500,
+                )
+                if (selectedProvider != null) {
+                    Text(
+                        selectedProvider,
+                        fontFamily = popMid,
+                        fontSize = 14.sp,
+                        color = Color(30, 30, 30, 161),
+                        fontWeight = FontWeight.W500,
+                    )
+                }
+                Text(
+                    selectedDate,
+                    fontFamily = popMid,
+                    fontSize = 14.sp,
+                    color = Color(30, 30, 30, 161),
+                    fontWeight = FontWeight.W500,
+                )
+
+
+
+                    Text(
+                        "every $selectedRepeatInterval  $selectedRepeatUnit for $selectedRepeatCount times  ",
+                        fontFamily = popMid,
+                        fontSize = 14.sp,
+                        color = Color(30, 30, 30, 161),
+                        fontWeight = FontWeight.W500,
+                    )
+
+                Spacer(m.height(15.dp))
+
+                Card(
+                    onClick = {
+                        onConfirm()
+                        onDismiss()
+                    },
+
+                    modifier = m
+                        .fillMaxWidth(0.9f)
+                        .height(40.dp)
+                        .border(
+                            width = 0.8.dp,
+                            color = Color(30, 30, 30, 110),
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .clip(shape = RoundedCornerShape(8.dp))
+                        .appButtonBack(),
+                    colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+
+                    ) {
+
+                    Row(
+                        modifier = m.fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            "Confirm",
+                            fontFamily = popMid,
+                            fontSize = 14.sp,
+                            color = Color(245, 245, 245, 255),
+                            fontWeight = FontWeight.W500
+                        )
+                    }
+
+                }
+
+
+                Spacer(m.height(12.dp))
+
+                Text(
+                    "Cancel",
+                    modifier = Modifier.clickable { onDismiss() },
+                    fontFamily = popMid,
+                    fontSize = 14.sp,
+                    color = Color(30, 30, 30, 161),
+                    fontWeight = FontWeight.W500,
+                )
+
+
+            }
+
+
+        }
+    }
+
+
+@Preview
+@Composable
+fun ConfirmScheduleAppointmentPreview() {
+
+}
 
 
 // home Screen
@@ -541,7 +591,6 @@ fun CarCard(
 
     var expanded by remember { mutableStateOf(false) }
 
-    var showDeleteDialog by remember { mutableStateOf(false) }
 
 
     Card(
@@ -633,7 +682,7 @@ fun CarCard(
                                 )
                             },
                             onClick = {
-                                onDeleteClick()  // ← was showDeleteDialog = true
+                                onDeleteClick()
                                 expanded = false
                             }
                         )
@@ -1063,14 +1112,13 @@ fun SelectDropdown(
             },
             shape = RoundedCornerShape(8.dp),
             colors = textFieldColors
-
-
         )
         DropdownMenu(
             modifier = m.verticalScroll(scrollState).size(300.dp, 135.dp)
                 .background(Color(230, 230, 230, 255)),
             expanded = expanded,
-            onDismissRequest = { expanded = false }) {
+            onDismissRequest = { expanded = false }
+        ) {
             options.forEachIndexed { index, option ->
                 DropdownMenuItem(modifier = m.height(40.dp), text = {
                     Text(

@@ -16,7 +16,7 @@ data class ReminderScreenState @OptIn(ExperimentalTime::class) constructor(
 
 
     val repeatInterval: Int = 1,
-    val repeatUnit: String = "MONTH",
+    val repeatUnit: String = "month",
     val repeatCount: Int = 1,
     val note: String = "",
 

@@ -253,7 +253,7 @@ fun ShimmerProfileScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F5))
+            .background(Color(0xFFD9D9D9))
             .padding(top = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

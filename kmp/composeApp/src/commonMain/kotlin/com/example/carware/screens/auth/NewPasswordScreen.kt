@@ -191,12 +191,12 @@ fun NewPasswordScreen(
                             else Color(30, 30, 30, 168)
                         )
                     },
-//                    keyboardOptions = KeyboardOptions.run {
-//                        Default.copy(
-//                                        keyboardType = KeyboardType.Password,
-//                                        imeAction = ImeAction.Next
-//                                    )
-//                    },
+                    keyboardOptions = KeyboardOptions.run {
+                        Default.copy(
+                                        keyboardType = KeyboardType.Password,
+                                        imeAction = ImeAction.Next
+                                    )
+                    },
                     isError = state.passError,
                     visualTransformation = if (isPassVisible) VisualTransformation.None
                     else PasswordVisualTransformation(),

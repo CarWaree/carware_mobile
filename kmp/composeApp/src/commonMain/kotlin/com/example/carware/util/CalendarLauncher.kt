@@ -4,6 +4,9 @@ expect class CalendarLauncher() {
     fun openCalendarWithEvent(
         title: String,
         description: String,
-        startTimeMillis: Long
+        startTimeMillis: Long,
+        repeatInterval: Int ,
+        repeatUnit: String ,
+        repeatCount: Int ,
     )
 }

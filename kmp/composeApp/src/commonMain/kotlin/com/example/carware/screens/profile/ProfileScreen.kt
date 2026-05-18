@@ -75,6 +75,7 @@ import com.example.carware.navigation.EditProfileScreen
 import com.example.carware.navigation.MyCarsScreen
 import com.example.carware.navigation.SignUpScreen
 import com.example.carware.network.api.baseUrl
+import com.example.carware.screens.ShimmerProfileScreen
 import com.example.carware.util.rememberImagePickerLauncher
 import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.profile.ProfileScreenState
@@ -113,9 +114,7 @@ fun ProfileScreen(
 
     when (state) {
         is ProfileScreenState.Loading -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
+            ShimmerProfileScreen()
         }
 
         is ProfileScreenState.Error -> {
@@ -219,6 +218,17 @@ fun ProfileScreen(
                                     .background(Color.LightGray)
                             )
                         }
+                        Icon(
+                            painter = painterResource(Res.drawable.edit),
+                            contentDescription = strings.get("EDIT_PROFILE"),
+                            tint = Color.Unspecified,
+                            modifier = Modifier
+                                .size(34.dp)
+                                .offset(x = (-4).dp, y = (-4).dp) // Adjust position slightly
+                                .clickable {
+                                    navController.navigate(EditProfileScreen)
+                                }
+                        )
 
                     }
                     Spacer(modifier = Modifier.height(12.dp))
