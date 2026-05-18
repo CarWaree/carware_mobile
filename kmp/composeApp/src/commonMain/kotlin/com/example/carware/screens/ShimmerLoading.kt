@@ -246,6 +246,145 @@ fun ShimmerHistoryCard() {
     }
 }
 
+// --- Profile Screen Shimmers ---
+
+@Composable
+fun ShimmerProfileScreen() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5))
+            .padding(top = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Top Bar placeholder
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp, vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(modifier = Modifier.size(28.dp).clip(CircleShape).shimmerEffect())
+            Spacer(modifier = Modifier.weight(1f))
+            Box(modifier = Modifier.size(100.dp, 24.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
+            Spacer(modifier = Modifier.weight(1.2f))
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Profile Picture Placeholder
+        Box(modifier = Modifier.size(140.dp).clip(CircleShape).shimmerEffect())
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Name and Subtitle Placeholders
+        Box(modifier = Modifier.size(150.dp, 24.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
+        Spacer(modifier = Modifier.height(8.dp))
+        Box(modifier = Modifier.size(180.dp, 16.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Vehicle Section Placeholder
+        Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
+            Box(modifier = Modifier.size(160.dp, 20.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
+            Spacer(modifier = Modifier.height(12.dp))
+            Box(modifier = Modifier.fillMaxWidth().height(180.dp).clip(RoundedCornerShape(12.dp)).shimmerEffect())
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Menu Items Placeholder
+        Column(
+            modifier = Modifier.padding(horizontal = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            repeat(2) {
+                Box(modifier = Modifier.fillMaxWidth().height(60.dp).clip(RoundedCornerShape(12.dp)).shimmerEffect())
+            }
+        }
+
+        Spacer(modifier = Modifier.height(40.dp))
+
+        // Logout Button Placeholder
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.65f)
+                .height(55.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .shimmerEffect()
+        )
+    }
+}
+
+// --- Reminder Screen Shimmer ---
+
+@Composable
+fun ShimmerReminderScreen() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFFF5F5F5))
+            .padding(vertical = 28.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Top Bar Placeholder
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(modifier = Modifier.size(28.dp).clip(CircleShape).shimmerEffect())
+            Spacer(modifier = Modifier.weight(1f))
+            Box(modifier = Modifier.size(150.dp, 25.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
+            Spacer(modifier = Modifier.weight(1.2f))
+        }
+
+        Spacer(Modifier.height(32.dp))
+
+        Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+            // Select Car Section
+            Box(modifier = Modifier.size(120.dp, 24.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
+            Spacer(Modifier.height(22.dp))
+            repeat(2) {
+                ShimmerUserCar()
+                Spacer(Modifier.height(8.dp))
+            }
+
+            Spacer(Modifier.height(18.dp))
+
+            // Select Service Section
+            Box(modifier = Modifier.size(140.dp, 24.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
+            Spacer(Modifier.height(12.dp))
+            ShimmerDropdown()
+
+            Spacer(Modifier.height(18.dp))
+
+            // Note Section
+            Box(modifier = Modifier.size(100.dp, 24.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
+            Spacer(Modifier.height(12.dp))
+            Box(modifier = Modifier.fillMaxWidth().height(110.dp).clip(RoundedCornerShape(12.dp)).shimmerEffect())
+
+            Spacer(Modifier.height(18.dp))
+
+            // Calendar Section
+            ShimmerCalendar()
+            
+            Spacer(Modifier.height(20.dp))
+            
+            // Confirm Button Placeholder
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .height(45.dp)
+                    .align(Alignment.CenterHorizontally)
+                    .clip(RoundedCornerShape(8.dp))
+                    .shimmerEffect()
+            )
+        }
+    }
+}
+
 @Preview
 @Composable
 fun ShimmerPreview() {
@@ -272,4 +411,16 @@ fun ShimmerHistoryPreview() {
     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         repeat(3) { ShimmerHistoryCard() }
     }
+}
+
+@Preview
+@Composable
+fun ShimmerProfilePreview() {
+    ShimmerProfileScreen()
+}
+
+@Preview
+@Composable
+fun ShimmerReminderPreview() {
+    ShimmerReminderScreen()
 }
