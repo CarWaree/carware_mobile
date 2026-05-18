@@ -66,7 +66,7 @@ kotlin {
             implementation(libs.koin.core)
 
 
-            implementation("io.github.mirzemehdi:kmpauth-google:2.5.0-alpha01") //Google One Tap Sign-In
+            implementation("io.github.mirzemehdi:kmpauth-google:2.5.0-alpha01") //Google One One Tap Sign-In
             implementation("io.github.mirzemehdi:kmpauth-uihelper:2.5.0-alpha01")
         }
 
@@ -78,6 +78,9 @@ kotlin {
 
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation("io.mockk:mockk:1.13.10")
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
+            implementation("io.ktor:ktor-client-mock:2.3.12")
         }
     }
 }

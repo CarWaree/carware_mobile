@@ -24,7 +24,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -64,6 +63,7 @@ import carware.composeapp.generated.resources.visa
 import com.example.carware.m
 import com.example.carware.navigation.EditProfileScreen
 import com.example.carware.navigation.SignUpScreen
+import com.example.carware.screens.ShimmerProfileScreen
 import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.profile.ProfileScreenState
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
@@ -90,21 +90,13 @@ fun ProfileScreen(
 
     val state by viewModel.state.collectAsState()
 
-//    val lifecycleOwner = LocalLifecycleOwner.current
-//
-//    LaunchedEffect(Unit) {
-//        viewModel.loadProfile()
-//    }
-
     val primaryGradientBrush = Brush.linearGradient(
         listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
     )
 
     when (state) {
         is ProfileScreenState.Loading -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
+            ShimmerProfileScreen()
         }
 
         is ProfileScreenState.Error -> {
@@ -117,7 +109,7 @@ fun ProfileScreen(
         is ProfileScreenState.Success -> {
             val profile = (state as ProfileScreenState.Success).profile
             val cars = (state as ProfileScreenState.Success).cars
-            val car = cars[0]
+            val car = cars.firstOrNull() ?: return
             Column(
                 modifier = m
                     .fillMaxSize()
@@ -499,6 +491,3 @@ fun PrimaryCarCard(
         } //card content
     }
 }
-
-
-
