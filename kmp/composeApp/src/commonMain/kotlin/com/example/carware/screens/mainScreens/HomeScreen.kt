@@ -66,6 +66,7 @@ import com.example.carware.screens.CarCard
 import com.example.carware.screens.ConfirmDeleteCar
 import com.example.carware.screens.ServiceHistoryItem
 import com.example.carware.screens.ShimmerCarCard
+import com.example.carware.screens.ShimmerReminderPreview
 import com.example.carware.screens.ToastMessage
 import com.example.carware.screens.UpcomingReminder
 import com.example.carware.screens.appGradBack
@@ -167,7 +168,9 @@ fun HomeScreen(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter
+    ) {
         Column(
             m
                 .fillMaxSize()
@@ -279,8 +282,11 @@ fun HomeScreen(
                             }
 
                             is HomeScreenState.Error -> {
-                                Spacer(modifier = m.padding(vertical = 50.dp))
-                                Text("Error: ${state.message}", color = Color.Red)
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Spacer(modifier = m.padding(vertical = 16.dp))
+                                                                        ShimmerCarCard()
+
+                                }
                             }
 
                             is HomeScreenState.Success -> {
@@ -376,11 +382,18 @@ fun HomeScreen(
 
                 }
             }
+
         }
-        // Show success toast
+
+
+        if (showDeleteDialog) {
+            ConfirmDeleteCar(
+                viewModel = viewModel,
+                onDismiss = { showDeleteDialog = false }
+            )
+        }  // Show success toast
         AnimatedVisibility(
             visible = state is HomeScreenState.Success && state.successMessage != null,
-
             modifier = Modifier
                 .padding(top = 50.dp) // Gap from the very top of the phone
         ) {
@@ -388,18 +401,28 @@ fun HomeScreen(
                 ToastMessage(message = state.successMessage!!, state = true)
                 LaunchedEffect(state.successMessage) {
                     delay(3000)
-                    viewModel.loadVehicles()
+        //                    viewModel.loadVehicles()
+                    viewModel.clearMessage()
+                }
+            }
+        }
+//        Spacer(modifier = m.padding(vertical = 50.dp))
+//        Text("Error: ${state.message}", color = Color.Red)
+        AnimatedVisibility(
+            visible = state is HomeScreenState.Error && state.message!=null,
+            modifier = Modifier
+                .padding(top = 50.dp) // Gap from the very top of the phone
+        ) {
+            if (state is HomeScreenState.Error ) {
+                ToastMessage(message = "${state.message}".take(20), state = false )
+                LaunchedEffect(state.message) {
+                    delay(3000)
                     viewModel.clearMessage()
                 }
             }
         }
 
-        if (showDeleteDialog) {
-            ConfirmDeleteCar(
-                viewModel = viewModel,
-                onDismiss = { showDeleteDialog = false }
-            )
-        }
+
     }
 }
 

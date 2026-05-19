@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -14,15 +15,23 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import carware.composeapp.generated.resources.Res
+import carware.composeapp.generated.resources.poppins_semibold
+import com.example.carware.LocalStrings
 import com.example.carware.m
+import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 fun Modifier.shimmerEffect(): Modifier = composed {
     var size by remember { mutableStateOf(IntSize.Zero) }
     val transition = rememberInfiniteTransition(label = "shimmer")
-    
+
     val progress by transition.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
@@ -70,10 +79,10 @@ fun ShimmerCarCard() {
             }
             Spacer(Modifier.height(10.dp))
             Box(modifier = Modifier.size(230.dp, 120.dp).clip(RoundedCornerShape(8.dp)).shimmerEffect())
-            
+
             Spacer(Modifier.height(15.dp))
             Box(modifier = Modifier.width(100.dp).height(24.dp).align(Alignment.Start).clip(RoundedCornerShape(4.dp)).shimmerEffect())
-            
+
             Spacer(Modifier.height(15.dp))
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 repeat(3) {
@@ -171,36 +180,97 @@ fun ShimmerScheduleScreen() {
         modifier = m
             .fillMaxSize()
             .background(Color(217, 217, 217, 255))
-            .padding(16.dp),
+            .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        val strings = LocalStrings.current
+        val popSemi = FontFamily(Font(Res.font.poppins_semibold))
+
         Spacer(modifier = m.height(45.dp))
-        Box(modifier = m.size(200.dp, 30.dp)
-            .clip(RoundedCornerShape(4.dp)).shimmerEffect())
+        Text(
+//            "schedule",
+            strings.get("SCHEDULE_SERVICE"),
+            fontFamily = popSemi,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            style = TextStyle(
+                brush = Brush.linearGradient(
+                    listOf(
+                        Color(194, 0, 0, 255),
+                        Color(92, 0, 0, 255)
+                    )
+                ),
+            ),
+            modifier = m
+                .fillMaxWidth()
+                .wrapContentSize(Alignment.Center)
+//                .padding(top = 45.dp),
+        )
         Spacer(modifier = m.height(32.dp))
-        
+
         Column(modifier = m.fillMaxWidth()) {
-            Box(modifier = m.size(120.dp, 24.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
+            Text(
+//                "Select Car",
+                strings.get("SELECT_CAR"),
+                fontFamily = popSemi,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                style = TextStyle(
+                    brush = Brush.linearGradient(
+                        listOf(
+                            Color(194, 0, 0, 255),
+                            Color(92, 0, 0, 255)
+                        )
+                    ),
+                ),
+                )
             Spacer(modifier = m.height(22.dp))
             repeat(2) {
                 ShimmerUserCar()
                 Spacer(modifier = m.height(8.dp))
             }
-            
+
             Spacer(modifier = m.height(18.dp))
-            Box(modifier = m.size(140.dp, 24.dp).clip(RoundedCornerShape(4.dp)).shimmerEffect())
+            Text(
+//                "Select Service",
+                strings.get("SELECT_CAR"),
+                fontFamily = popSemi,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                style = TextStyle(
+                    brush = Brush.linearGradient(
+                        listOf(
+                            Color(194, 0, 0, 255),
+                            Color(92, 0, 0, 255)
+                        )
+                    ),
+                ),
+            )
             Spacer(modifier = m.height(12.dp))
             ShimmerDropdown()
-            
+
             Spacer(modifier = m.height(18.dp))
-            Box(modifier = m.size(160.dp,
-                24.dp).clip(RoundedCornerShape(4.dp))
-                .shimmerEffect())
+            Text(
+                "Select provider",
+//                strings.get("SELECT_CAR"),
+                fontFamily = popSemi,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                style = TextStyle(
+                    brush = Brush.linearGradient(
+                        listOf(
+                            Color(194, 0, 0, 255),
+                            Color(92, 0, 0, 255)
+                        )
+                    ),
+                ),
+            )
             Spacer(modifier = m.height(12.dp))
             ShimmerDropdown()
-            
+
             Spacer(modifier = m.height(18.dp))
             ShimmerCalendar()
+
         }
     }
 }
@@ -369,9 +439,9 @@ fun ShimmerReminderScreen() {
 
             // Calendar Section
             ShimmerCalendar()
-            
+
             Spacer(Modifier.height(20.dp))
-            
+
             // Confirm Button Placeholder
             Box(
                 modifier = Modifier

@@ -72,7 +72,6 @@ fun createHttpClient(preferencesManager: PreferencesManager): HttpClient {
 
                         println("💾 [AUTH] Tokens saved to preferences")
 
-                        // Return the new tokens
                         BearerTokens(
                             accessToken = response.data.accessToken,
                             refreshToken = response.data.refreshToken

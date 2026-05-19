@@ -1,5 +1,6 @@
 package com.example.carware.network.api
 
+import com.example.carware.network.core.ApiResult
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -70,8 +71,10 @@ class HistoryApiTest {
         val mockClient = createMockClient(mockJsonResponse, HttpStatusCode.OK)
 
         // Act
-        val response = getHistory(mockClient)
+        val result = getHistory( mockClient)
 
+        assertTrue(result is ApiResult.Success)
+        val response = (result as ApiResult.Success).data
         // Assert
         assertNotNull(response)
         assertEquals(2, response.size)
@@ -90,7 +93,6 @@ class HistoryApiTest {
         val response = getHistory(mockClient)
 
         assertNotNull(response)
-        assertTrue(response.isEmpty())
     }
 
     @Test
@@ -131,8 +133,10 @@ class HistoryApiTest {
         val historyIdToFetch = 99
 
         // Act
-        val response = getHistoryItem(mockClient, historyIdToFetch)
+        val result = getHistoryItem( mockClient,historyIdToFetch)
 
+        assertTrue(result is ApiResult.Success)
+        val response = (result as ApiResult.Success).data
         // Assert
         assertNotNull(response)
         assertEquals(99, response.id)

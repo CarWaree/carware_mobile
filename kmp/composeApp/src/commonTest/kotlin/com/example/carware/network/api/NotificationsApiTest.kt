@@ -1,6 +1,7 @@
 package com.example.carware.network.api
 
 import com.example.carware.network.apiRequests.notifications.RegisterTokenRequest
+import com.example.carware.network.core.ApiResult
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -14,6 +15,7 @@ import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
 class NotificationsApiTest {
 
@@ -57,9 +59,11 @@ class NotificationsApiTest {
             token = "dummy_fcm_token_xyz_123",
             platform = 1 // e.g., 1 for Android, 2 for iOS
         )
+        val result = registerFCMToken(request, mockClient)
 
+        assertTrue(result is ApiResult.Success)
+        val response = (result as ApiResult.Success).data
         // Act
-        val response = registerFCMToken(request, mockClient)
 
         // Assert
         assertEquals("Token registered successfully", response.message)

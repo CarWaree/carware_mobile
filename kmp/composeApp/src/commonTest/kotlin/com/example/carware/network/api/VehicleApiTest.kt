@@ -2,6 +2,7 @@ package com.example.carware.network.api
 
 import com.example.carware.network.apiRequests.vehicle.UpdateVehicleRequest
 import com.example.carware.network.apiRequests.vehicle.VehicleRequest
+import com.example.carware.network.core.ApiResult
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -16,6 +17,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 class VehicleApiTest {
 
@@ -47,26 +49,29 @@ class VehicleApiTest {
     fun testGetBrands_Success_ReturnsList() = runTest {
         // Arrange: BrandResponse has a "data" wrapper containing the list
         val mockJsonResponse = """
-            {
-                "data": [
-                    { "id": 1, "name": "Toyota" },
-                    { "id": 2, "name": "Honda" }
-                ]
-            }
-        """.trimIndent()
+        {
+            "data": [
+                { "id": 1, "name": "Toyota" },
+                { "id": 2, "name": "Honda" }
+            ]
+        }
+    """.trimIndent()
 
         val mockClient = createMockClient(mockJsonResponse, HttpStatusCode.OK)
 
         // Act
-        val responseList = getBrands(client = mockClient)
+        val result = getBrands(client = mockClient)
 
-        // Assert: Your function extracts and returns the List<Brand> directly
+        assertTrue(result is ApiResult.Success)
+        val response = (result as ApiResult.Success).data
+        val responseList = response.data  // unwrap List<Brand> from BrandResponse
+
+        // Assert
         assertNotNull(responseList)
         assertEquals(2, responseList.size)
         assertEquals(1, responseList[0].id)
         assertEquals("Toyota", responseList[0].name)
     }
-
     // ==========================================
     // Tests for getModels()
     // ==========================================
@@ -86,8 +91,14 @@ class VehicleApiTest {
         val mockClient = createMockClient(mockJsonResponse, HttpStatusCode.OK)
 
         // Act
-        val responseList = getModels(brandId = 1, client = mockClient)
+        val result = getModels(
+            client = mockClient,
+            brandId = 1
+        )
 
+        assertTrue(result is ApiResult.Success)
+        val response = (result as ApiResult.Success).data
+        val responseList = response.data  // unwrap List<Brand> from BrandResponse
         // Assert
         assertNotNull(responseList)
         assertEquals(2, responseList.size)
@@ -121,8 +132,10 @@ class VehicleApiTest {
         val mockClient = createMockClient(mockJsonResponse, HttpStatusCode.OK)
 
         // Act
-        val response = getVehicles(mockClient)
+        val result = getVehicles(client = mockClient)
 
+        assertTrue(result is ApiResult.Success)
+        val response = (result as ApiResult.Success).data
         // Assert
         assertEquals("Vehicles fetched successfully", response.message)
         assertEquals(200, response.statusCode)
@@ -170,8 +183,10 @@ class VehicleApiTest {
         val mockClient = createMockClient(mockJsonResponse, HttpStatusCode.OK)
 
         // Act
-        val response = getVehicle(mockClient, 100)
+        val result = getVehicle(client = mockClient,100)
 
+        assertTrue(result is ApiResult.Success)
+        val response = (result as ApiResult.Success).data
         // Assert
         assertEquals(200, response.statusCode)
         assertEquals("Honda", response.data.brandName)
@@ -224,8 +239,10 @@ class VehicleApiTest {
         )
 
         // Act
-        val response = addVehicles(request, mockClient)
+        val result = addVehicles(request,  mockClient)
 
+        assertTrue(result is ApiResult.Success)
+        val response = (result as ApiResult.Success).data
         // Assert
         assertEquals("Vehicle added", response.message)
         assertEquals(201, response.statusCode)
@@ -272,8 +289,14 @@ class VehicleApiTest {
         )
 
         // Act
-        val response = updateVehicle(mockClient, 100, request)
+        val result = updateVehicle(
+            client = mockClient,
+            id = 100,
+            request = request
+        )
 
+        assertTrue(result is ApiResult.Success)
+        val response = (result as ApiResult.Success).data
         // Assert
         assertEquals(200, response.statusCode)
         assertEquals("Car updated successfully", response.message)
@@ -311,8 +334,13 @@ class VehicleApiTest {
         val mockClient = createMockClient(mockJsonResponse, HttpStatusCode.OK)
 
         // Act
-        val response = deleteVehicle(mockClient, 100)
+        val result = deleteVehicle(
+            client = mockClient,
+            id = 100,
+        )
 
+        assertTrue(result is ApiResult.Success)
+        val response = (result as ApiResult.Success).data
         // Assert
         assertEquals(200, response.statusCode)
         assertEquals("Car deleted successfully", response.message)

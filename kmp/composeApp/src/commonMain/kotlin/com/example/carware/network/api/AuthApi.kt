@@ -17,19 +17,14 @@ import com.example.carware.network.apiResponse.auth.SignUpResponse
 import com.example.carware.network.core.ApiResult
 import com.example.carware.network.core.safeApiCall
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import io.ktor.http.isSuccess
-import kotlinx.serialization.json.Json
 
 //const val baseUrl = "https://63nw61z7-7136.euw.devtunnels.ms" //abdo
 
-const val baseUrl = "https://qd5sjv6c-7136.uks1.devtunnels.ms"
+const val baseUrl = "https://n63dmtd6-7136.uks1.devtunnels.ms"
 suspend fun signupUser(
     request: SignUpRequest,
     client: HttpClient

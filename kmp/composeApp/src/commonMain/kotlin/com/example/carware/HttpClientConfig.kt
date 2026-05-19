@@ -8,9 +8,9 @@ object HttpClientConfig {
     var enableLogging = true
 
     // Other settings you might need later
-    var requestTimeoutMillis = 100_000L  // 10 seconds
-    var connectTimeoutMillis = 100_000L
-    var socketTimeoutMillis = 100_000L
+    var requestTimeoutMillis = 3_000L  // 10 seconds
+    var connectTimeoutMillis = 3_000L
+    var socketTimeoutMillis = 3_000L
 
     init {
         // Set logging based on your needs

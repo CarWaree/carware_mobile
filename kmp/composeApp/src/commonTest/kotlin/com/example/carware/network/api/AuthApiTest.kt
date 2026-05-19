@@ -6,6 +6,7 @@ import com.example.carware.network.apiRequests.auth.LoginRequest
 import com.example.carware.network.apiRequests.auth.OTPRequest
 import com.example.carware.network.apiRequests.auth.ResetPasswordRequest
 import com.example.carware.network.apiRequests.auth.SignUpRequest
+import com.example.carware.network.core.ApiResult
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -69,7 +70,10 @@ class AuthApiTest {
             userName = "JohnDOew"
         )
 
-        val response = signupUser(request, mockClient)
+        val result = signupUser(request, mockClient)
+
+        assertTrue(result is ApiResult.Success)
+        val response = (result as ApiResult.Success).data
 
         assertEquals("Account created successfully", response.message)
         assertEquals(201, response.statusCode)
@@ -135,9 +139,10 @@ class AuthApiTest {
             emailOrUsername = "john@example.com",
             password = "SecurePass123"
         )
+        val result = loginUser(request, mockClient)
 
-        val response = loginUser(request, mockClient)
-
+        assertTrue(result is ApiResult.Success)
+        val response = (result as ApiResult.Success).data
         assertEquals("User logged in successfully", response.message)
         assertEquals(200, response.statusCode)
         assertNotNull(response.data)
@@ -185,8 +190,10 @@ class AuthApiTest {
             email = "john@example.com",
             otp = "123456"
         )
+        val result = verifyEmailUser(request, mockClient)
 
-        val response = verifyEmailUser(request, mockClient)
+        assertTrue(result is ApiResult.Success)
+        val response = (result as ApiResult.Success).data
         assertEquals("Email verified", response.message)
         assertEquals(200, response.statusCode)
     }
@@ -204,8 +211,11 @@ class AuthApiTest {
         val request = ForgotPasswordRequest(
             email = "john@example.com"
         )
+        val result = forgotPasswordUser(request, mockClient)
 
-        val response = forgotPasswordUser(request, mockClient)
+        assertTrue(result is ApiResult.Success)
+        val response = (result as ApiResult.Success).data
+
         assertEquals("OTP sent to email", response.message)
         assertEquals(200, response.statusCode)
     }
@@ -225,8 +235,10 @@ class AuthApiTest {
             newPassword = "NewSecurePass456",
             confirmPassword = "NewSecurePass456"
         )
+        val result = resetPasswordUser(request, mockClient)
 
-        val response = resetPasswordUser(request, mockClient)
+        assertTrue(result is ApiResult.Success)
+        val response = (result as ApiResult.Success).data
         assertEquals("Password updated successfully", response.message)
         assertEquals(200, response.statusCode)
     }
@@ -456,8 +468,10 @@ class AuthApiTest {
             email = "john@example.com",
             otp = "123456"
         )
+        val result = otpVerificationUser(request, mockClient)
 
-        val response = otpVerificationUser(request, mockClient)
+        assertTrue(result is ApiResult.Success)
+        val response = (result as ApiResult.Success).data
 
         assertEquals("OTP verified successfully", response.message)
         assertEquals(200, response.statusCode)

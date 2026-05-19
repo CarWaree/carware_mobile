@@ -130,6 +130,7 @@ fun ReminderScreen(
     val pageScrollState = rememberScrollState()
     val selectCarScrollState = rememberScrollState()
     val strings = LocalStrings.current
+
     var showConfirmDialog by remember { mutableStateOf(false) }
 
 // Selected Car
@@ -172,442 +173,452 @@ fun ReminderScreen(
     }
 
 
-    if (state.isTimePickerVisible) {
-        Column(m.fillMaxSize()) {
-            SelectDateBox(
-                availableSlots = state.availableSlots,
-                onSlotClick = { viewModel.selectTimeSlot(it) },
-                onConfirm = { viewModel.confirmTimeSelection() }
-            )
-        }
-    } else if (state.isLoading) {
+    if (state.isLoading) {
         ShimmerScheduleScreen()
-    } else if (showConfirmDialog) {
-        ConfirmSchedule(
-            reminderViewmodel = viewModel,
-            onDismiss = { showConfirmDialog = false },
-            carName = carName,
-            selectedService = selectedService,
-            selectedDate = "$summaryDate",
-            selectedRepeatUnit = state.repeatUnit,
-            selectedRepeatCount = state.repeatCount.toString(),
-            selectedRepeatInterval = state.repeatInterval.toString(),
-            onConfirm = { viewModel.setReminder() }
-        )
     } else {
-
-        Column(
-            m
-                .fillMaxSize()
-                .background(Color(217, 217, 217, 255))
-                .padding(vertical = 28.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-
-        ) {
-            AnimatedVisibility(
-                visible = state.error != null,
-                enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
-                exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
-                modifier = Modifier.padding(top = 20.dp)
-            ) {
-                state.error?.let { msg ->
-                    ToastMessage(message = msg, state = false)
-
-                }
-            }
-            AnimatedVisibility(
-                visible = state.isBookingSuccessMessage != null,
-                enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
-                exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
-                modifier = Modifier.padding(top = 20.dp)
-            ) {
-                state.isBookingSuccessMessage?.let { msg ->
-                    ToastMessage(message = "${state.isBookingSuccessMessage}", state = true)
+        Box(m.fillMaxSize()) {
 
 
-                }
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp)
-                    .padding(10.dp),
-
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Icon(
-                    painter = painterResource(Res.drawable.arrow_left),
-                    contentDescription = strings.get("BACK"),
-                    modifier = Modifier
-                        .size(28.dp)
-                        .clickable { navController.popBackStack() }
-                        .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-                        .drawWithContent {
-                            drawContent()
-                            drawRect(primaryGradientBrush, blendMode = BlendMode.SrcIn)
-                        },
-                    tint = Color.White
-                ) //return arrow
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    text = strings.get("ADD_REMINDER"),
-                    fontFamily = pop,
-                    fontSize = 25.sp,
-                    fontWeight = FontWeight.Medium,
-                    style = TextStyle(brush = primaryGradientBrush)
-                ) //top screen title
-                Spacer(modifier = Modifier.weight(1.2f))
-
-                Icon(
-                    painter = painterResource(Res.drawable.history),
-                    contentDescription = strings.get("HISTORY"),
-                    modifier = Modifier
-                        .size(28.dp)
-                        .clickable { navController.navigate(ReminderHistoryScreen) }
-                        .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-                        .drawWithContent {
-                            drawContent()
-                            drawRect(primaryGradientBrush, blendMode = BlendMode.SrcIn)
-                        },
-                    tint = Color.Unspecified
-                ) //reminder history
-            }
-
-            Spacer(m.height(32.dp))
-
-            Column(
-                m.fillMaxSize()
-                    .verticalScroll(pageScrollState)
-            ) {
-                // ============ SELECT CAR SECTION ============
-                Text(
-                    strings.get("SELECT_CAR"),
-                    fontFamily = popSemi,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    style = TextStyle(
-                        brush = Brush.linearGradient(
-                            listOf(
-                                Color(194, 0, 0, 255),
-                                Color(92, 0, 0, 255)
-                            )
-                        ),
-                    ),
-                    modifier = m.padding(horizontal = 16.dp)
-                ) //select car
-                Spacer(m.height(22.dp))
-                Column(
-                    m
-                        .height(140.dp)
-                        .verticalScroll(selectCarScrollState)
-                ) {
-                    state.availableCars.forEach { car ->
-                        UsersCar(
-                            brand = car.brandName,
-                            model = car.modelName,
-                            isSelected = state.selectedCarId == car.id,
-                            onClick = {
-                                viewModel.selectVehicle(car.id)
-                            }
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-                }
-
-                Spacer(m.height(18.dp))
-
-                // ============ SELECT SERVICES SECTION ============
-                Text(
-                    strings.get("SELECT_SERVICES"),
-                    fontFamily = popSemi,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    style = TextStyle(
-                        brush = Brush.linearGradient(
-                            listOf(
-                                Color(194, 0, 0, 255),
-                                Color(92, 0, 0, 255)
-                            )
-                        ),
-                    ),
-                    modifier = m.padding(horizontal = 16.dp)
-                )
-                Spacer(m.height(6.dp))
-
-                Box(m.padding(horizontal = 26.dp)) {
-                    SelectDropdown(
-                        label = strings.get("SELECT_SERVICE"),
-                        selectedValue = state.selectedServiceName ?: "",
-                        options = state.availableServicesTypes.map { it.name },
-                        onSelect = { selectedName ->
-                            val serviceType =
-                                state.availableServicesTypes.firstOrNull { it: Service ->
-                                    it.name == selectedName
-                                }
-                            // ============ CHANGE: Add it.id as second parameter ============
-                            serviceType?.let { viewModel.selectServiceType(it.id, it.name) }
-                        },
+            if (state.isTimePickerVisible) {
+                Column(m.fillMaxSize()) {
+                    SelectDateBox(
+                        availableSlots = state.availableSlots,
+                        onSlotClick = { viewModel.selectTimeSlot(it) },
+                        onConfirm = { viewModel.confirmTimeSelection() }
                     )
                 }
+            }else
+            Column(
+                m
+                    .fillMaxSize()
+                    .background(Color(217, 217, 217, 255))
+                    .padding(vertical = 28.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
 
-                Spacer(m.height(18.dp))
-                val intervals = listOf(3, 6, 9)
-                val units = listOf("Day", "Month", "Year")
-                Text(
-                    "Repeat Every :",
-                    fontFamily = popSemi,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    style = TextStyle(
-                        brush = Brush.linearGradient(
-                            listOf(
-                                Color(194, 0, 0, 255),
-                                Color(92, 0, 0, 255)
-                            )
-                        ),
-                    ), modifier = m.padding(horizontal = 16.dp),)
-                Spacer(m.height(6.dp))
+            ) {
+                AnimatedVisibility(
+                    visible = state.error != null,
+                    enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+                    exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
+                    modifier = Modifier.padding(top = 20.dp)
+                ) {
+                    state.error?.let { msg ->
+                        ToastMessage(message = msg, state = false)
+
+                    }
+                }
+                AnimatedVisibility(
+                    visible = state.isBookingSuccessMessage != null,
+                    enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+                    exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
+                    modifier = Modifier.padding(top = 20.dp)
+                ) {
+                    state.isBookingSuccessMessage?.let { msg ->
+                        ToastMessage(message = "${state.isBookingSuccessMessage}", state = true)
+
+
+                    }
+                }
 
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
+                        .padding(horizontal = 8.dp)
+                        .padding(10.dp),
+
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .size(45.dp),
-                        value = state.repeatInterval.toString(),
-                        onValueChange = { viewModel.setRepeatInterval(it) },
-                        keyboardOptions = KeyboardOptions.run {
-                            Default.copy(
-                                keyboardType = KeyboardType.Number,
-                                imeAction = ImeAction.Next
-                            )
-                        },
-                        singleLine = true,
-                        shape = RoundedCornerShape(8.dp),
-                        colors = textFieldColors
-                    )
-
-                    Box {
-                        OutlinedButton(
-                            modifier = Modifier
-                                .width(90.dp),
-                            onClick = { selectRepeatCountExpanded = true },
-                            shape = RoundedCornerShape(8.dp),
-                        ) {
-                            Text(state.repeatUnit?.ifEmpty { "Select Unit" } ?: "Select Unit")
-                        }
-                        DropdownMenu(
-                            containerColor = Color(217, 217, 217).copy(alpha = 0.8f),
-                            shape = RoundedCornerShape(8.dp),
-                            expanded = selectRepeatCountExpanded,
-                            onDismissRequest = { selectRepeatCountExpanded = false }
-                        ) {
-                            units.forEach { unit ->
-                                DropdownMenuItem(
-                                    text = { Text(unit,
-                                        fontFamily = popSemi,
-                                        fontSize = 14.sp,
-                                        color = Color(0, 0, 0, 255),
-                                        fontWeight = FontWeight.W400,
-                                    ) },
-                                    onClick = {
-                                        viewModel.setRepeatUnit(unit)
-                                        selectRepeatCountExpanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-
-                    Text(
-                        "for",
-                        fontFamily = popSemi,
-                        fontSize = 14.sp,
-                        color = Color(0, 0, 0, 255),
-                        fontWeight = FontWeight.W400,
-                    )
-
-                    OutlinedTextField(
-                        modifier = Modifier
-                            .size(45.dp),
-                        value = state.repeatCount.toString(),
-                        onValueChange = { viewModel.setRepeatCount(it) },
-                        keyboardOptions = KeyboardOptions.run {
-                            Default.copy(
-                                keyboardType = KeyboardType.Number,
-                                imeAction = ImeAction.Next
-                            )
-                        },
-                        singleLine = true,
-                        shape = RoundedCornerShape(8.dp),
-                        colors = textFieldColors
-                    )
-
-                    Text(
-                        "Times",
-                        fontFamily = popSemi,
-                        fontSize = 12.sp,
-                        color = Color(0, 0, 0, 255),
-                        fontWeight = FontWeight.W400,
-                    )
-                }
-
-//
-                Spacer(m.height(18.dp))
-                // ============ NOTES  SECTION ============
-
-                var noteBoxHeight by remember { mutableStateOf(110.dp) }
-                val minHeight = 80.dp
-                val maxHeight = 300.dp
-
-                Text(
-                    text = strings.get("NOTE_LABEL"),
-                    fontFamily = popSemi,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    style = TextStyle(
-                        brush = Brush.linearGradient(
-                            listOf(
-                                Color(0xFFC20000),
-                                Color(0xFF5C0000)
-                            )
-                        )
-                    ),
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                ) // notes label
-
-
-                val density = LocalDensity.current
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .height(noteBoxHeight)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0xFFE0E0E0))
-                        .border(
-                            width = 1.dp,
-                            color = Color(0xFFBDBDBD),
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                ) {
-                    BasicTextField(
-                        value = state.note,
-                        onValueChange = { viewModel.updateNote(it) },
-                        textStyle = TextStyle(
-                            fontFamily = popMid,
-                            fontSize = 13.sp,
-                            color = Color(0xFF3C3C3C)
-                        ),
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(12.dp),
-                        decorationBox = { innerTextField ->
-                            if (state.note.isEmpty()) {
-                                Text(
-                                    text = strings.get("ADD_NOTE_PLACEHOLDER"),
-                                    fontFamily = popMid,
-                                    fontSize = 13.sp,
-                                    color = Color(0xFF9E9E9E)
-                                )
-                            }
-                            innerTextField()
-                        }
-                    )
-
-                    // ── Resize handle icon (bottom-right) — drag vertically to resize ──
 
                     Icon(
-                        painter = painterResource(Res.drawable.reminder_note_resize),
-                        contentDescription = null,
-                        tint = Color.Unspecified,
+                        painter = painterResource(Res.drawable.arrow_left),
+                        contentDescription = strings.get("BACK"),
                         modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(8.dp)
-                            .size(16.dp)
-                            .pointerInput(Unit) {
-                                detectVerticalDragGestures { _, dragAmount ->
-                                    val deltaDp = with(density) { dragAmount.toDp() }
-                                    noteBoxHeight = (noteBoxHeight + deltaDp)
-                                        .coerceIn(minHeight, maxHeight)
-                                }
+                            .size(28.dp)
+                            .clickable { navController.popBackStack() }
+                            .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+                            .drawWithContent {
+                                drawContent()
+                                drawRect(primaryGradientBrush, blendMode = BlendMode.SrcIn)
                             },
-                    )
+                        tint = Color.White
+                    ) //return arrow
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = strings.get("ADD_REMINDER"),
+                        fontFamily = pop,
+                        fontSize = 25.sp,
+                        fontWeight = FontWeight.Medium,
+                        style = TextStyle(brush = primaryGradientBrush)
+                    ) //top screen title
+                    Spacer(modifier = Modifier.weight(1.2f))
 
-
-                } //Text field box
-
-                // ============ CALENDAR SECTION ============
-                Column(
-                    m.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    CalenderBox(
-                        currentMonthIndex = state.currentMonthIndex,
-                        currentYear = state.currentYear,
-                        selectedDay = state.selectedDay,
-                        preferencesManager = preferencesManager,
-                        onChangeMonth = { viewModel.changeMonth(it) },
-                        onChangeYear = { viewModel.changeYear(it) },
-                        onSelectDay = { viewModel.selectDay(it) }
-                    )
+                    Icon(
+                        painter = painterResource(Res.drawable.history),
+                        contentDescription = strings.get("HISTORY"),
+                        modifier = Modifier
+                            .size(28.dp)
+                            .clickable { navController.navigate(ReminderHistoryScreen) }
+                            .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+                            .drawWithContent {
+                                drawContent()
+                                drawRect(primaryGradientBrush, blendMode = BlendMode.SrcIn)
+                            },
+                        tint = Color.Unspecified
+                    ) //reminder history
                 }
 
-                Spacer(m.height(20.dp))
+                Spacer(m.height(32.dp))
 
-                // ============ CONFIRM BUTTON & DETAILS SECTION ============
-
-
-                // Confirm Button
-                Card(
-                    onClick = {
-                        if (viewModel.isValid()) {
-                            showConfirmDialog = true
-                        } else {
-                            state.error
-                        }
-
-                    },
-                    modifier = m
-                        .fillMaxWidth(0.8f)
-                        .height(45.dp)
-                        .align(Alignment.CenterHorizontally)
-                        .border(
-                            width = 1.dp,
-                            color = Color(30, 30, 30, 110),
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                        .clip(shape = RoundedCornerShape(8.dp))
-                        .appButtonBack()
-                        .padding(horizontal = 26.dp),
-
-                    colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                Column(
+                    m.fillMaxSize()
+                        .verticalScroll(pageScrollState)
                 ) {
-                    Row(
-                        modifier = m.fillMaxSize(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
+                    // ============ SELECT CAR SECTION ============
+                    Text(
+                        strings.get("SELECT_CAR"),
+                        fontFamily = popSemi,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        style = TextStyle(
+                            brush = Brush.linearGradient(
+                                listOf(
+                                    Color(194, 0, 0, 255),
+                                    Color(92, 0, 0, 255)
+                                )
+                            ),
+                        ),
+                        modifier = m.padding(horizontal = 16.dp)
+                    ) //select car
+                    Spacer(m.height(22.dp))
+                    Column(
+                        m
+                            .height(140.dp)
+                            .verticalScroll(selectCarScrollState)
                     ) {
-                        Text(
-                            text = strings.get("ADD_REMINDER"),
-                            fontFamily = popSemi,
-                            fontSize = 18.sp,
-                            color = Color(217, 217, 217, 255)
+                        state.availableCars.forEach { car ->
+                            UsersCar(
+                                brand = car.brandName,
+                                model = car.modelName,
+                                isSelected = state.selectedCarId == car.id,
+                                onClick = {
+                                    viewModel.selectVehicle(car.id)
+                                }
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+                    }
+
+                    Spacer(m.height(18.dp))
+
+                    // ============ SELECT SERVICES SECTION ============
+                    Text(
+                        strings.get("SELECT_SERVICES"),
+                        fontFamily = popSemi,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        style = TextStyle(
+                            brush = Brush.linearGradient(
+                                listOf(
+                                    Color(194, 0, 0, 255),
+                                    Color(92, 0, 0, 255)
+                                )
+                            ),
+                        ),
+                        modifier = m.padding(horizontal = 16.dp)
+                    )
+                    Spacer(m.height(6.dp))
+
+                    Box(m.padding(horizontal = 26.dp)) {
+                        SelectDropdown(
+                            label = strings.get("SELECT_SERVICE"),
+                            selectedValue = state.selectedServiceName ?: "",
+                            options = state.availableServicesTypes.map { it.name },
+                            onSelect = { selectedName ->
+                                val serviceType =
+                                    state.availableServicesTypes.firstOrNull { it: Service ->
+                                        it.name == selectedName
+                                    }
+                                // ============ CHANGE: Add it.id as second parameter ============
+                                serviceType?.let { viewModel.selectServiceType(it.id, it.name) }
+                            },
                         )
                     }
+
+                    Spacer(m.height(18.dp))
+                    val intervals = listOf(3, 6, 9)
+                    val units = listOf("Day", "Month", "Year")
+                    Text(
+                        "Repeat Every :",
+                        fontFamily = popSemi,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        style = TextStyle(
+                            brush = Brush.linearGradient(
+                                listOf(
+                                    Color(194, 0, 0, 255),
+                                    Color(92, 0, 0, 255)
+                                )
+                            ),
+                        ),
+                        modifier = m.padding(horizontal = 16.dp),
+                    )
+                    Spacer(m.height(6.dp))
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        OutlinedTextField(
+                            modifier = Modifier
+                                .size(45.dp),
+                            value = state.repeatInterval.toString(),
+                            onValueChange = { viewModel.setRepeatInterval(it) },
+                            keyboardOptions = KeyboardOptions.run {
+                                Default.copy(
+                                    keyboardType = KeyboardType.Number,
+                                    imeAction = ImeAction.Next
+                                )
+                            },
+                            singleLine = true,
+                            shape = RoundedCornerShape(8.dp),
+                            colors = textFieldColors
+                        )
+
+                        Box {
+                            OutlinedButton(
+                                modifier = Modifier
+                                    .width(90.dp),
+                                onClick = { selectRepeatCountExpanded = true },
+                                shape = RoundedCornerShape(8.dp),
+                            ) {
+                                Text(state.repeatUnit?.ifEmpty { "Select Unit" } ?: "Select Unit")
+                            }
+                            DropdownMenu(
+                                containerColor = Color(217, 217, 217).copy(alpha = 0.8f),
+                                shape = RoundedCornerShape(8.dp),
+                                expanded = selectRepeatCountExpanded,
+                                onDismissRequest = { selectRepeatCountExpanded = false }
+                            ) {
+                                units.forEach { unit ->
+                                    DropdownMenuItem(
+                                        text = {
+                                            Text(
+                                                unit,
+                                                fontFamily = popSemi,
+                                                fontSize = 14.sp,
+                                                color = Color(0, 0, 0, 255),
+                                                fontWeight = FontWeight.W400,
+                                            )
+                                        },
+                                        onClick = {
+                                            viewModel.setRepeatUnit(unit)
+                                            selectRepeatCountExpanded = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+
+                        Text(
+                            "for",
+                            fontFamily = popSemi,
+                            fontSize = 14.sp,
+                            color = Color(0, 0, 0, 255),
+                            fontWeight = FontWeight.W400,
+                        )
+
+                        OutlinedTextField(
+                            modifier = Modifier
+                                .size(45.dp),
+                            value = state.repeatCount.toString(),
+                            onValueChange = { viewModel.setRepeatCount(it) },
+                            keyboardOptions = KeyboardOptions.run {
+                                Default.copy(
+                                    keyboardType = KeyboardType.Number,
+                                    imeAction = ImeAction.Next
+                                )
+                            },
+                            singleLine = true,
+                            shape = RoundedCornerShape(8.dp),
+                            colors = textFieldColors
+                        )
+
+                        Text(
+                            "Times",
+                            fontFamily = popSemi,
+                            fontSize = 12.sp,
+                            color = Color(0, 0, 0, 255),
+                            fontWeight = FontWeight.W400,
+                        )
+                    }
+
+                    //
+                    Spacer(m.height(18.dp))
+                    // ============ NOTES  SECTION ============
+
+                    var noteBoxHeight by remember { mutableStateOf(110.dp) }
+                    val minHeight = 80.dp
+                    val maxHeight = 300.dp
+
+                    Text(
+                        text = strings.get("NOTE_LABEL"),
+                        fontFamily = popSemi,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        style = TextStyle(
+                            brush = Brush.linearGradient(
+                                listOf(
+                                    Color(0xFFC20000),
+                                    Color(0xFF5C0000)
+                                )
+                            )
+                        ),
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    ) // notes label
+
+
+                    val density = LocalDensity.current
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .height(noteBoxHeight)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color(0xFFE0E0E0))
+                            .border(
+                                width = 1.dp,
+                                color = Color(0xFFBDBDBD),
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                    ) {
+                        BasicTextField(
+                            value = state.note,
+                            onValueChange = { viewModel.updateNote(it) },
+                            textStyle = TextStyle(
+                                fontFamily = popMid,
+                                fontSize = 13.sp,
+                                color = Color(0xFF3C3C3C)
+                            ),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(12.dp),
+                            decorationBox = { innerTextField ->
+                                if (state.note.isEmpty()) {
+                                    Text(
+                                        text = strings.get("ADD_NOTE_PLACEHOLDER"),
+                                        fontFamily = popMid,
+                                        fontSize = 13.sp,
+                                        color = Color(0xFF9E9E9E)
+                                    )
+                                }
+                                innerTextField()
+                            }
+                        )
+
+                        // ── Resize handle icon (bottom-right) — drag vertically to resize ──
+
+                        Icon(
+                            painter = painterResource(Res.drawable.reminder_note_resize),
+                            contentDescription = null,
+                            tint = Color.Unspecified,
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(8.dp)
+                                .size(16.dp)
+                                .pointerInput(Unit) {
+                                    detectVerticalDragGestures { _, dragAmount ->
+                                        val deltaDp = with(density) { dragAmount.toDp() }
+                                        noteBoxHeight = (noteBoxHeight + deltaDp)
+                                            .coerceIn(minHeight, maxHeight)
+                                    }
+                                },
+                        )
+
+
+                    } //Text field box
+
+                    // ============ CALENDAR SECTION ============
+                    Column(
+                        m.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CalenderBox(
+                            currentMonthIndex = state.currentMonthIndex,
+                            currentYear = state.currentYear,
+                            selectedDay = state.selectedDay,
+                            preferencesManager = preferencesManager,
+                            onChangeMonth = { viewModel.changeMonth(it) },
+                            onChangeYear = { viewModel.changeYear(it) },
+                            onSelectDay = { viewModel.selectDay(it) }
+                        )
+                    }
+
+                    Spacer(m.height(20.dp))
+
+                    // ============ CONFIRM BUTTON & DETAILS SECTION ============
+
+
+                    // Confirm Button
+                    Card(
+                        onClick = {
+                            if (viewModel.isValid()) {
+                                showConfirmDialog = true
+                            } else {
+                                state.error
+                            }
+
+                        },
+                        modifier = m
+                            .fillMaxWidth(0.8f)
+                            .height(45.dp)
+                            .align(Alignment.CenterHorizontally)
+                            .border(
+                                width = 1.dp,
+                                color = Color(30, 30, 30, 110),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .clip(shape = RoundedCornerShape(8.dp))
+                            .appButtonBack()
+                            .padding(horizontal = 26.dp),
+
+                        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                    ) {
+                        Row(
+                            modifier = m.fillMaxSize(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = strings.get("ADD_REMINDER"),
+                                fontFamily = popSemi,
+                                fontSize = 18.sp,
+                                color = Color(217, 217, 217, 255)
+                            )
+                        }
+                    }
+
+                    Spacer(m.height(100.dp))
+
+
                 }
-
-                Spacer(m.height(100.dp))
-
-
             }
+        }
+        if (showConfirmDialog) {
+            ConfirmSchedule(
+                reminderViewmodel = viewModel,
+                onDismiss = { showConfirmDialog = false },
+                carName = carName,
+                selectedService = selectedService,
+                selectedDate = "$summaryDate",
+                selectedRepeatUnit = state.repeatUnit,
+                selectedRepeatCount = state.repeatCount.toString(),
+                selectedRepeatInterval = state.repeatInterval.toString(),
+                onConfirm = { viewModel.setReminder() }
+            )
         }
     }
 }

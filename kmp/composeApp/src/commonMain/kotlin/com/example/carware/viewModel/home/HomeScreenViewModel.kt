@@ -93,7 +93,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             when (val result: UiResult<DeleteVehicleResponse> = repository.deleteVehicleRepo(id)) {
                 is UiResult.Success -> {
-//                    loadVehicles()
+                    loadVehicles()
 //                    delay(3000)
                     _state.update {
                         if (it is HomeScreenState.Success) {
@@ -113,7 +113,10 @@ class HomeScreenViewModel(
     fun clearMessage() = _state.update {
         if (it is HomeScreenState.Success) {
             it.copy(successMessage = null)
-        } else {
+        } else if (it is HomeScreenState.Error){
+            it.copy(message = null)
+        }
+        else {
             it
         }
     }

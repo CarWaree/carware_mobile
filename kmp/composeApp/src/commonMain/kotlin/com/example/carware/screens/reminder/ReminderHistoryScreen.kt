@@ -72,8 +72,7 @@ fun ReminderHistoryScreen(
     )
     Column(
         m.fillMaxSize()
-            .verticalScroll(pageScrollState)
-            .background(Color(217, 217, 217, 255)),  // remove padding(horizontal = 20.dp)
+            .background(Color(217, 217, 217, 255)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
@@ -135,8 +134,9 @@ fun ReminderHistoryScreen(
             thickness = 1.dp
         )
 
-        Spacer(m.height(32.dp))
-        Column(m.fillMaxSize()) {
+        Column(m.fillMaxSize()
+            .verticalScroll(pageScrollState)
+        ) {
             when (currentState) {
                 is ReminderHistoryState.Loading -> {
                     Column(
@@ -165,7 +165,8 @@ fun ReminderHistoryScreen(
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(horizontal = 16.dp),
+
+                                .padding( 16.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             currentState.historyItems.forEach { item ->

@@ -133,9 +133,13 @@ class ScheduleScreenViewModel(
             var year = current.currentYear
 
             if (forward) {
-                if (month < 11) month++ else { month = 0; year++ }
+                if (month < 11) month++ else {
+                    month = 0; year++
+                }
             } else {
-                if (month > 0) month-- else { month = 11; year-- }
+                if (month > 0) month-- else {
+                    month = 11; year--
+                }
             }
 
             current.copy(
@@ -154,16 +158,22 @@ class ScheduleScreenViewModel(
             current.copy(currentYear = newYear, selectedDay = null, selectedTime = null)
         }
     }
+
     fun confirmAppointment() {
         val current = _state.value
 
-        if (!isValid(current)) {
-            _state.update { it.copy(error = "Please complete all required fields") }
-            return
-        }
+//        if (!isValid(current)) {
+//            _state.update { it.copy(error = "Please complete all required fields") }
+//            return
+//        }
 
         val request = SetAppointmentRequest(
-            date = formatToISO8601(current.currentYear, current.currentMonthIndex + 1, current.selectedDay!!, current.selectedTime!!),
+            date = formatToISO8601(
+                current.currentYear,
+                current.currentMonthIndex + 1,
+                current.selectedDay!!,
+                current.selectedTime!!
+            ),
             timeSlot = current.selectedTime,
             vehicleId = current.selectedCarId!!,
             serviceId = current.selectedServiceId!!,
@@ -173,30 +183,55 @@ class ScheduleScreenViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, error = null, isBookingSuccess = true) }
 
-            when (val result: UiResult<AppointmentResponse> = repository.setAppointmentRepo(request)) {
+            when (val result: UiResult<AppointmentResponse> =
+                repository.setAppointmentRepo(request)) {
                 is UiResult.Success -> {
-                    _state.update { it.copy(isLoading = false,
-                        isBookingSuccess = true,
-                        bookingSuccessMessage = "Appointment Created Successfully") }
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            isBookingSuccess = true,
+                            bookingSuccessMessage = "Appointment Created Successfully"
+                        )
+                    }
                 }
+
                 is UiResult.Error -> {
                     _state.update { it.copy(isLoading = false, error = result.message) }
                 }
             }
         }
     }
+
     fun onBookingSuccessConsumed() {
         _state.update { it.copy(isBookingSuccess = false) }
     }
 
     // ============ PRIVATE ============
 
-    private fun isValid(state: ScheduleScreenState): Boolean =
-        state.selectedServiceId != null &&
-                state.selectedCenterId != null &&
-                state.selectedCarId != null &&
-                state.selectedDay != null &&
-                state.selectedTime != null
+    fun isValid(): Boolean {
+        val state = _state.value
+        return when {
+            state.selectedCarId == null -> {
+                _state.update { it.copy(error = "Please select a vehicle") }
+                false
+            }
+            state.selectedServiceId == null -> {
+                _state.update { it.copy(error = "Please select a service type") }
+                false
+            }
+            state.selectedDay == null -> {
+                _state.update { it.copy(error = "Please select a day") }
+                false
+            }
+            state.selectedTime == null -> {
+                _state.update { it.copy(error = "Please select a time") }
+                false
+            }
+            state.selectedCenterName ==null ->{ _state.update { it.copy(error = "Please select a provider") }
+                false}
+            else -> true
+        }
+    }
 
     @OptIn(ExperimentalTime::class)
     private fun formatToISO8601(year: Int, month: Int, day: Int, time: String): String {
@@ -216,10 +251,13 @@ class ScheduleScreenViewModel(
         }
     }
 
-    fun clearErrorMessage() = _state.update { it.copy(error = null,
-        isBookingSuccess = false,
-        bookingSuccessMessage = null) }
-
+    fun clearErrorMessage() = _state.update {
+        it.copy(
+            error = null,
+            isBookingSuccess = false,
+            bookingSuccessMessage = null
+        )
+    }
 
 
 }

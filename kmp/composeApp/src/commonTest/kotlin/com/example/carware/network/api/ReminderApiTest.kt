@@ -1,6 +1,7 @@
 package com.example.carware.network.api
 
 import com.example.carware.network.apiRequests.reminder.ReminderRequest
+import com.example.carware.network.core.ApiResult
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -71,9 +72,11 @@ class ReminderApiTest {
             typeId = 2,
             vehicleId = 101
         )
+        val result = setReminder( mockClient,request)
 
+        assertTrue(result is ApiResult.Success)
+        val response = (result as ApiResult.Success).data
         // Act
-        val response = setReminder(mockClient, request)
 
         // Assert
         assertEquals("Reminder created successfully", response.message)
@@ -140,7 +143,10 @@ class ReminderApiTest {
         val mockClient = createMockClient(mockJsonResponse, HttpStatusCode.OK)
 
         // Act
-        val response = getReminder(mockClient)
+        val result = getReminder( mockClient,)
+
+        assertTrue(result is ApiResult.Success)
+        val response = (result as ApiResult.Success).data
 
         // Assert
         assertEquals("Reminders fetched successfully", response.message)
@@ -164,7 +170,10 @@ class ReminderApiTest {
 
         val mockClient = createMockClient(mockJsonResponse, HttpStatusCode.OK)
 
-        val response = getReminder(mockClient)
+        val result = getReminder( mockClient,)
+
+        assertTrue(result is ApiResult.Success)
+        val response = (result as ApiResult.Success).data
 
         assertEquals(200, response.statusCode)
         assertTrue(response.data.isEmpty())

@@ -421,7 +421,7 @@ fun ConfirmSchedule(
             Column(
                 modifier = m
                     .clip(RoundedCornerShape(8.dp))
-                    .fillMaxWidth(0.7f)
+                    .fillMaxWidth(0.8f)
 //                    .fillMaxHeight(0.32f)
                     .background(Color(204, 204, 204, 242))
                     .padding(12.dp),
@@ -443,7 +443,7 @@ fun ConfirmSchedule(
 
                     )
                 }
-                Spacer(m.height(6.dp))
+                Spacer(m.height(8.dp))
                 Text(
                     "Just one more step!",
                     fontFamily = popMid,
@@ -455,7 +455,7 @@ fun ConfirmSchedule(
                     ),
                     fontWeight = FontWeight.W600,
                 )
-                Spacer(m.height(6.dp))
+                Spacer(m.height(8.dp))
                 Text(
                     "Review your appointment details before confirming",
                     fontFamily = popMid,
@@ -471,6 +471,8 @@ fun ConfirmSchedule(
                     color = Color(30, 30, 30, 161),
                     fontWeight = FontWeight.W500,
                 )
+                Spacer(m.height(2.dp))
+
                 Text(
                     selectedService,
                     fontFamily = popMid,
@@ -478,6 +480,7 @@ fun ConfirmSchedule(
                     color = Color(30, 30, 30, 161),
                     fontWeight = FontWeight.W500,
                 )
+                Spacer(m.height(2.dp))
                 if (selectedProvider != null) {
                     Text(
                         selectedProvider,
@@ -487,6 +490,7 @@ fun ConfirmSchedule(
                         fontWeight = FontWeight.W500,
                     )
                 }
+                Spacer(m.height(2.dp))
                 Text(
                     selectedDate,
                     fontFamily = popMid,
@@ -495,7 +499,8 @@ fun ConfirmSchedule(
                     fontWeight = FontWeight.W500,
                 )
 
-
+                Spacer(m.height(2.dp))
+                if (selectedRepeatUnit != null || selectedRepeatCount !=null|| selectedRepeatInterval !=null ) {
 
                     Text(
                         "every $selectedRepeatInterval  $selectedRepeatUnit for $selectedRepeatCount times  ",
@@ -504,6 +509,7 @@ fun ConfirmSchedule(
                         color = Color(30, 30, 30, 161),
                         fontWeight = FontWeight.W500,
                     )
+                }
 
                 Spacer(m.height(15.dp))
 
@@ -1022,8 +1028,8 @@ fun ToastMessage(message: String, state: Boolean) {
         Text(
             message,
             fontFamily = popSemi,
-            fontSize = 8.sp,
-            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.W500,
             color = Color(30, 30, 30, 161)
         )
 

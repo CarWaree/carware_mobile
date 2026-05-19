@@ -1,7 +1,7 @@
 package com.example.carware.network.core
 
 object ApiLogger {
-    var isEnabled = true  // Toggle this to true/false
+    var isEnabled = true
 
     fun log(message: String) {
         if (isEnabled) {

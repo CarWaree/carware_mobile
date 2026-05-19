@@ -1,6 +1,7 @@
 package com.example.carware.reposotory
 
 import com.example.carware.network.apiRequests.auth.LoginRequest
+import com.example.carware.network.core.UiResult
 import com.example.carware.repository.auth.AuthRepository
 import io.ktor.client.*
 import io.ktor.client.engine.mock.*
@@ -11,6 +12,7 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class AuthRepositoryTest {
 
@@ -52,14 +54,12 @@ class AuthRepositoryTest {
         val repository = AuthRepository(mockClient)
 
         // 2. Execute
-        try {
-            val response = repository.logInRepo(LoginRequest("test@email.com", "password123"))
-            
-            // 3. Assert
-            assertEquals(200, response.statusCode)
-        } catch (e: Exception) {
-            println("❌ Test Execution Failed: ${e.message}")
-            throw e
-        }
+        val result = repository.logInRepo(LoginRequest("test@email.com", "password123"))
+
+// 3. Assert
+        assertTrue(result is UiResult.Success)
+        val response = (result as UiResult.Success).data
+
+        assertEquals(200, response.statusCode)
     }
 }

@@ -11,5 +11,5 @@ sealed class HomeScreenState {
         val appointments: List<Appointments>,
         val successMessage: String? = null  // Only success here
     ) : HomeScreenState()
-    data class Error(val message: String) : HomeScreenState()
+    data class Error(val message: String?=null) : HomeScreenState()
 }

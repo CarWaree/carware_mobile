@@ -1,6 +1,7 @@
 package com.example.carware.network.api
 
 import com.example.carware.network.apiRequests.schedule.SetAppointmentRequest
+import com.example.carware.network.core.ApiResult
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -60,7 +61,15 @@ class ScheduleApiTest {
         val mockClient = createMockClient(mockJsonResponse, HttpStatusCode.OK)
 
         // Act
-        val responseList = getServiceType(mockClient)
+        val result = getServiceType(mockClient)
+
+        assertTrue(result is ApiResult.Success)
+        val response = (result as ApiResult.Success).data
+
+// Assert: Access the list through the response wrapper
+        assertNotNull(response)
+        val responseList = response.data
+
 
         // Assert: Your function returns the List<Service> directly from the .data field
         assertNotNull(responseList)
@@ -96,7 +105,16 @@ class ScheduleApiTest {
         val mockClient = createMockClient(mockJsonResponse, HttpStatusCode.OK)
 
         // Act
-        val responseList = getServiceCenters(mockClient)
+        val result = getServiceCenters(mockClient)
+
+        assertTrue(result is ApiResult.Success)
+        val responseList = (result as ApiResult.Success).data
+
+// Assert
+        assertNotNull(responseList)
+        assertEquals(2, responseList.size)
+        assertEquals(1, responseList[0].id)
+        assertEquals("Center Name", responseList[0].name)
 
         // Assert
         assertNotNull(responseList)
@@ -134,8 +152,10 @@ class ScheduleApiTest {
         val mockClient = createMockClient(mockJsonResponse, HttpStatusCode.OK)
 
         // Act
-        val response = getAppointments(mockClient)
+        val result = getAppointments( mockClient)
 
+        assertTrue(result is ApiResult.Success)
+        val response = (result as ApiResult.Success).data
         // Assert
         assertEquals("Appointments fetched successfully", response.message)
         assertEquals(200, response.statusCode)
@@ -193,8 +213,10 @@ class ScheduleApiTest {
         )
 
         // Act
-        val response = setAppointment(request, mockClient)
+        val result = setAppointment(request, mockClient)
 
+        assertTrue(result is ApiResult.Success)
+        val response = (result as ApiResult.Success).data
         // Assert
         assertEquals("Appointment created successfully", response.message)
         assertEquals(201, response.statusCode)
