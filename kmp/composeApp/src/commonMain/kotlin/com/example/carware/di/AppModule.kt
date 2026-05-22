@@ -27,6 +27,7 @@ import com.example.carware.viewModel.reminder.reminderHistory.ReminderHistoryVie
 import com.example.carware.viewModel.reminder.reminderScreen.ReminderScreenViewModel
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
 import com.example.carware.viewModel.vehicle.editCar.EditCarViewModel
+import com.plusmobileapps.konnectivity.Konnectivity
 import org.koin.dsl.module
 
 fun appModule(preferencesManager: PreferencesManager) = module {
@@ -36,6 +37,8 @@ fun appModule(preferencesManager: PreferencesManager) = module {
     single { createHttpClient(get()) }
     single { getPushTokenProvider() }
     single<CalendarLauncher> { CalendarLauncher() }
+    single { Konnectivity() }
+
     // Repositories
     single { VehicleRepository(get()) }
     single { AuthRepository(get()) }
@@ -53,14 +56,14 @@ fun appModule(preferencesManager: PreferencesManager) = module {
     factory { NewPasswordViewModel(get(), get()) }
     factory { EmailVerificationViewModel(get(), get()) }
     single { HistoryScreenViewModel(get()) }
-    factory { ScheduleScreenViewModel(get(), get()) }
+    factory { ScheduleScreenViewModel(get(), get(),get()) }
     factory { AddCarViewModel(get(), get()) }
     factory { ProfileScreenViewModel(get(), get()) }
     factory { ForgotPasswordViewModel(get(), get()) }
-    factory { NotificationViewModel(get(),get()) }
+    factory { NotificationViewModel(get(), get()) }
     factory { EditCarViewModel(get()) }
-    factory{ ReminderScreenViewModel(get(),get(),get(),get()) }
-    factory { MyCarsScreenViewModel(get(),get()) }
+    factory { ReminderScreenViewModel(get(), get(), get(), get()) }
+    factory { MyCarsScreenViewModel(get(), get()) }
     factory { ReminderHistoryViewModel(get()) }
     // AppFonts.kt
 

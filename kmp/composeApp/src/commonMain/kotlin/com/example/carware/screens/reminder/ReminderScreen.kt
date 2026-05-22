@@ -192,6 +192,7 @@ fun ReminderScreen(
                 m
                     .fillMaxSize()
                     .background(Color(217, 217, 217, 255))
+                    .padding(bottom = 28.dp)
                     .padding(vertical = 28.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
 
@@ -561,6 +562,7 @@ fun ReminderScreen(
 
                     // ============ CONFIRM BUTTON & DETAILS SECTION ============
 
+                    Spacer(m.height(82.dp))
 
                     // Confirm Button
                     Card(
@@ -601,7 +603,6 @@ fun ReminderScreen(
                         }
                     }
 
-                    Spacer(m.height(100.dp))
 
 
                 }

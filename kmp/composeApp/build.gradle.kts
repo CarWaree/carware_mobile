@@ -70,6 +70,7 @@ kotlin {
 
             implementation("io.github.mirzemehdi:kmpauth-google:2.5.0-alpha01") //Google One Tap Sign-In
             implementation("io.github.mirzemehdi:kmpauth-uihelper:2.5.0-alpha01")
+            implementation("com.plusmobileapps:konnectivity:0.1-alpha01")
         }
 
         nativeMain.dependencies {

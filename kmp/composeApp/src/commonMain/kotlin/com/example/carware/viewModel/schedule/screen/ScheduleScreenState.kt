@@ -3,6 +3,7 @@ package com.example.carware.viewModel.schedule.screen
 import com.example.carware.network.apiResponse.schedule.Centers
 import com.example.carware.network.apiResponse.schedule.Service
 import com.example.carware.network.apiResponse.vehicle.Vehicles
+import com.plusmobileapps.konnectivity.Konnectivity
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 import kotlin.time.Clock
@@ -38,5 +39,4 @@ data class ScheduleScreenState @OptIn(ExperimentalTime::class) constructor(
     val isLoading: Boolean = false,
     val isBookingSuccess: Boolean = false,
     val bookingSuccessMessage: String?=null,
-    val error: String? = null
-)
+    val error: String? = null, )

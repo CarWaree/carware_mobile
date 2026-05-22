@@ -32,14 +32,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.poppins_medium
@@ -50,6 +53,7 @@ import com.example.carware.network.apiResponse.schedule.Service
 import com.example.carware.screens.CalenderBox
 import com.example.carware.screens.ConfirmSchedule
 import com.example.carware.screens.LoadingOverlay
+import com.example.carware.screens.NoInternetDialog
 import com.example.carware.screens.SelectDateBox
 import com.example.carware.screens.SelectDropdown
 import com.example.carware.screens.ShimmerScheduleScreen
@@ -78,6 +82,7 @@ fun ScheduleScreen(
     val strings = LocalStrings.current
 
     var showConfirmDialog by remember { mutableStateOf(false) }
+    val isConnected by viewModel.isConnected.collectAsStateWithLifecycle()
 
     val carName = state.availableCars.find { it.id == state.selectedCarId }?.let { car ->
         "${car.brandName} ${car.modelName} ${car.year}"
@@ -116,12 +121,15 @@ fun ScheduleScreen(
     } else {
 
 
-        Box(m.fillMaxSize()) {
+        Box(
+            modifier = m.fillMaxSize()
 
+        ){
             Column(
                 m
                     .fillMaxSize()
                     .background(Color(217, 217, 217, 255)),
+
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
@@ -369,7 +377,23 @@ fun ScheduleScreen(
                 }
             }
 
-            if (showConfirmDialog) {
+            if (!isConnected) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Transparent)
+                        .pointerInput(Unit) {
+                            awaitPointerEventScope {
+                                while (true) {
+                                    awaitPointerEvent()
+                                    // Blocks all touches
+                                }
+                            }
+                        }
+                )
+                NoInternetDialog()
+            }
+                if (showConfirmDialog) {
                 ConfirmSchedule(
                     scheduleViewModel = viewModel,
                     onDismiss = { showConfirmDialog = false },

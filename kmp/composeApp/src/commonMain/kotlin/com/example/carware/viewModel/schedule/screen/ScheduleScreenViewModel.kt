@@ -1,6 +1,5 @@
 package com.example.carware.viewModel.schedule.screen
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.carware.network.apiRequests.schedule.SetAppointmentRequest
@@ -10,6 +9,7 @@ import com.example.carware.network.core.UiResult
 import com.example.carware.repository.ServiceRepository
 import com.example.carware.repository.VehicleRepository
 import com.example.carware.viewModel.defaultSlots
+import com.plusmobileapps.konnectivity.Konnectivity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,10 +24,13 @@ import kotlin.time.ExperimentalTime
 class ScheduleScreenViewModel(
     private val repository: ServiceRepository,
     private val vehicleRepository: VehicleRepository,
+    connectivityManager: Konnectivity
 ) : ViewModel() {
+    val isConnected = connectivityManager.isConnectedState
 
     private val _state = MutableStateFlow(ScheduleScreenState())
     val state: StateFlow<ScheduleScreenState> = _state.asStateFlow()
+
 
     init {
         loadInitialData()
