@@ -1,7 +1,15 @@
 package com.example.carware
 
+import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.Service
+import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import com.example.carware.Notification.SavedNotification
 import com.example.carware.network.apiRequests.notifications.RegisterTokenRequest
 import com.example.carware.repository.NotificationsRepository
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -11,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.java.KoinJavaComponent.inject
+import java.util.UUID
 
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
@@ -32,5 +41,67 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
+
+        val title = message.notification?.title ?: "New Message"
+        val body = message.notification?.body ?: ""
+
+        showNotification(title, body)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val notification = SavedNotification(
+                id = UUID.randomUUID().toString(),
+                title = title,
+                body = body,
+                timestamp = System.currentTimeMillis()
+            )
+            Log.d("FCM_SAVE", "Saving notification: $notification")
+            notificationsRepository.saveNotificationRepo(notification)
+            Log.d("FCM_SAVE", "Notification saved")
+        }
     }
-}
+
+    private fun showNotification(title: String, body: String) {
+        val channelId = "default_channel_v4"
+
+        // The channel is already created in CarwareApplication, but we can ensure it here too with HIGH importance
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                channelId,
+                "General Notifications",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Channel for general app notifications"
+                enableLights(true)
+                enableVibration(true)
+            }
+            val manager = getSystemService(NotificationManager::class.java)
+            manager.createNotificationChannel(channel)
+        }
+
+        val notification = NotificationCompat.Builder(this, channelId)
+            .setContentTitle(title)
+            .setContentText(body)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setDefaults(NotificationCompat.DEFAULT_ALL)
+            .setAutoCancel(true)
+            .build()
+
+        // Fix: check permission before notifying
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+                == PackageManager.PERMISSION_GRANTED
+            ) {
+                NotificationManagerCompat.from(this).notify(
+                    System.currentTimeMillis().toInt(),
+                    notification
+                )
+            }
+        } else {
+            // Below Android 13, no permission needed
+            NotificationManagerCompat.from(this).notify(
+                System.currentTimeMillis().toInt(),
+                notification
+            )
+        }
+    }}

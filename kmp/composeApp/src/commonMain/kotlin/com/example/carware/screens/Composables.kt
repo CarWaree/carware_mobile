@@ -34,16 +34,18 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -73,6 +75,7 @@ import carware.composeapp.generated.resources.check_time_slot
 import carware.composeapp.generated.resources.clander_right_arrow
 import carware.composeapp.generated.resources.color
 import carware.composeapp.generated.resources.cuate
+import carware.composeapp.generated.resources.dots
 import carware.composeapp.generated.resources.failed
 import carware.composeapp.generated.resources.keyboard_arrow_down
 import carware.composeapp.generated.resources.keyboard_arrow_up
@@ -85,17 +88,24 @@ import carware.composeapp.generated.resources.x_time_slot
 import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.navigation.AddCarScreen
+import com.example.carware.navigation.ReminderScreen
 import com.example.carware.util.navBar.TabItem
 import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.viewModel.home.HomeScreenViewModel
+import com.example.carware.viewModel.reminder.reminderScreen.ReminderScreenViewModel
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
 import com.example.carware.viewModel.schedule.screen.TimeSlot
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 
 fun Modifier.appGradBack(): Modifier = this.then(
@@ -139,8 +149,9 @@ fun Modifier.cardGradBack(): Modifier = this.then(
     )
 )
 
-    fun Modifier.backgroundColor(): Modifier = this.then(
-    background(Color(217, 217, 217, 255)
+fun Modifier.backgroundColor(): Modifier = this.then(
+    background(
+        Color(217, 217, 217, 255)
     )
 )
 
@@ -154,8 +165,6 @@ fun BottomNavBar(
     modifier: Modifier = Modifier
 ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
-
-    val popMid = FontFamily(Font(Res.font.poppins_medium))
 
 
     // OUTER HEIGHT ONLY FOR SPACING
@@ -255,21 +264,400 @@ fun BottomNavBar(
     }
 }
 
+@Composable
+fun ConfirmDeleteCar(
+    viewModel: HomeScreenViewModel,
+    onDismiss: () -> Unit,
+) {
+    val popMid = FontFamily(Font(Res.font.poppins_medium))
+    val selectedCar by viewModel.selectedCar.collectAsState()
+
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.5f)),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Column(
+            modifier = m
+                .clip(RoundedCornerShape(8.dp))
+                .fillMaxWidth(0.7f)
+                .background(Color(204, 204, 204, 242))
+                .padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+
+            Box(
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(CircleShape)
+                    .appGradBack(),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.recycle_bin),
+                    contentDescription = null,
+                    tint = Color(255, 255, 255, 201),
+                    modifier = m.size(25.dp)
+
+                )
+            }
+            Spacer(m.height(6.dp))
+            Text(
+                "Are you sure ?",
+                fontFamily = popMid,
+                fontSize = 15.sp,
+                style = TextStyle(
+                    brush = Brush.linearGradient(
+                        listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
+                    )
+                ),
+                fontWeight = FontWeight.W600,
+            )
+            Spacer(m.height(6.dp))
+            Text(
+                "This will permanently delete your car\n and all its data.",
+
+                fontFamily = popMid,
+                fontSize = 12.sp,
+                color = Color(30, 30, 30, 161),
+                fontWeight = FontWeight.W400,
+
+                )
+            Spacer(m.height(12.dp))
+
+            selectedCar?.let { car ->
+
+                Text(
+                    "${car.brandName} ${car.modelName} ${car.year}",
+                    fontFamily = popMid,
+                    fontSize = 14.sp,
+                    color = Color(30, 30, 30, 161),
+                    fontWeight = FontWeight.W500,
+                )
+            }
+
+            Spacer(m.height(15.dp))
+
+            Card(
+                onClick = {
+                    viewModel.deleteCar()
+                    onDismiss()
+                },
+
+                modifier = m
+                    .fillMaxWidth(0.9f)
+                    .height(40.dp)
+                    .border(
+                        width = 0.8.dp,
+                        color = Color(30, 30, 30, 110),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .clip(shape = RoundedCornerShape(8.dp))
+                    .appButtonBack(),
+                colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+
+                ) {
+
+                Row(
+                    modifier = m.fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        "Delete",
+                        fontFamily = popMid,
+                        fontSize = 14.sp,
+                        color = Color(245, 245, 245, 255),
+                        fontWeight = FontWeight.W500
+                    )
+                }
+
+            }
+            Spacer(m.height(12.dp))
+
+            Text(
+                "Cancel",
+                modifier = Modifier.clickable { onDismiss() },
+                fontFamily = popMid,
+                fontSize = 14.sp,
+                color = Color(30, 30, 30, 161),
+                fontWeight = FontWeight.W500,
+            )
+        }
+    }
+
+}
+
+@Composable
+fun ConfirmSchedule(
+    scheduleViewModel: ScheduleScreenViewModel? = null,
+    reminderViewmodel: ReminderScreenViewModel? = null,
+    onDismiss: () -> Unit,
+    carName: String,
+    selectedService: String,
+    selectedProvider: String? = null,
+    selectedDate: String,
+    selectedRepeatInterval: String? = null,
+    selectedRepeatUnit: String? = null,
+    selectedRepeatCount: String? = null,
+    onConfirm: () -> Unit,
+
+
+    ) {
+    val popMid = FontFamily(Font(Res.font.poppins_medium))
+
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.5f)),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Column(
+            modifier = m
+                .clip(RoundedCornerShape(8.dp))
+                .fillMaxWidth(0.8f)
+//                    .fillMaxHeight(0.32f)
+                .background(Color(204, 204, 204, 242))
+                .padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+
+            Box(
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(CircleShape)
+                    .appGradBack(),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.check_time_slot),
+                    contentDescription = null,
+                    tint = Color(255, 255, 255, 255),
+                    modifier = m.size(25.dp)
+
+                )
+            }
+            Spacer(m.height(8.dp))
+            Text(
+                "Just one more step!",
+                fontFamily = popMid,
+                fontSize = 15.sp,
+                style = TextStyle(
+                    brush = Brush.linearGradient(
+                        listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
+                    )
+                ),
+                fontWeight = FontWeight.W600,
+            )
+            Spacer(m.height(8.dp))
+            Text(
+                "Review your appointment details before confirming",
+                fontFamily = popMid,
+                fontSize = 12.sp,
+                color = Color(30, 30, 30, 161),
+                fontWeight = FontWeight.W400,
+            )
+            Spacer(m.height(12.dp))
+            Text(
+                carName,
+                fontFamily = popMid,
+                fontSize = 14.sp,
+                color = Color(30, 30, 30, 161),
+                fontWeight = FontWeight.W500,
+            )
+            Spacer(m.height(2.dp))
+
+            Text(
+                selectedService,
+                fontFamily = popMid,
+                fontSize = 14.sp,
+                color = Color(30, 30, 30, 161),
+                fontWeight = FontWeight.W500,
+            )
+            Spacer(m.height(2.dp))
+            if (selectedProvider != null) {
+                Text(
+                    selectedProvider,
+                    fontFamily = popMid,
+                    fontSize = 14.sp,
+                    color = Color(30, 30, 30, 161),
+                    fontWeight = FontWeight.W500,
+                )
+            }
+            Spacer(m.height(2.dp))
+            Text(
+                selectedDate,
+                fontFamily = popMid,
+                fontSize = 14.sp,
+                color = Color(30, 30, 30, 161),
+                fontWeight = FontWeight.W500,
+            )
+
+            Spacer(m.height(2.dp))
+            if (selectedRepeatUnit != null || selectedRepeatCount != null || selectedRepeatInterval != null) {
+
+                Text(
+                    "every $selectedRepeatInterval  $selectedRepeatUnit for $selectedRepeatCount times  ",
+                    fontFamily = popMid,
+                    fontSize = 14.sp,
+                    color = Color(30, 30, 30, 161),
+                    fontWeight = FontWeight.W500,
+                )
+            }
+
+            Spacer(m.height(15.dp))
+
+            Card(
+                onClick = {
+                    onConfirm()
+                    onDismiss()
+                },
+
+                modifier = m
+                    .fillMaxWidth(0.9f)
+                    .height(40.dp)
+                    .border(
+                        width = 0.8.dp,
+                        color = Color(30, 30, 30, 110),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .clip(shape = RoundedCornerShape(8.dp))
+                    .appButtonBack(),
+                colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+
+                ) {
+
+                Row(
+                    modifier = m.fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        "Confirm",
+                        fontFamily = popMid,
+                        fontSize = 14.sp,
+                        color = Color(245, 245, 245, 255),
+                        fontWeight = FontWeight.W500
+                    )
+                }
+
+            }
+
+
+            Spacer(m.height(12.dp))
+
+            Text(
+                "Cancel",
+                modifier = Modifier.clickable { onDismiss() },
+                fontFamily = popMid,
+                fontSize = 14.sp,
+                color = Color(30, 30, 30, 161),
+                fontWeight = FontWeight.W500,
+            )
+
+
+        }
+
+
+    }
+}
+
+@Composable
+fun NoInternetDialog() {
+    val popMid = FontFamily(Font(Res.font.poppins_medium))
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(Color.Black.copy(alpha = 0.5f)),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Column(
+            modifier = m
+                .clip(RoundedCornerShape(8.dp))
+                .fillMaxWidth(0.75f)
+                .fillMaxHeight(0.3f)
+                .background(Color(204, 204, 204, 242))
+                .padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly
+        ) {
+
+            Box(
+                modifier = Modifier
+                    .size(50.dp)
+                    .clip(CircleShape)
+                    .appGradBack(),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.failed),
+                    contentDescription = null,
+                    tint = Color(255, 255, 255, 255),
+                    modifier = m.size(25.dp)
+
+                )
+            }
+//            Spacer(m.height(6.dp))
+            Text(
+                "Oops! No Internet",
+                fontFamily = popMid,
+                fontSize = 15.sp,
+                style = TextStyle(
+                    brush = Brush.linearGradient(
+                        listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
+                    )
+                ),
+                fontWeight = FontWeight.W600,
+            )
+//            Spacer(m.height(12.dp))
+            Text(
+                "You need an internet connection to access this page. Please check your connection and try again.",
+                fontFamily = popMid,
+                fontSize = 12.sp,
+                color = Color(30, 30, 30, 161),
+                fontWeight = FontWeight.W500,
+
+                )
+//            Spacer(m.height(12.dp))
+
+        }
+    }
+
+
+}
+
+@Preview
+@Composable
+fun ConfirmScheduleAppointmentPreview() {
+
+}
+
 
 // home Screen
 @Composable
 fun CarCard(
+    viewModel: HomeScreenViewModel,
     navController: NavController,
     brand: String,
     model: String,
     modelYear: String,
     color: String,
-    image: DrawableResource
+    image: DrawableResource,
+    onEditClick: () -> Unit,  // add this
+    onDeleteClick: () -> Unit,  // ← add this
+
+
 ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
-    val popMid = FontFamily(Font(Res.font.poppins_medium))
 
     val cardMod = Modifier.size(width = 305.dp, height = 255.dp)
+
+    var expanded by remember { mutableStateOf(false) }
+
 
 
     Card(
@@ -294,19 +682,79 @@ fun CarCard(
                 modifier = m.fillMaxWidth().padding(horizontal = 20.dp),
                 horizontalArrangement = Arrangement.End
             ) {
-                Icon(
-                    painter = painterResource(Res.drawable.x_time_slot),
-                    contentDescription = null,
-                    tint = Color(30, 30, 30, 168),
-                    modifier = m.size(20.dp)
-                        .clickable {
-                            navController.navigate(AddCarScreen)
-                        }
-                        .rotate(45f)
-                        .size(4.dp)
+                Box {
+                    Icon(
+                        painter = painterResource(Res.drawable.dots),
+                        contentDescription = null,
+                        tint = Color(194, 0, 0, 171),
+                        modifier = m.size(20.dp)
+                            .clickable {
+                                expanded = true
+                            }
+                            .size(4.dp)
 
 
-                )
+                    )
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                        containerColor = Color(217, 217, 217).copy(alpha = 0.8f),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier
+                            .border(
+                                width = 0.5.dp,
+                                color = Color.White.copy(alpha = 0.3f),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                    )
+                    {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    "Add",
+                                    fontSize = 14.sp,
+                                    color = Color(30, 30, 30, 153),
+                                    fontFamily = popSemi,
+                                    fontWeight = FontWeight.W400
+                                )
+                            },
+                            onClick = {
+                                navController.navigate(AddCarScreen)
+                                expanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    "Edit",
+                                    fontSize = 14.sp,
+                                    color = Color(30, 30, 30, 153),
+                                    fontFamily = popSemi,
+                                    fontWeight = FontWeight.W400
+                                )
+                            },
+                            onClick = {
+                                onEditClick()
+                                expanded = false
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    "Delete",
+                                    fontSize = 14.sp,
+                                    color = Color(30, 30, 30, 153),
+                                    fontFamily = popSemi,
+                                    fontWeight = FontWeight.W400
+                                )
+                            },
+                            onClick = {
+                                onDeleteClick()
+                                expanded = false
+                            }
+                        )
+                    }
+                }
             } // top dots
             Image(
                 painter = painterResource(image),
@@ -395,14 +843,15 @@ fun CarCard(
 
             } //car details
         } //card content
-    }  // car card
+    }  // car  card
+
+
 }
 
 @Composable
-fun OBDCard(onClick: () -> Unit, ) {
+fun OBDCard(onClick: () -> Unit) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
 
-    val popMid = FontFamily(Font(Res.font.poppins_medium))
     val strings = LocalStrings.current
     Card(
         m.fillMaxWidth().height(170.dp),
@@ -467,119 +916,145 @@ fun OBDCard(onClick: () -> Unit, ) {
     }
 }
 
+@OptIn(ExperimentalTime::class)
 @Composable
-fun UpcomingMaintenance(
+fun rememberCountdown(targetMillis: Long): Triple<Long, Long, Long> {
+    var now by remember { mutableLongStateOf(Clock.System.now().toEpochMilliseconds()) }
+
+    LaunchedEffect(targetMillis) {
+        while (true) {
+            delay(1000L)
+            now = Clock.System.now().toEpochMilliseconds()
+        }
+    }
+
+    val diff = (targetMillis - now).coerceAtLeast(0L)
+    return Triple(
+        diff / (1000 * 60 * 60 * 24),
+        (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+        (diff % (1000 * 60 * 60)) / (1000 * 60)
+    )
+}
+
+@Composable
+fun UpcomingReminder(
+    navController: NavController,
+    nextReminderMillis: Long?
 ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
-    val popMid = FontFamily(Font(Res.font.poppins_medium))
     val strings = LocalStrings.current
 
     @Composable
-    fun TimerUpcomingMaintenance(time: String) {
-        val popSemi = FontFamily(Font(Res.font.poppins_semibold))
-
-        val popMid = FontFamily(Font(Res.font.poppins_medium))
+    fun TimerBox(value: String) {
         Column(
-            m.size(40.dp).border(
-                shape = RoundedCornerShape(8.dp), width = 1.dp, color = Color(30, 30, 30, 110)
-            ).clip(shape = RoundedCornerShape(8.dp)).background(Color(217, 217, 217, 255)),
+            modifier = m
+                .size(40.dp)
+                .border(
+                    shape = RoundedCornerShape(8.dp),
+                    width = 1.dp,
+                    color = Color(30, 30, 30, 110)
+                )
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color(217, 217, 217, 255)),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                time,
+                text = value.padStart(2, '0'),
                 fontFamily = popSemi,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(118, 118, 118, 255)
             )
-
         }
-
     }
+
+    @Composable
+    fun TimerUnit(value: String, label: String) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            TimerBox(value)
+            Spacer(m.height(2.dp))
+            Text(
+                text = label,
+                fontFamily = popSemi,
+                fontSize = 12.sp,
+                color = Color(217, 217, 217, 255)
+            )
+        }
+    }
+
+    @Composable
+    fun Separator() {
+        Spacer(m.width(4.dp))
+        Text(
+            text = ":",
+            fontFamily = popSemi,
+            fontSize = 20.sp,
+            color = Color(217, 217, 217, 255)
+        )
+        Spacer(m.width(4.dp))
+    }
+
     Row(
-        m.appButtonBack()
-            .padding(vertical = 20.dp, horizontal = 10.dp)
+        modifier = m
+            .appButtonBack()
+            .padding(vertical = 18.dp, horizontal = 10.dp)
             .fillMaxWidth()
             .height(54.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Start
-
-    )
-
-    {
-        Text(
-            strings.get("UP_COMING_MAINTENANCE"),
-            fontFamily = popSemi,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(217, 217, 217, 255)
-        )
-
-        Spacer(m.padding(horizontal = 2.dp))
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TimerUpcomingMaintenance("10")
+    ) {
+        // Left column — title + create button (always shown)
+        Column {
             Text(
-                strings.get("DAY"),
+                text = strings.get("UP_COMING_REMINDER"),
                 fontFamily = popSemi,
-                fontSize = 12.sp,
+                fontSize = 19.sp,
+                fontWeight = FontWeight.W600,
                 color = Color(217, 217, 217, 255)
             )
-            Spacer(m.padding(horizontal = 2.dp))
-
-        }
-        Spacer(m.padding(horizontal = 4.dp))
-
-        Text(
-            ":",
-            fontFamily = popSemi,
-            fontSize = 20.sp,
-            color = Color(217, 217, 217, 255)
-        ) // two dots
-        Spacer(m.padding(horizontal = 4.dp))
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TimerUpcomingMaintenance("25")
-            Text(
-                strings.get("HOUR"),
-                fontFamily = popSemi,
-                fontSize = 12.sp,
-                color = Color(217, 217, 217, 255)
-            )
-            Spacer(m.padding(horizontal = 2.dp))
-
-        }
-        Spacer(m.padding(horizontal = 4.dp))
-
-        Text(
-            ":",
-            fontFamily = popSemi,
-            fontSize = 20.sp,
-            color = Color(217, 217, 217, 255)
-        ) // two dots
-        Spacer(m.padding(horizontal = 4.dp))
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            TimerUpcomingMaintenance("50")
-            Text(
-                strings.get("MINUTE"),
-                fontFamily = popSemi,
-                fontSize = 12.sp,
-                color = Color(217, 217, 217, 255)
-            )
-            Spacer(m.width(width = 50.dp))
-
+            Spacer(m.height(2.dp))
+            Row(
+                modifier = m
+                    .fillMaxWidth(0.5f)
+                    .clickable { navController.navigate(ReminderScreen) },
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = strings.get("CREATE_REMINDER"),
+                    fontFamily = popSemi,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.W500,
+                    color = Color(217, 217, 217, 255)
+                )
+                Spacer(m.width(4.dp))
+                Icon(
+                    painter = painterResource(Res.drawable.x_time_slot),
+                    contentDescription = null,
+                    tint = Color(229, 174, 65, 255),
+                    modifier = m
+                        .size(20.dp)
+                        .rotate(45f)
+                )
+            }
         }
 
+        // Right side — countdown or nothing
+        if (nextReminderMillis != null) {
+            val (days, hours, minutes) = rememberCountdown(nextReminderMillis)
+
+            Spacer(m.width(8.dp))
+
+            TimerUnit(days.toString(), strings.get("DAY"))
+            Separator()
+            TimerUnit(hours.toString(), strings.get("HOUR"))
+            Separator()
+            TimerUnit(minutes.toString(), strings.get("MINUTE"))
+        }
+        // null → nothing rendered on the right, create button is the only CTA
     }
-
 }
+
 
 @Composable
 fun ToastMessage(message: String, state: Boolean) {
@@ -614,8 +1089,8 @@ fun ToastMessage(message: String, state: Boolean) {
         Text(
             message,
             fontFamily = popSemi,
-            fontSize = 8.sp,
-            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.W500,
             color = Color(30, 30, 30, 161)
         )
 
@@ -632,9 +1107,9 @@ fun CurvedLineCanvas() {
         val path = Path().apply {
             moveTo(0f, 0f) // start point
             // First curve (quadratic)
-            quadraticBezierTo(85f, 50f, 50f, 140f)
+            quadraticTo(85f, 50f, 50f, 140f)
             // Second curve (quadratic)
-            quadraticBezierTo(150f, 100f, 320f, 110f)
+            quadraticTo(150f, 100f, 320f, 110f)
         }
 
         drawPath(
@@ -646,13 +1121,11 @@ fun CurvedLineCanvas() {
 
 @Composable
 fun SelectDropdown(
-
     label: String,
     selectedValue: String?,
     options: List<String>,
     onSelect: (String) -> Unit,
-
-    ) {
+) {
 
     val textFieldColors = TextFieldDefaults.colors(
 
@@ -706,14 +1179,13 @@ fun SelectDropdown(
             },
             shape = RoundedCornerShape(8.dp),
             colors = textFieldColors
-
-
         )
         DropdownMenu(
             modifier = m.verticalScroll(scrollState).size(300.dp, 135.dp)
                 .background(Color(230, 230, 230, 255)),
             expanded = expanded,
-            onDismissRequest = { expanded = false }) {
+            onDismissRequest = { expanded = false }
+        ) {
             options.forEachIndexed { index, option ->
                 DropdownMenuItem(modifier = m.height(40.dp), text = {
                     Text(
@@ -730,7 +1202,7 @@ fun SelectDropdown(
 
                 )
                 if (index < options.size - 1) {
-                    Divider(color = Color(118, 118, 118, 128), thickness = 1.dp)
+                    HorizontalDivider(Modifier, thickness = 1.dp, color = Color(118, 118, 118, 128))
                 }
 
             }
@@ -741,114 +1213,76 @@ fun SelectDropdown(
 
 @Composable
 fun CalenderBox(
-    viewModel: ScheduleScreenViewModel,
-    preferencesManager: PreferencesManager
+    currentMonthIndex: Int,
+    currentYear: Int,
+    selectedDay: Int?,
+    preferencesManager: PreferencesManager,
+    onChangeMonth: (Boolean) -> Unit,
+    onChangeYear: (Boolean) -> Unit,
+    onSelectDay: (Int) -> Unit
 ) {
-    val _state by viewModel.state.collectAsState()
-    val state = _state
-
-    val daysOfWeek = listOf("SUN", "MON", "TUE", "WEN", "THU", "FRI", "SAT")
-
-    // Using your data structure
-    val calendarDays = listOf(
-        listOf(
-            "28" to false,
-            "29" to false,
-            "30" to false,
-            "1" to true,
-            "2" to true,
-            "3" to true,
-            "4" to true
-        ), listOf(
-            "5" to true,
-            "6" to true,
-            "7" to true,
-            "8" to true,
-            "9" to true,
-            "10" to true,
-            "11" to true
-        ), listOf(
-            "12" to true,
-            "13" to true,
-            "14" to true,
-            "15" to true,
-            "16" to true,
-            "17" to true,
-            "18" to true
-        ), listOf(
-            "19" to true,
-            "20" to true,
-            "21" to true,
-            "22" to true,
-            "23" to true,
-            "24" to true,
-            "25" to true
-        ), listOf(
-            "26" to true,
-            "27" to true,
-            "28" to true,
-            "29" to true,
-            "30" to true,
-            "1" to false,
-            "2" to false
-        )
-    )
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
-    val popMid = FontFamily(Font(Res.font.poppins_medium))
+
+    val months = listOf(
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    )
+    val daysOfWeek = listOf("SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT")
+
+    val calendarDays = remember(currentMonthIndex, currentYear) {
+        buildCalendarDays(currentMonthIndex + 1, currentYear)
+    }
+
     Column(
-        modifier = m.size(375.dp, 300.dp).scale(0.9f).clip(RoundedCornerShape(5.dp))
-            .background(Color(207, 207, 207, 207)),
-//        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier
+            .size(375.dp, 300.dp)
+            .scale(0.9f)
+            .clip(RoundedCornerShape(5.dp))
+            .background(Color(207, 207, 207, 207))
     ) {
-        // Header: Month and Year
+        // Header
         Row(
-            modifier = m.fillMaxWidth().height(50.dp).appButtonBack(),
+            modifier = Modifier.fillMaxWidth().height(50.dp).appButtonBack(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            // Month Control
             CalendarArrowButton(
                 isLeft = true,
-                onClick = { viewModel.changeMonth(false) },
-                preferencesManager
-            )
-
-
-            Text(
-                viewModel.months[state.currentMonthIndex],
-                color = Color.White,
-                fontFamily = popSemi,
-                fontSize = 20.sp,
-                modifier = m.padding(horizontal = 10.dp)
-            )
-            CalendarArrowButton(
-                isLeft = false,
-                onClick = { viewModel.changeMonth(true) },
-                preferencesManager
-            )
-
-            // Year Control
-            CalendarArrowButton(
-                isLeft = true,
-                { viewModel.changeYear(false) },
+                onClick = { onChangeMonth(false) },
                 preferencesManager
             )
             Text(
-                state.currentYear.toString(),
+                months[currentMonthIndex],
                 color = Color.White,
                 fontFamily = popSemi,
-                fontSize = 20.sp,
-                modifier = m.padding(horizontal = 10.dp)
+                fontSize = 20.sp
             )
             CalendarArrowButton(
                 isLeft = false,
-                { viewModel.changeYear(true) },
+                onClick = { onChangeMonth(true) },
+                preferencesManager
+            )
+
+            CalendarArrowButton(
+                isLeft = true,
+                onClick = { onChangeYear(false) },
+                preferencesManager
+            )
+            Text(
+                currentYear.toString(),
+                color = Color.White,
+                fontFamily = popSemi,
+                fontSize = 20.sp
+            )
+            CalendarArrowButton(
+                isLeft = false,
+                onClick = { onChangeYear(true) },
                 preferencesManager
             )
         }
 
-        // Days Header (SUN, MON...)
-        Row(modifier = Modifier.fillMaxWidth().padding(top = 10.dp)) {
+        // Day headers
+        Row(Modifier.fillMaxWidth().padding(top = 10.dp)) {
             daysOfWeek.forEach { day ->
                 Text(
                     day,
@@ -859,29 +1293,29 @@ fun CalenderBox(
             }
         }
 
-        // Days Grid
+        // Days grid
         calendarDays.forEach { week ->
             Row(
-                modifier = m.fillMaxWidth().padding(vertical = 4.dp),
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 week.forEach { (day, isCurrentMonth) ->
-                    val isSelected = state.selectedDay == day && isCurrentMonth
+                    val isSelected = selectedDay == day && isCurrentMonth
 
                     Box(
-                        modifier = m.size(35.dp).clip(RoundedCornerShape(8.dp))
-                            // Highlight the background if selected
+                        modifier = Modifier
+                            .size(35.dp)
+                            .clip(RoundedCornerShape(8.dp))
                             .background(if (isSelected) Color(0xFFC20000) else Color.Transparent)
                             .clickable(enabled = isCurrentMonth) {
-                                viewModel.onDayClick(day)
-                                state.isTimePickerVisible = true
-
+                                onSelectDay(day)
                             },
-
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = day, fontFamily = popSemi, color = when {
+                            text = day.toString(),
+                            fontFamily = popSemi,
+                            color = when {
                                 isSelected -> Color.White
                                 isCurrentMonth -> Color.Black
                                 else -> Color.Gray
@@ -893,6 +1327,47 @@ fun CalenderBox(
         }
     }
 }
+
+// Builds the actual weeks for any month/year
+private fun buildCalendarDays(month: Int, year: Int): List<List<Pair<Int, Boolean>>> {
+    val firstDay = LocalDate(year, month, 1)
+    val daysInMonth = when (month) {
+        1, 3, 5, 7, 8, 10, 12 -> 31
+        4, 6, 9, 11 -> 30
+        2 -> if (isLeapYear(year)) 29 else 28
+        else -> 30
+    }
+    val startDayOfWeek = firstDay.dayOfWeek.ordinal + 1 // Mon=1, shift to Sun=0
+    val prevMonthDays = if (startDayOfWeek == 7) 0 else startDayOfWeek
+
+    val days = mutableListOf<Pair<Int, Boolean>>()
+
+    // Previous month padding
+    val prevMonth = if (month == 1) LocalDate(year - 1, 12, 1) else LocalDate(year, month - 1, 1)
+    val prevMonthNumber = if (month == 1) 12 else month - 1
+    val prevYear = if (month == 1) year - 1 else year
+    val daysInPrevMonth = when (prevMonthNumber) {
+        1, 3, 5, 7, 8, 10, 12 -> 31
+        4, 6, 9, 11 -> 30
+        2 -> if (isLeapYear(prevYear)) 29 else 28
+        else -> 30
+    }
+
+    for (i in (daysInPrevMonth - prevMonthDays + 1)..daysInPrevMonth) {
+        days.add(i to false)
+    }
+
+    // Current month
+    for (i in 1..daysInMonth) days.add(i to true)
+
+    // Next month padding
+    val remaining = 42 - days.size
+    for (i in 1..remaining) days.add(i to false)
+
+    return days.chunked(7)
+}
+
+private fun isLeapYear(year: Int) = year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)
 
 @Composable
 fun CalendarArrowButton(
@@ -926,74 +1401,61 @@ fun CalendarArrowButton(
 }
 
 @Composable
-fun SelectDateBox(viewModel: ScheduleScreenViewModel) {
-
-    val _state by viewModel.state.collectAsState()
-    val state = _state
-    val textFieldColors = TextFieldDefaults.colors(
-
-        unfocusedTextColor = Color.DarkGray,
-        errorTextColor = Color(194, 0, 0, 255),
-
-        focusedContainerColor = Color.Transparent,
-        unfocusedContainerColor = Color.Transparent,
-        disabledContainerColor = Color.Transparent,
-        errorContainerColor = Color.Transparent,
-
-
-        cursorColor = Color(194, 0, 0, 255),
-        focusedIndicatorColor = Color(
-            118, 118, 118, 255
-        ),    // underline/border when focused
-        unfocusedIndicatorColor = Color(
-            118, 118, 118, 255
-        ),  // underline/border when not focused
-        errorIndicatorColor = Color(194, 0, 0, 255),
-        focusedTextColor = Color(0, 0, 0, 255)
-
-
-    )
-
+fun SelectDateBox(
+    availableSlots: List<TimeSlot>,
+    onSlotClick: (String) -> Unit,
+    onConfirm: () -> Unit
+) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
+
+    val morningSlots = availableSlots.filter {
+        val hour = parseHour(it.time)
+        hour in 10..17
+    }
+    val eveningSlots = availableSlots.filter {
+        val hour = parseHour(it.time)
+        hour >= 18 || hour == 0
+    }
+
+
     Column(
-        m.fillMaxSize().background(Color(0, 0, 0, 128)),
+        Modifier.fillMaxSize().background(Color(0, 0, 0, 128)),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Column(
-            m
-
-                .fillMaxWidth(0.85f).fillMaxHeight(0.7f).clip(RoundedCornerShape(10.dp))
-                .background(Color(217, 217, 217, 255)).padding(horizontal = 20.dp, vertical = 24.dp)
+            Modifier
+                .fillMaxWidth(0.85f)
+                .fillMaxHeight(0.7f)
+                .clip(RoundedCornerShape(10.dp))
+                .background(Color(217, 217, 217, 255))
+                .padding(horizontal = 20.dp, vertical = 24.dp)
         ) {
             Text(
                 "Choose Available Time Slot",
                 fontFamily = popSemi,
                 fontSize = 16.sp,
-                fontWeight = FontWeight.W500,
                 style = TextStyle(
                     brush = Brush.linearGradient(
-                        listOf(
-                            Color(194, 0, 0, 255), Color(92, 0, 0, 255)
-                        )
-                    ),
-                ),
-            ) // choose text
-            Spacer(m.padding(top = 24.dp))
+                        listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
+                    )
+                )
+            )
+
+            Spacer(Modifier.height(24.dp))
+
             Text(
                 "Morning",
                 fontFamily = popSemi,
                 fontSize = 16.sp,
-                fontWeight = FontWeight.W500,
                 style = TextStyle(
                     brush = Brush.linearGradient(
-                        listOf(
-                            Color(194, 0, 0, 255), Color(92, 0, 0, 255)
-                        )
-                    ),
-                ),
-            ) //morning text
-            Spacer(m.padding(top = 4.dp))
+                        listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
+                    )
+                )
+            )
+
+            Spacer(Modifier.height(4.dp))
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
@@ -1001,26 +1463,25 @@ fun SelectDateBox(viewModel: ScheduleScreenViewModel) {
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier.weight(1f)
             ) {
-                items(viewModel.morningSlots) { slot ->
-                    TimeSlotItem(
-                        slot = slot, onSlotClick = { viewModel.onTimeClick(it) })
+                items(morningSlots) { slot ->
+                    TimeSlotItem(slot = slot, onSlotClick = { onSlotClick(it) })
                 }
             }
-            Spacer(m.padding(top = 22.dp))
+
+            Spacer(Modifier.height(22.dp))
+
             Text(
                 "Evening",
                 fontFamily = popSemi,
                 fontSize = 16.sp,
-                fontWeight = FontWeight.W500,
                 style = TextStyle(
                     brush = Brush.linearGradient(
-                        listOf(
-                            Color(194, 0, 0, 255), Color(92, 0, 0, 255)
-                        )
-                    ),
-                ),
-            ) //evening text
-            Spacer(m.padding(top = 4.dp))
+                        listOf(Color(194, 0, 0, 255), Color(92, 0, 0, 255))
+                    )
+                )
+            )
+
+            Spacer(Modifier.height(4.dp))
 
             LazyVerticalGrid(
                 columns = GridCells.Fixed(3),
@@ -1028,42 +1489,26 @@ fun SelectDateBox(viewModel: ScheduleScreenViewModel) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.weight(1f)
             ) {
-                items(viewModel.eveningSlots) { slot ->
-                    TimeSlotItem(
-                        slot = slot, onSlotClick = { viewModel.onTimeClick(it) })
+                items(eveningSlots) { slot ->
+                    TimeSlotItem(slot = slot, onSlotClick = { onSlotClick(it) })
                 }
             }
-            Spacer(m.padding(top = 22.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
-            ) {
+
+            Spacer(Modifier.height(22.dp))
+
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
                 Card(
-                    onClick = {
-                        val finalDate = viewModel.getFinalSelectionString()
-                        if (finalDate != null) {
-                            println("User selected😂😂: $finalDate")
-                            // This is where you would pass it to the next screen
-                            // or save it to your database
-                            viewModel.closeTimePicker()
-                        } else {
-                            println("Please select both a day and a time💕.")
-                        }
-
-                    },
-                    modifier = m
-
-                        .fillMaxWidth(0.8f).height(45.dp).border(
-                            width = 1.dp,
-                            color = Color(30, 30, 30, 110),
-                            shape = RoundedCornerShape(8.dp)
-                        ).clip(shape = RoundedCornerShape(8.dp)).appButtonBack(),
-
-                    colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-
-                    ) {
-
+                    onClick = { onConfirm() },
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f)
+                        .height(45.dp)
+                        .border(1.dp, Color(30, 30, 30, 110), RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(8.dp))
+                        .appButtonBack(),
+                    colors = CardDefaults.cardColors(containerColor = Color.Transparent)
+                ) {
                     Row(
-                        modifier = m.fillMaxSize(),
+                        Modifier.fillMaxSize(),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
@@ -1075,11 +1520,21 @@ fun SelectDateBox(viewModel: ScheduleScreenViewModel) {
                         )
                     }
                 }
-            } //continue button
-
-
+            }
         }
+    }
+}
 
+// Parses "10:30 AM" -> 10, "6:00 PM" -> 18, "12:00 AM" -> 0
+private fun parseHour(time: String): Int {
+    return try {
+        val parts = time.split(" ")
+        var hour = parts[0].split(":")[0].toInt()
+        if (parts[1] == "PM" && hour != 12) hour += 12
+        else if (parts[1] == "AM" && hour == 12) hour = 0
+        hour
+    } catch (e: Exception) {
+        0
     }
 }
 
@@ -1302,16 +1757,15 @@ fun ServiceHistoryItem(
             Box(
                 modifier = Modifier
                     .size(10.dp)
-                    .background(color =if (status =="Confirmed") {
-                        Color(4, 186, 0, 255)
-                    }
-                    else if(status=="Pending")
-                    {
-                        Color(210, 194, 4, 255)
-                    }else{
-                        Color(194, 0, 0, 255)
-                    }
-                        , shape = CircleShape)
+                    .background(
+                        color = if (status == "Confirmed") {
+                            Color(4, 186, 0, 255)
+                        } else if (status == "Pending") {
+                            Color(210, 194, 4, 255)
+                        } else {
+                            Color(194, 0, 0, 255)
+                        }, shape = CircleShape
+                    )
             )
             Image(
                 painter = painterResource(Res.drawable.recycle_bin),
@@ -1344,8 +1798,4 @@ fun switchTest() {
 
 }
 
-@Preview
-@Composable
-fun prev() {
-}
 

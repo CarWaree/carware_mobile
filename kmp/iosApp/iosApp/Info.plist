@@ -17,5 +17,13 @@
 </array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>calshow</string>
+    </array>
+
+    <key>NSCalendarsUsageDescription</key>
+    <string>We need access to add events to your calendar</string>
 </dict>
+
 </plist>

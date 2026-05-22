@@ -1,15 +1,17 @@
 package com.example.carware.di
 
 import com.example.carware.Notification.getPushTokenProvider
-import com.example.carware.network.createHttpClient
+import com.example.carware.network.core.createHttpClient
 import com.example.carware.repository.HistoryRepository
 import com.example.carware.repository.NotificationsRepository
 import com.example.carware.repository.ProfileRepository
+import com.example.carware.repository.ReminderRepository
 import com.example.carware.repository.ServiceRepository
 import com.example.carware.repository.VehicleRepository
 import com.example.carware.repository.auth.AuthRepository
+import com.example.carware.util.CalendarLauncher
 import com.example.carware.util.storage.PreferencesManager
-import com.example.carware.viewModel.addcar.AddCarViewModel
+import com.example.carware.viewModel.vehicle.addcar.AddCarViewModel
 import com.example.carware.viewModel.auth.emailVerification.EmailVerificationViewModel
 import com.example.carware.viewModel.auth.forgotPassword.ForgotPasswordViewModel
 import com.example.carware.viewModel.auth.logIn.LogInViewModel
@@ -18,9 +20,14 @@ import com.example.carware.viewModel.auth.otpVerification.OTPViewModel
 import com.example.carware.viewModel.auth.signUp.SignUpViewModel
 import com.example.carware.viewModel.history.HistoryScreenViewModel
 import com.example.carware.viewModel.home.HomeScreenViewModel
+import com.example.carware.viewModel.mycars.MyCarsScreenViewModel
 import com.example.carware.viewModel.notification.NotificationViewModel
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
+import com.example.carware.viewModel.reminder.reminderHistory.ReminderHistoryViewModel
+import com.example.carware.viewModel.reminder.reminderScreen.ReminderScreenViewModel
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
+import com.example.carware.viewModel.vehicle.editCar.EditCarViewModel
+import com.plusmobileapps.konnectivity.Konnectivity
 import org.koin.dsl.module
 
 fun appModule(preferencesManager: PreferencesManager) = module {
@@ -29,6 +36,8 @@ fun appModule(preferencesManager: PreferencesManager) = module {
     single { preferencesManager }
     single { createHttpClient(get()) }
     single { getPushTokenProvider() }
+    single<CalendarLauncher> { CalendarLauncher() }
+    single { Konnectivity() }
 
     // Repositories
     single { VehicleRepository(get()) }
@@ -37,7 +46,7 @@ fun appModule(preferencesManager: PreferencesManager) = module {
     single { ProfileRepository(get()) }
     single { ServiceRepository(get()) }
     single { NotificationsRepository(get()) }
-
+    single { ReminderRepository(get()) }
 
     // ViewModels
     factory { HomeScreenViewModel(get()) }
@@ -46,12 +55,16 @@ fun appModule(preferencesManager: PreferencesManager) = module {
     factory { OTPViewModel(get(), get()) }
     factory { NewPasswordViewModel(get(), get()) }
     factory { EmailVerificationViewModel(get(), get()) }
-    factory { HistoryScreenViewModel(get()) }
-    factory { ScheduleScreenViewModel(get(), get()) }
+    single { HistoryScreenViewModel(get()) }
+    factory { ScheduleScreenViewModel(get(), get(),get()) }
     factory { AddCarViewModel(get(), get()) }
     factory { ProfileScreenViewModel(get(), get()) }
     factory { ForgotPasswordViewModel(get(), get()) }
-    factory { NotificationViewModel(get(),get()) }
+    factory { NotificationViewModel(get(), get()) }
+    factory { EditCarViewModel(get()) }
+    factory { ReminderScreenViewModel(get(), get(), get(), get()) }
+    factory { MyCarsScreenViewModel(get(), get()) }
+    factory { ReminderHistoryViewModel(get()) }
     // AppFonts.kt
 
 }

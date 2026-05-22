@@ -1,5 +1,6 @@
 package com.example.carware.navigation
 
+import com.example.carware.network.apiResponse.vehicle.Vehicles
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -18,7 +19,7 @@ object ResetPasswordScreen
 object NewPasswordScreen
 
 @Serializable
-object VerificationCodeScreen
+data class VerificationCodeScreen(val email: String)
 
 @Serializable
 object OnboardingScreen
@@ -46,7 +47,7 @@ object LanguageSelectionScreen
 object TestScreen
 
 @Serializable
-object EmailVerificationScreen
+data class EmailVerificationScreen(val email: String)
 
 @Serializable
 object ProfileScreen
@@ -57,3 +58,22 @@ object EditProfileScreen
 
 @Serializable
 object SelectLanguageScreen
+
+
+@Serializable
+object ReminderScreen
+
+@Serializable
+object ServiceRecordScreen
+
+@Serializable
+data class EditCarScreen(val carId: Int)
+
+@Serializable
+object NotificationScreen
+
+@Serializable
+object MyCarsScreen
+
+@Serializable
+object ReminderHistoryScreen

@@ -24,36 +24,33 @@ class NewPasswordViewModel (
     val state : StateFlow<NewPasswordState> = _state.asStateFlow()
 
     fun onPasswordChange(value: String) = _state.update { it.copy(pass = value) }
-    fun onConfirmPasswordChange(value: String) = _state.update { it.copy(pass = value) }
+    fun onConfirmPasswordChange(value: String) = _state.update { it.copy(confPass = value) }
 
     fun clearErrorMessage() = _state.update { it.copy(errorMessage = null) }
 
-    private  fun validateForm():String?{
-        val state =_state.value
-
-        var passError=false
-        var confPassError=false
+    private fun validateForm(): String? {
+        val state = _state.value
+        var passError = false
+        var confPassError = false
         var errorMessage: String? = null
 
-
-
-        if (state.confPass.isBlank()) {
-            confPassError = true
-            errorMessage = "email or username is required"
-
-        } else if (state.pass.isBlank()) {
+        if (state.pass.isBlank()) {
             passError = true
             errorMessage = "Password is required"
+        } else if (state.pass.length < 8) {
+            passError = true
+            errorMessage = "Password must be at least 8 characters"
+        } else if (state.confPass.isBlank()) {
+            confPassError = true
+            errorMessage = "Please confirm your password"
+        } else if (state.pass != state.confPass) {
+            confPassError = true
+            errorMessage = "Passwords do not match"
         }
-        _state.update {
-            it.copy(
-                confPassError = confPassError,
-                passError = passError
-            )
-        }
+
+        _state.update { it.copy(passError = passError, confPassError = confPassError) }
         return errorMessage
     }
-
     fun newPassword(){
         val validationError = validateForm()
         if (validationError != null) {
@@ -66,7 +63,7 @@ class NewPasswordViewModel (
                 _state.update { it.copy(isLoading = true, errorMessage = null) }
 
                 val request = ResetPasswordRequest(
-                    token = preferencesManager.getToken(),
+                    accessToken = preferencesManager.getResetToken(),
                     newPassword = _state.value.pass,
                     confirmPassword =_state.value.confPass
                 )

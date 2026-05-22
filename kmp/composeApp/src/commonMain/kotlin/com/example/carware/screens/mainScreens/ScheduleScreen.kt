@@ -1,5 +1,10 @@
 package com.example.carware.screens.mainScreens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -22,19 +27,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.poppins_medium
@@ -43,15 +54,18 @@ import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.network.apiResponse.schedule.Service
 import com.example.carware.screens.CalenderBox
+import com.example.carware.screens.ConfirmSchedule
 import com.example.carware.screens.LoadingOverlay
+import com.example.carware.screens.NoInternetDialog
 import com.example.carware.screens.SelectDateBox
 import com.example.carware.screens.SelectDropdown
 import com.example.carware.screens.ShimmerScheduleScreen
+import com.example.carware.screens.ToastMessage
 import com.example.carware.screens.UsersCar
 import com.example.carware.screens.appButtonBack
 import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
-import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.Font
 
 @Composable
@@ -64,319 +78,342 @@ fun ScheduleScreen(
 
     val state by viewModel.state.collectAsState()
 
+
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
-    val popMid = FontFamily(Font(Res.font.poppins_medium))
     val pageScrollState = rememberScrollState()
     val selectCarScrollState = rememberScrollState()
     val strings = LocalStrings.current
-    val lifecycleOwner = LocalLifecycleOwner.current
 
-//    LaunchedEffect(Unit) {
-//        viewModel.loadInitialData()
-//        viewModel.loadInitialTimeSlots()
-//    }
+    var showConfirmDialog by remember { mutableStateOf(false) }
+    val isConnected by viewModel.isConnected.collectAsStateWithLifecycle()
+
+    val carName = state.availableCars.find { it.id == state.selectedCarId }?.let { car ->
+        "${car.brandName} ${car.modelName} ${car.year}"
+    } ?: ""
+
+    val selectedService = state.selectedServiceName.toString()
+    val selectedProvider = state.selectedCenterName
+    val months = listOf(
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+    )
+    val summaryDate = if (state.selectedDay != null && state.selectedTime != null) {
+        "${months[state.currentMonthIndex]} ${state.selectedDay}, ${state.currentYear} at ${state.selectedTime}"
+    } else null
 
     if (state.isTimePickerVisible) {
         Column(m.fillMaxSize()) {
-            SelectDateBox(viewModel = viewModel)
+            SelectDateBox(
+                availableSlots = state.availableSlots,
+                onSlotClick = { viewModel.selectTimeSlot(it) },
+                onConfirm = { viewModel.confirmTimeSelection() }
+            )
         }
-    } else if (state.isInitialLoading) {
+    } else if (state.isLoading) {
         ShimmerScheduleScreen()
     } else {
-        Column(
-            m
-                .fillMaxSize()
-                .verticalScroll(pageScrollState)
-                .background(Color(217, 217, 217, 255)),
-        ) {
-            Text(
-                strings.get("SCHEDULE_SERVICE"),
-                fontFamily = popSemi,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                style = TextStyle(
-                    brush = Brush.linearGradient(
-                        listOf(
-                            Color(194, 0, 0, 255),
-                            Color(92, 0, 0, 255)
-                        )
-                    ),
-                ),
-                modifier = m
-                    .fillMaxWidth()
-                    .wrapContentSize(Alignment.Center)
-                    .padding(top = 45.dp),
-            )
-            Spacer(m.height(32.dp))
 
-            Column(m.fillMaxSize()) {
-                // ============ SELECT CAR SECTION ============
-                Text(
-                    strings.get("SELECT_CAR"),
-                    fontFamily = popSemi,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    style = TextStyle(
-                        brush = Brush.linearGradient(
-                            listOf(
-                                Color(194, 0, 0, 255),
-                                Color(92, 0, 0, 255)
+
+        Box(
+            modifier = m.fillMaxSize()
+
+        ){
+            Column(
+                m
+                    .fillMaxSize()
+                    .background(Color(217, 217, 217, 255))
+                    .graphicsLayer {
+                        if (!isConnected || showConfirmDialog) {
+                            renderEffect = BlurEffect(
+                                radiusX = 10f,
+                                radiusY = 10f,
                             )
-                        ),
-                    ),
-                    modifier = m.padding(horizontal = 16.dp)
-                )
-                Spacer(m.height(22.dp))
-
-                Column(
-                    m
-                        .height(140.dp)
-                        .verticalScroll(selectCarScrollState)
-                ) {
-                    state.availableCars.forEach { car ->
-                        UsersCar(
-                            brand = car.brandName,
-                            model = car.modelName,
-                            isSelected = state.selectedCarId == car.id,
-                            onClick = {
-                                viewModel.selectVehicle(car.id)
-                            }
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-                }
-
-                Spacer(m.height(18.dp))
-
-                // ============ SELECT SERVICES SECTION ============
-                Text(
-                    strings.get("SELECT_SERVICE"),
-                    fontFamily = popSemi,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    style = TextStyle(
-                        brush = Brush.linearGradient(
-                            listOf(
-                                Color(194, 0, 0, 255),
-                                Color(92, 0, 0, 255)
-                            )
-                        ),
-                    ),
-                    modifier = m.padding(horizontal = 16.dp)
-                )
-                Spacer(m.height(6.dp))
-
-                Box(m.padding(horizontal = 26.dp)) {
-                    SelectDropdown(
-                        label = strings.get("SELECT_SERVICE"),
-                        selectedValue = state.selectedService.toString(),
-                        options = state.availableServicesTypes.map { it.name },
-                        onSelect = { selectedName ->
-                            val serviceType =
-                                state.availableServicesTypes.firstOrNull { it: Service ->
-                                    it.name == selectedName
-                                }
-                            // ============ CHANGE: Add it.id as second parameter ============
-                            serviceType?.let { viewModel.selectServiceType(it.name, it.id) }
-                        },
-                    )
-                }
-
-                Spacer(m.height(18.dp))
-
-                // ============ SELECT PROVIDER SECTION ============
-                Text(
-                    strings.get("SELECT_YOUR_PROVIDER"),
-                    fontFamily = popSemi,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    style = TextStyle(
-                        brush = Brush.linearGradient(
-                            listOf(
-                                Color(194, 0, 0, 255),
-                                Color(92, 0, 0, 255)
-                            )
-                        ),
-                    ),
-                    modifier = m.padding(horizontal = 16.dp)
-                )
-                Spacer(m.height(6.dp))
-
-                Column(m.padding(horizontal = 26.dp)) {
-                    SelectDropdown(
-                        label = strings.get("SELECT_YOUR_PROVIDER"),
-                        selectedValue = state.selectedCenter.toString(),
-                        options = state.availableCenters.mapNotNull { it.name },
-                        onSelect = { name ->
-                            state.availableCenters.firstOrNull { it.name == name }?.let {
-                                viewModel.selectCenter(it)
-                            }
                         }
-                    )
-                }
+                    },
 
-                Spacer(m.height(18.dp))
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
-                // ============ CALENDAR SECTION ============
-                CalenderBox(
-                    viewModel,
-                    preferencesManager = preferencesManager
-                )
-
-                Spacer(m.height(20.dp))
-
-                // ============ CONFIRM BUTTON & DETAILS SECTION ============
-                Column(
-                    m
-                        .fillMaxWidth()
-                        .padding(horizontal = 26.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // Display error if any
+                Box(contentAlignment = Alignment.TopCenter) {
                     if (state.error != null) {
-                        Text(
-                            text = state.error ?: "",
-                            color = Color.Red,
-                            fontSize = 12.sp,
-                            fontFamily = popSemi,
-                            modifier = m.padding(bottom = 8.dp)
-                        )
-                    }
-
-//                    // Display loading state
-//                    if (state.isLoading) {
-//                        Text(
-//                            text = strings.get("PROCESSING"),
-//                            fontFamily = popSemi,
-//                            fontSize = 14.sp,
-//                            color = Color(194, 0, 0, 255)
-//                        )
-//                        Spacer(m.height(8.dp))
-//                    }
-
-                    // Confirm Button
-                    Card(
-                        onClick = {
-                            if (viewModel.isAppointmentValid()) {
-                                viewModel.confirmAppointment()
-                            }
-                        },
-                        modifier = m
-                            .fillMaxWidth(0.8f)
-                            .height(45.dp)
-                            .border(
-                                width = 1.dp,
-                                color = Color(30, 30, 30, 110),
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                            .clip(shape = RoundedCornerShape(8.dp))
-                            .appButtonBack(),
-                        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-                    ) {
-                        Row(
-                            modifier = m.fillMaxSize(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
+                        this@Column.AnimatedVisibility(
+                            visible = state.error != null,
+                            enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+                            exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
+                            modifier = Modifier.padding(top = 45.dp)
                         ) {
-                            Text(
-                                strings.get("CONFIRM_RESERVATION"),
-                                fontFamily = popSemi,
-                                fontSize = 18.sp,
-                                color = Color(217, 217, 217, 255)
+                            state.error?.let { msg ->
+                                ToastMessage(message = msg, state = false)
+
+                                LaunchedEffect(msg) {
+                                    delay(3000)
+                                    viewModel.clearErrorMessage()
+                                }
+                            }
+                        }
+                    } else if (state.isBookingSuccess)
+                        this@Column.AnimatedVisibility(
+                            visible = state.isBookingSuccess && state.bookingSuccessMessage != null,
+                            enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+                            exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
+                            modifier = Modifier.padding(top = 45.dp)
+                        ) {
+                            state.bookingSuccessMessage?.let { msg ->
+                                ToastMessage(message = msg, state = true)
+                                LaunchedEffect(msg) {
+                                    delay(3000)
+                                    viewModel.clearErrorMessage()
+                                }
+                            }
+
+                        }
+                    else
+                        Text(
+                            strings.get("SCHEDULE_SERVICE"),
+                            fontFamily = popSemi,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            style = TextStyle(
+                                brush = Brush.linearGradient(
+                                    listOf(
+                                        Color(194, 0, 0, 255),
+                                        Color(92, 0, 0, 255)
+                                    )
+                                ),
+                            ),
+                            modifier = m
+                                .fillMaxWidth()
+                                .wrapContentSize(Alignment.Center)
+                                .padding(top = 45.dp),
+                        )
+                }
+                Spacer(m.height(32.dp))
+
+                Column(
+                    m
+                        .fillMaxSize()
+                        .verticalScroll(pageScrollState),
+
+                    ) {
+                    // ============ SELECT CAR SECTION ============
+                    Text(
+                        strings.get("SELECT_CAR"),
+                        fontFamily = popSemi,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        style = TextStyle(
+                            brush = Brush.linearGradient(
+                                listOf(
+                                    Color(194, 0, 0, 255),
+                                    Color(92, 0, 0, 255)
+                                )
+                            ),
+                        ),
+                        modifier = m.padding(horizontal = 16.dp)
+                    )
+                    Spacer(m.height(22.dp))
+
+                    Column(
+                        m
+                            .height(140.dp)
+                            .verticalScroll(selectCarScrollState)
+                    ) {
+                        state.availableCars.forEach { car ->
+                            UsersCar(
+                                brand = car.brandName,
+                                model = car.modelName,
+                                isSelected = state.selectedCarId == car.id,
+                                onClick = {
+                                    viewModel.selectVehicle(car.id)
+                                }
                             )
+                            Spacer(modifier = Modifier.height(8.dp))
                         }
                     }
 
-                    Spacer(m.height(16.dp))
+                    Spacer(m.height(18.dp))
 
-                    // Reservation Details
+                    // ============ SELECT SERVICES SECTION ============
                     Text(
-                        strings.get("RESERVATION_DETAILS"),
+                        strings.get("SELECT_SERVICE"),
                         fontFamily = popSemi,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.W600,
-                        color = Color(194, 0, 0, 255)
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        style = TextStyle(
+                            brush = Brush.linearGradient(
+                                listOf(
+                                    Color(194, 0, 0, 255),
+                                    Color(92, 0, 0, 255)
+                                )
+                            ),
+                        ),
+                        modifier = m.padding(horizontal = 16.dp)
                     )
+                    Spacer(m.height(6.dp))
 
-                    Spacer(m.height(8.dp))
-
-                    // Date & Time
-                    viewModel.getFinalSelectionString()?.let {
-                        Text(
-                            text = it,
-                            fontFamily = popMid,
-                            fontSize = 12.sp,
-                            color = Color.DarkGray
-                        )
-                    } ?: run {
-                        Text(
-                            text = strings.get("no_date/time_selected"),
-                            fontFamily = popMid,
-                            fontSize = 12.sp,
-                            color = Color.Gray
+                    Box(m.padding(horizontal = 26.dp)) {
+                        SelectDropdown(
+                            label = strings.get("SELECT_SERVICE"),
+                            selectedValue = state.selectedServiceName ?: "",
+                            options = state.availableServicesTypes.map { it.name },
+                            onSelect = { selectedName ->
+                                val serviceType =
+                                    state.availableServicesTypes.firstOrNull { it: Service ->
+                                        it.name == selectedName
+                                    }
+                                // ============ CHANGE: Add it.id as second parameter ============
+                                serviceType?.let { viewModel.selectServiceType(it.id, it.name) }
+                            },
                         )
                     }
 
-                    Spacer(m.height(4.dp))
+                    Spacer(m.height(18.dp))
 
+                    // ============ SELECT PROVIDER SECTION ============
+                    Text(
+                        strings.get("SELECT_YOUR_PROVIDER"),
+                        fontFamily = popSemi,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        style = TextStyle(
+                            brush = Brush.linearGradient(
+                                listOf(
+                                    Color(194, 0, 0, 255),
+                                    Color(92, 0, 0, 255)
+                                )
+                            ),
+                        ),
+                        modifier = m.padding(horizontal = 16.dp)
+                    )
+                    Spacer(m.height(6.dp))
 
-                    // Selected Service
-                    state.selectedService?.let {
-                        Text(
-                            text = strings.get("SERVICE") + "$it",
-                            fontFamily = popMid,
-                            fontSize = 12.sp,
-                            color = Color.DarkGray
-                        )
-                    } ?: run {
-                        Text(
-                            text = strings.get("SERVICE_NOT_SELECTED"),
-                            fontFamily = popMid,
-                            fontSize = 12.sp,
-                            color = Color.Gray
-                        )
-                    }
-
-                    Spacer(m.height(4.dp))
-
-                    // Selected Center
-                    state.selectedCenter?.let {
-                        Text(
-                            text = strings.get("PROVIDER") + "$it",
-                            fontFamily = popMid,
-                            fontSize = 12.sp,
-                            color = Color.DarkGray
-                        )
-                    } ?: run {
-                        Text(
-                            text = strings.get("PROVIDER_NOT_SELECTED"),
-                            fontFamily = popMid,
-                            fontSize = 12.sp,
-                            color = Color.Gray
+                    Column(m.padding(horizontal = 26.dp)) {
+                        SelectDropdown(
+                            label = strings.get("SELECT_YOUR_PROVIDER"),
+                            selectedValue = state.selectedCenterName ?: "",
+                            options = state.availableCenters.mapNotNull { it.name },
+                            onSelect = { name ->
+                                state.availableCenters.firstOrNull { it.name == name }?.let {
+                                    viewModel.selectCenter(it)
+                                }
+                            }
                         )
                     }
 
-                    Spacer(m.height(4.dp))
+                    Spacer(m.height(18.dp))
 
-                    // Selected Car
-                    state.availableCars.find { it.id == state.selectedCarId }?.let { car ->
-                        Text(
-                            text = "Car: ${car.brandName} ${car.modelName}",
-                            fontFamily = popMid,
-                            fontSize = 12.sp,
-                            color = Color.DarkGray
-                        )
-                    } ?: run {
-                        Text(
-                            text = strings.get("CAR_NOT_SELECTED"),
-                            fontFamily = popMid,
-                            fontSize = 12.sp,
-                            color = Color.Gray
+                    // ============ CALENDAR SECTION ============
+                    Column(
+                        m.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CalenderBox(
+                            currentMonthIndex = state.currentMonthIndex,
+                            currentYear = state.currentYear,
+                            selectedDay = state.selectedDay,
+                            preferencesManager = preferencesManager,
+                            onChangeMonth = { viewModel.changeMonth(it) },
+                            onChangeYear = { viewModel.changeYear(it) },
+                            onSelectDay = { viewModel.selectDay(it) }
                         )
                     }
+
+                    Spacer(m.height(20.dp))
+
+                    // ============ CONFIRM BUTTON & DETAILS SECTION ============
+                    Column(
+                        m
+                            .fillMaxWidth()
+                            .padding(horizontal = 26.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        // Display error if any
+                        if (state.error != null) {
+                            Text(
+                                text = state.error ?: "",
+                                color = Color.Red,
+                                fontSize = 12.sp,
+                                fontFamily = popSemi,
+                                modifier = m.padding(bottom = 8.dp)
+                            )
+                        }
+
+                        //
+                        Card(
+                            onClick = {
+                                if (viewModel.isValid()) {
+                                    showConfirmDialog = true
+                                } else {
+                                    state.error
+                                }
+
+                            },
+                            modifier = m
+                                .fillMaxWidth(0.8f)
+                                .height(45.dp)
+                                .border(
+                                    width = 1.dp,
+                                    color = Color(30, 30, 30, 110),
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .clip(shape = RoundedCornerShape(8.dp))
+                                .appButtonBack(),
+                            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                        ) {
+                            Row(
+                                modifier = m.fillMaxSize(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    strings.get("CONFIRM_RESERVATION"),
+                                    fontFamily = popSemi,
+                                    fontSize = 18.sp,
+                                    color = Color(217, 217, 217, 255)
+                                )
+                            }
+                        }
+                    }
+                    Spacer(m.height(120.dp))
                 }
+            }
 
-                Spacer(m.height(120.dp))
+            if (!isConnected) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.4f))  // Semi-transparent dark overlay
+                        .blur(10.dp)  // Blur effect
+                        .pointerInput(Unit) {
+                            awaitPointerEventScope {
+                                while (true) {
+                                    awaitPointerEvent()
+                                }
+                            }
+                        }
+                )
+                NoInternetDialog()
+            }
+                if (showConfirmDialog) {
+                ConfirmSchedule(
+                    scheduleViewModel = viewModel,
+                    onDismiss = { showConfirmDialog = false },
+                    carName = carName,
+                    selectedService = selectedService,
+                    selectedDate = "$summaryDate",
+                    selectedProvider = selectedProvider,
+                    onConfirm = { viewModel.confirmAppointment() }
+                )
             }
         }
 

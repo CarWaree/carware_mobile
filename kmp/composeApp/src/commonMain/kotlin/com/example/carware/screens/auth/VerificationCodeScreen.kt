@@ -53,8 +53,6 @@ import com.example.carware.screens.LoadingOverlay
 import com.example.carware.screens.ToastMessage
 import com.example.carware.screens.appButtonBack
 import com.example.carware.screens.appGradBack
-import com.example.carware.util.lang.AppLanguage
-import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.auth.otpVerification.OTPViewModel
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.Font
@@ -63,7 +61,8 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun VerificationCodeScreen(
     navController: NavController,
-    viewModel: OTPViewModel
+    viewModel: OTPViewModel,
+    email: String
 ) {
 
     val state by viewModel.state.collectAsState()
@@ -83,9 +82,6 @@ fun VerificationCodeScreen(
     val normalBorderColor = Color(118, 118, 118, 255)
     val placeholderColor = Color(30, 30, 30, 168)
 
-//
-//    var OTP by remember { mutableStateOf("") }
-//    var isErrorOTP by remember { mutableStateOf(false) }
 
     val textFieldColors = TextFieldDefaults.colors(
 
@@ -119,8 +115,8 @@ fun VerificationCodeScreen(
 
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
-            navController.navigate(NewPasswordScreen ){
-                popUpTo(VerificationCodeScreen) { inclusive = true }
+            navController.navigate(NewPasswordScreen) {
+                popUpTo<VerificationCodeScreen> { inclusive = true }
             }
         }
     }
@@ -245,12 +241,7 @@ fun VerificationCodeScreen(
                     Spacer(modifier = m.padding(vertical = 8.dp))
 
                     Card(
-                        //                    when {
-//                        cameFromSignup -> navController.navigate(HomeScreen)
-//                        cameFromReset -> navController.navigate(NewPasswordScreen)
-//                        else -> navController.popBackStack() // fallback
-                        //}
-                        onClick = { viewModel.otpVerification() },
+                        onClick = { viewModel.otpVerification(email) },
                         modifier = m
 
                             .size(width = 280.dp, height = 45.dp)

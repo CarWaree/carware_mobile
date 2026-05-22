@@ -11,5 +11,6 @@ val message: String
 )
 @Serializable
 data class VerificationData(
-    val token: String,
+    val accessToken: String,
+    val refreshToken: String
 )

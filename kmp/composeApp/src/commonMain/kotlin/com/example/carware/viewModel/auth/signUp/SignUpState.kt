@@ -16,7 +16,8 @@ data class SignUpState(
     val isCarAdded: Boolean = false,
     val needsEmailVerification: Boolean = false,
 
-
+    val firstNameError: Boolean = false,
+    val lastNameError: Boolean=false,
     val userNameError: Boolean = false,
     val emailError: Boolean = false,
     val passError: Boolean = false,

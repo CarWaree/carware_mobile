@@ -2,9 +2,19 @@ import SwiftUI
 import GoogleSignIn
 import FirebaseCore
 import Firebase
-    
+import ComposeApp
+
+
+
 @main
 struct iOSApp: App {
+    
+    
+       init() {
+           MainViewControllerKt.setupLottieFactory {
+               LottieSplashController()
+           }
+       }
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     

@@ -1,7 +1,9 @@
 package com.example.carware.screens.mainScreens
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,11 +12,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -28,22 +28,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.audi
@@ -53,33 +55,34 @@ import carware.composeapp.generated.resources.person
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.LocalStrings
-import com.example.carware.Notification.RequestNotificationPermission
 import com.example.carware.m
+import com.example.carware.navigation.EditCarScreen
+import com.example.carware.navigation.NotificationScreen
+import com.example.carware.navigation.ProfileScreen
 import com.example.carware.network.apiResponse.appointment.Appointments
 import com.example.carware.network.apiResponse.vehicle.Vehicles
 import com.example.carware.screens.CarCard
-import com.example.carware.screens.OBDCard
+import com.example.carware.screens.ConfirmDeleteCar
 import com.example.carware.screens.ServiceHistoryItem
 import com.example.carware.screens.ShimmerCarCard
-import com.example.carware.screens.ShimmerMaintenance
-import com.example.carware.screens.UpcomingMaintenance
+import com.example.carware.screens.ToastMessage
+import com.example.carware.screens.UpcomingReminder
 import com.example.carware.screens.appGradBack
 import com.example.carware.screens.shimmerEffect
-import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.home.HomeScreenState
 import com.example.carware.viewModel.home.HomeScreenViewModel
 import com.example.carware.viewModel.notification.NotificationViewModel
-import kotlinx.coroutines.awaitCancellation
+import com.example.carware.viewModel.notification.NotificationsUiState
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
+@Suppress("SuspiciousIndentation")
 @Composable
 fun HomeScreen(
     navController: NavController,
     viewModel: HomeScreenViewModel,
     notificationViewModel: NotificationViewModel
-
 ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
@@ -89,251 +92,357 @@ fun HomeScreen(
 
     val _state by viewModel.state.collectAsState()
     val state = _state
-
-    val cachedVehicles by viewModel.cachedVehicles.collectAsState(initial = emptyList())
+    val uiState by notificationViewModel.notificationsUiState.collectAsState()
 
     val username = when (state) {
         is HomeScreenState.Success -> state.cars.firstOrNull()?.userName ?: "User"
         else -> "Guest"
     }
-    RequestNotificationPermission { granted ->
-        notificationViewModel.onPermissionResult(granted)
+
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+
+    @Composable
+    fun SuccessCarPagerContent(cars: List<Vehicles>, navController: NavController) {
+        val pagerState = rememberPagerState(pageCount = { cars.size })
+
+        LaunchedEffect(pagerState.currentPage) {
+            val currentCarId = cars[pagerState.currentPage].id
+            viewModel.setCurrentCar(currentCarId)
+        }
+
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Spacer(modifier = m.padding(vertical = 16.dp))
+
+            HorizontalPager(
+                state = pagerState,
+                modifier = m.fillMaxWidth(),
+                verticalAlignment = Alignment.Top
+            ) { page ->
+                val car = cars[page]
+                Box(modifier = m.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    CarCard(
+                        brand = car.brandName,
+                        model = car.modelName,
+                        modelYear = car.year.toString(),
+                        color = car.color,
+                        image = Res.drawable.audi,
+                        navController = navController,
+                        viewModel = viewModel,
+                        onEditClick = {
+                            navController.navigate(EditCarScreen(carId = car.id))
+                        },
+                        onDeleteClick = { showDeleteDialog = true },
+
+                        )
+                }
+            }
+
+            //  page indicator
+            Row(
+                Modifier.fillMaxWidth().padding(top = 8.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                repeat(cars.size) { iteration ->
+                    val color = if (pagerState.currentPage == iteration)
+                        Color(194, 0, 0, 255)
+                    else Color.Transparent
+                    Box(
+                        modifier = m
+                            .padding(4.dp)
+                            .clip(shape = CircleShape)
+                            .background(color).size(10.dp)
+                            .border(
+                                shape = CircleShape,
+                                width = 1.dp,
+                                color = Color(194, 0, 0, 255)
+                            )
+                    )
+                }
+            }
+        }
     }
 
-//    val lifecycleOwner = LocalLifecycleOwner.current
-//
-//    LaunchedEffect(Unit) {
-//        viewModel.loadVehicles()
-//    }
-
-    Column(
-        m
-            .fillMaxSize()
-            .appGradBack()
-
+    Box(modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter
     ) {
-        Box(m.fillMaxWidth()
-        ){
-            Icon(
-                painter = painterResource(Res.drawable.home_line),
-                contentDescription = null,
-                tint = Color.Unspecified,
-                modifier = m
-                    .fillMaxWidth()
-                    .offset(x = 5.dp, y = 10.dp)
-                    .graphicsLayer(
-//                        transformOrigin = TransformOrigin(pivotFractionX = -0.8f, pivotFractionY = 0.5f),
-                        scaleX = 1f, // Stretches it to 250% width
-                        scaleY = 1.5f  // Flattens it to 80% height
-                    )
-            )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 32.dp, vertical = 50.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    painter = painterResource(Res.drawable.person),
-                    contentDescription = null,
-                    tint = Color.Unspecified,
-                    modifier = m.size(25.dp)
-                ) //profile icon
-                Spacer(modifier = m.padding(horizontal = 4.dp))
-                Text(
-                    text = strings.get("WELCOME_BACK_HOME") + " \n $username",
-                    fontFamily = popSemi,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(217, 217, 217, 255)
-                ) // welcome back
-            }
-            Spacer(modifier = m.padding(horizontal = 8.dp))
-
-            Icon(
-                painter = painterResource(Res.drawable.notification),
-                contentDescription = null,
-                tint = Color.Unspecified,
-                modifier = m
-                    .size(25.dp)
-
-            ) //notifications
-        }
-
-
-
-        }
-        val isRefreshing = state is HomeScreenState.Loading
-
-        PullToRefreshBox(
-            isRefreshing = isRefreshing,
-            onRefresh = { viewModel.loadVehicles() } // ✅ user pulls → fresh data
-        ) {
-
         Column(
-            m.fillMaxSize()
-                .clip(RoundedCornerShape(70.dp, 70.dp, 0.dp, 0.dp))
-                .verticalScroll(scrollState)
-                .background(Color(217, 217, 217, 255)),
+            m
+                .fillMaxSize()
+                .graphicsLayer {
+                    if (showDeleteDialog) {
+                        renderEffect = BlurEffect(
+                            radiusX = 10f,
+                            radiusY = 10f,
+                        )
+                    }
+                }
+                .appGradBack(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box {
-                when (state) {
-                    is HomeScreenState.Loading -> {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Spacer(modifier = m.padding(vertical = 16.dp))
-                            ShimmerCarCard()
-                        }
-                    }
 
-                    is HomeScreenState.Error -> {
-                        Spacer(modifier = m.padding(vertical = 50.dp))
-                        Text("Error: ${state.message}", color = Color.Red)
-                    }
 
-                    is HomeScreenState.Success -> {
-                        // Get cached vehicles for auto-update
-                        val cachedVehicles by viewModel.cachedVehicles.collectAsState(initial = emptyList())
-
-                        // Use cached if available, otherwise use state vehicles
-                        val vehiclesToDisplay = if (cachedVehicles.isNotEmpty()) cachedVehicles else state.cars
-
-                        SuccessCarPagerContent(vehiclesToDisplay, navController)
-                    }
-                }
-            }
-            Spacer(modifier = m.padding(vertical = 16.dp))
-            if (state is HomeScreenState.Loading) {
-                Box(modifier = m.padding(horizontal = 12.dp)) {
-                    ShimmerMaintenance()
-                }
-            } else {
-                UpcomingMaintenance()
-            }
-            Spacer(modifier = m.padding(vertical = 12.dp))
-            Text(
-                strings.get("SCHEDULED_SERVICES"),
-                fontFamily = popSemi,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                style = TextStyle(
-                    brush = Brush.linearGradient(
-                        listOf(
-                            Color(194, 0, 0, 255),
-                            Color(92, 0, 0, 255)
+            Box(
+                m.fillMaxWidth()
+            ) {
+                Icon(
+                    painter = painterResource(Res.drawable.home_line),
+                    contentDescription = null,
+                    tint = Color.Unspecified,
+                    modifier = m
+                        .fillMaxWidth()
+                        .offset(x = 5.dp, y = 10.dp)
+                        .graphicsLayer(
+//                        transformOrigin = TransformOrigin(pivotFractionX = -0.8f, pivotFractionY = 0.5f),
+                            scaleX = 1f, // Stretches it to 250% width
+                            scaleY = 1.5f  // Flattens it to 80% height
                         )
-                    ),
-                ),
-                modifier = m
-                    .padding(start = 8.dp)
-                    .align(alignment = Alignment.Start)
-            ) // Secluded Services
-            Spacer(modifier = m.padding(vertical = 4.dp))
-
-            Box {
-                when (state) {
-                    is HomeScreenState.Success -> {
-                        if (state.appointments.isNotEmpty()) {
-                            SuccessServicePagerContent(state.appointments)
-
-                        } else {
-                            Spacer(modifier = m.padding(vertical = 50.dp))
-                            Text(
-                                strings.get("NO_UPCOMING_APPOINTMENTS"),
-                                fontFamily = popMid,
-                                fontSize = 14.sp,
-                                color = Color.Gray
-                            )
-                        }
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 32.dp, vertical = 50.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            painter = painterResource(Res.drawable.person),
+                            contentDescription = null,
+                            tint = Color.Unspecified,
+                            modifier = m.size(25.dp)
+                                .clickable { navController.navigate(ProfileScreen) }
+                        ) //profile icon
+                        Spacer(modifier = m.padding(horizontal = 4.dp))
+                        Text(
+                            text = strings.get("WELCOME_BACK_HOME") + " \n $username",
+                            fontFamily = popSemi,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(217, 217, 217, 255)
+                        ) // welcome back
                     }
-                    is HomeScreenState.Loading -> {
-                        Row(
-                            modifier = m
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp, horizontal = 4.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            repeat(3) {
+                    Spacer(modifier = m.padding(horizontal = 8.dp))
+
+                    Box {
+                        Icon(
+                            painter = painterResource(Res.drawable.notification),
+                            contentDescription = null,
+                            tint = Color.Unspecified,
+                            modifier = Modifier
+                                .size(26.dp)
+                                .clickable { navController.navigate(NotificationScreen) }
+                        )
+
+                        if (uiState is NotificationsUiState.Success) {
+                            val unreadCount = (uiState as NotificationsUiState.Success).unreadCount
+                            if (unreadCount > 0) {
                                 Box(
                                     modifier = Modifier
-                                        .size(120.dp, 80.dp)
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .shimmerEffect()
-                                )
+                                        .align(Alignment.TopEnd)
+                                        .background(Color(235, 169, 39, 255), shape = CircleShape)
+                                        .size(12.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = unreadCount.toString(),
+                                        color = Color.White,
+                                        fontSize = 8.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
                             }
                         }
                     }
 
-                    else -> {
-                        Spacer(modifier = m.padding(vertical = 16.dp))
+
+                }
+
+            }
+            val isRefreshing = state is HomeScreenState.Loading
+
+            PullToRefreshBox(
+                isRefreshing = isRefreshing,
+                onRefresh = { viewModel.loadVehicles()
+                viewModel.loadNextReminder()}
+            ) {
+
+
+                Column(
+                    m.fillMaxSize()
+                        .clip(RoundedCornerShape(70.dp, 70.dp, 0.dp, 0.dp))
+                        .verticalScroll(scrollState)
+                        .background(Color(217, 217, 217, 255)),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Box {
+                        when (state) {
+                            is HomeScreenState.Loading -> {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Spacer(modifier = m.padding(vertical = 16.dp))
+                                    ShimmerCarCard()
+                                }
+                            }
+
+                            is HomeScreenState.Error -> {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Spacer(modifier = m.padding(vertical = 16.dp))
+                                                                        ShimmerCarCard()
+
+                                }
+                            }
+
+                            is HomeScreenState.Success -> {
+
+                                // Get cached vehicles for auto-update
+                                val cachedVehicles by viewModel.cachedVehicles.collectAsState(
+                                    initial = emptyList()
+                                )
+
+                                // Use cached if available, otherwise use state vehicles
+                                val vehiclesToDisplay =
+
+                                    cachedVehicles.ifEmpty { state.cars }
+
+                                SuccessCarPagerContent(vehiclesToDisplay, navController)
+
+                            }
+                        }
                     }
+                    Spacer(modifier = m.padding(vertical = 16.dp))
+
+                    val nextReminder by viewModel.nextReminderMillis.collectAsStateWithLifecycle()
+
+                    UpcomingReminder(navController, nextReminder)
+                    Spacer(modifier = m.padding(vertical = 12.dp))
+                    Text(
+                        strings.get("SCHEDULED_SERVICES"),
+                        fontFamily = popSemi,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        style = TextStyle(
+                            brush = Brush.linearGradient(
+                                listOf(
+                                    Color(194, 0, 0, 255),
+                                    Color(92, 0, 0, 255)
+                                )
+                            ),
+                        ),
+                        modifier = m
+                            .padding(start = 8.dp)
+                            .align(alignment = Alignment.Start)
+                    ) // Secluded Services
+                    Spacer(modifier = m.padding(vertical = 4.dp))
+
+                    Box {
+                        when (state) {
+                            is HomeScreenState.Success -> {
+                                if (state.appointments.isNotEmpty()) {
+                                    SuccessServicePagerContent(state.appointments)
+
+                                } else {
+                                    Spacer(modifier = m.padding(vertical = 50.dp))
+                                    Text(
+                                        strings.get("NO_UPCOMING_APPOINTMENTS"),
+                                        fontFamily = popMid,
+                                        fontSize = 14.sp,
+                                        color = Color.Gray
+                                    )
+                                }
+                            }
+
+                            is HomeScreenState.Loading -> {
+                                Row(
+                                    modifier = m
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp, horizontal = 4.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    repeat(3) {
+                                        Box(
+                                            modifier = Modifier
+                                                .size(120.dp, 80.dp)
+                                                .clip(RoundedCornerShape(8.dp))
+                                                .shimmerEffect()
+                                        )
+                                    }
+                                }
+                            }
+
+                            else -> {
+                                Spacer(modifier = m.padding(vertical = 16.dp))
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = m.padding(vertical = 12.dp))
+
+                    //                Row(m.padding(horizontal = 12.dp))
+                    //                {
+                    //                    OBDCard(onClick = {/* more details logic*/ })
+                    //                }
+
+                    Spacer(modifier = m.padding(vertical = 64.dp))
+
                 }
             }
 
-            Spacer(modifier = m.padding(vertical = 12.dp))
-
-            Row(m.padding(horizontal = 12.dp))
-            { 
-                OBDCard(onClick = {/* more details logic*/ }) 
-            }
-
-            Spacer(modifier = m.padding(vertical = 64.dp))
-
-
-        }
-    }
-    }
-}
-
-@Composable
-fun SuccessCarPagerContent(cars: List<Vehicles>,navController: NavController) {
-    // Initialize pager state with the number of cars
-    val pagerState = rememberPagerState(pageCount = { cars.size })
-
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Spacer(modifier = m.padding(vertical = 16.dp))
-
-        HorizontalPager(
-            state = pagerState,
-            modifier = m.fillMaxWidth(),
-            verticalAlignment = Alignment.Top
-        ) { page ->
-            val car = cars[page]
-            Box(modifier = m.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                CarCard(
-                    brand = car.brandName,
-                    model = car.modelName,
-                    modelYear = car.year.toString(),
-                    color = car.color,
-                    image = Res.drawable.audi,
-                    navController = navController
-
-                )
-            }
         }
 
-        //  page indicator
-        Row(
-            Modifier.fillMaxWidth().padding(top = 8.dp),
-            horizontalArrangement = Arrangement.Center
+
+        if (showDeleteDialog) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.4f))  // Semi-transparent dark overlay
+                    .blur(10.dp)  // Blur effect
+                    .pointerInput(Unit) {
+                        awaitPointerEventScope {
+                            while (true) {
+                                awaitPointerEvent()
+                            }
+                        }
+                    }
+            )
+            ConfirmDeleteCar(
+                viewModel = viewModel,
+                onDismiss = { showDeleteDialog = false }
+            )
+        }
+        AnimatedVisibility(
+            visible = state is HomeScreenState.Success && state.successMessage != null,
+            modifier = Modifier
+                .padding(top = 50.dp) // Gap from the very top of the phone
         ) {
-            repeat(cars.size) { iteration ->
-                val color = if (pagerState.currentPage == iteration)
-                    Color(194, 0, 0, 255)
-                else Color.Transparent
-                Box(
-                    modifier = m
-                        .padding(4.dp)
-                        .clip(shape = CircleShape)
-                        .background(color).size(10.dp)
-                        .border(shape = CircleShape, width = 1.dp, color = Color(194, 0, 0, 255))
-                )
+            if (state is HomeScreenState.Success && state.successMessage != null) {
+                ToastMessage(message = state.successMessage, state = true)
+                LaunchedEffect(state.successMessage) {
+                    delay(3000)
+        //                    viewModel.loadVehicles()
+                    viewModel.clearMessage()
+                }
             }
         }
+//        Spacer(modifier = m.padding(vertical = 50.dp))
+//        Text("Error: ${state.message}", color = Color.Red)
+        AnimatedVisibility(
+            visible = state is HomeScreenState.Error && state.message!=null,
+            modifier = Modifier
+                .padding(top = 50.dp) // Gap from the very top of the phone
+        ) {
+            if (state is HomeScreenState.Error ) {
+                ToastMessage(message = "${state.message}".take(20), state = false )
+                LaunchedEffect(state.message) {
+                    delay(3000)
+                    viewModel.clearMessage()
+                }
+            }
+        }
+
+
     }
 }
+
 
 @Composable
 fun SuccessServicePagerContent(appointments: List<Appointments>) {

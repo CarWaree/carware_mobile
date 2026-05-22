@@ -3,10 +3,10 @@ package com.example.carware.viewModel.auth.emailVerification
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.carware.network.apiRequests.auth.EmailVerificationRequest
-import com.example.carware.network.apiRequests.auth.OTPRequest
+import com.example.carware.network.apiResponse.auth.EmailVerificationResponse
+import com.example.carware.network.core.UiResult
 import com.example.carware.repository.auth.AuthRepository
 import com.example.carware.util.storage.PreferencesManager
-import com.example.carware.viewModel.auth.logIn.LogInState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,7 +17,8 @@ class EmailVerificationViewModel
     (
     private val repository: AuthRepository,
     private val preferencesManager: PreferencesManager,
-) : ViewModel() {
+
+    ) : ViewModel() {
     private val _state = MutableStateFlow(EmailVerificationState())
     val state: StateFlow<EmailVerificationState> = _state.asStateFlow()
 
@@ -44,7 +45,7 @@ class EmailVerificationViewModel
         return errorMessage
     }
 
-    fun emailVerification() {
+    fun emailVerification(email: String) {
         val validationError = validateForm()
         if (validationError != null) {
             _state.update { it.copy(errorMessage = validationError) }
@@ -52,31 +53,45 @@ class EmailVerificationViewModel
         }
 
         viewModelScope.launch {
-            try {
-                _state.update { it.copy(isLoading = true, errorMessage = null) }
-                val request = EmailVerificationRequest(
-                    otp = _state.value.otp
-                )
-                val response = repository.verifyEmailRepo(request)
+            _state.update { it.copy(isLoading = true, errorMessage = null) }
+            val request = EmailVerificationRequest(
+                email = email,
+                otp = _state.value.otp
+            )
 
-                val token = response.data?.token
-                    ?: throw IllegalStateException("Token missing in response")
-                preferencesManager.saveToken(token)
+            when (val result: UiResult<EmailVerificationResponse> =
+                repository.verifyEmailRepo(request)) {
+                is UiResult.Success -> {
+                    val response = result.data
+                    val accessToken = response.data?.accessToken
+                    val refreshToken = response.data?.refreshToken
 
-//                val expToken=response.data.expiresOn
-//                preferencesManager.saveExpiresOn(expToken)
-                preferencesManager.saveEmailVerified(true)
+                    if (accessToken == null || refreshToken == null) {
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                errorMessage = "Token missing from server response"
+                            )
+                        }
+                        return@launch
+                    }
 
-                _state.update {
-                    it.copy(isLoading = false, isSuccess = true)
+                    preferencesManager.saveToken(accessToken)
+                    preferencesManager.saveRefreshToken(refreshToken)
+                    preferencesManager.saveEmailVerified(true)
 
+                    _state.update {
+                        it.copy(isLoading = false, isSuccess = true)
+                    }
                 }
-            } catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = e.message ?: "An error occurred"
-                    )
+
+                is UiResult.Error -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = result.message
+                        )
+                    }
                 }
             }
         }

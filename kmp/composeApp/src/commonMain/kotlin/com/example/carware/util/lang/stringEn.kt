@@ -32,6 +32,8 @@ val StringsEn = mapOf(
     // Sign up
     "WELCOME_MESSAGE" to "Welcome!",
     "MARKETING_SLOGAN" to " Drive with confidence.Enroll in smarter! \n CarWare today.",
+    "SIGNUP" to "Sign Up",
+
 //    "JOIN_CARWARE" to "CarWare today .",
     "FIRST_NAME" to "First Name",
     "LAST_NAME" to "Last Name",
@@ -110,14 +112,16 @@ val StringsEn = mapOf(
     "LOADING_CAR_DATA" to "Loading car data ...",
     "SCHEDULED_SERVICES" to "Scheduled Services",
     "NO_UPCOMING_APPOINTMENTS" to "No upcoming appointments",
-    "UP_COMING_MAINTENANCE" to " Upcoming \n Maintenance ",
+    "UP_COMING_REMINDER" to " Upcoming Reminder",
+    "CREATE_REMINDER" to "Create One",
     "MORE_DETAILS" to "more details",
 
 
     // schedule screen
     "SCHEDULE_SERVICE" to "Schedule Service",
-    "SELECT_CAR" to "Select your Car",
-    "SELECT_SERVICE"  to "Select Service",
+    "SELECT_CAR" to "Select Your Car",
+    "SELECT_SERVICE"  to "select your Service",
+    "SELECT_SERVICES" to "Select Services",
     "SELECT_YOUR_PROVIDER" to "select your Provider",
     "PROCESSING" to "Processing...",
     "CONFIRM_RESERVATION" to "Confirm Reservation",
@@ -159,5 +163,28 @@ val StringsEn = mapOf(
     "PREFERENCES" to "Preferences",
     "CHANGE_LANGUAGE" to "Change Language",
     "HELP_SUPPORT" to "Help & Support",
-    "LOG_OUT" to "Log Out"
-)
+    "LOG_OUT" to "Log Out",
+
+    // Profile
+    "PROFILE" to "Profile",
+    "MEMBER_SINCE" to "Member since",
+    "MY_PRIMARY_VEHICLE" to "My Primary Vehicle",
+    "MY_CARS" to "My Cars",
+    "VISA_ENDING_IN" to "Visa ending in",
+    "EXPIRES" to "Expires",
+    "ADD_NEW_METHOD" to "Add new method",
+    "CHANGE_PHOTO" to "Change profile photo",
+    "DISCARD_CHANGES" to "Discard Changes",
+    "EMAIL_ADDRESS" to "Email Address",
+    "FULL_NAME_LABEL" to "Full Name",
+
+    // Reminder
+    "REMINDER" to "Reminder",
+    "ADD_REMINDER" to "Add Reminder",
+    "NOTE_LABEL" to "Note",
+    "ADD_NOTE_PLACEHOLDER" to "Add your Note",
+    // Reminder History
+    "REMINDER_HISTORY" to "Reminder History",
+    "REMINDER_SUBTITLE" to "View and manage your Reminder records for all your vehicles.",
+
+    )

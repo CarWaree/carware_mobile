@@ -1,12 +1,15 @@
 package com.example.carware.viewModel.schedule.screen
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.carware.network.apiRequests.schedule.SetAppointmentRequest
+import com.example.carware.network.apiResponse.appointment.AppointmentResponse
 import com.example.carware.network.apiResponse.schedule.Centers
+import com.example.carware.network.core.UiResult
 import com.example.carware.repository.ServiceRepository
 import com.example.carware.repository.VehicleRepository
+import com.example.carware.viewModel.defaultSlots
+import com.plusmobileapps.konnectivity.Konnectivity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,30 +24,21 @@ import kotlin.time.ExperimentalTime
 class ScheduleScreenViewModel(
     private val repository: ServiceRepository,
     private val vehicleRepository: VehicleRepository,
+    connectivityManager: Konnectivity
 ) : ViewModel() {
+    val isConnected = connectivityManager.isConnectedState
 
     private val _state = MutableStateFlow(ScheduleScreenState())
     val state: StateFlow<ScheduleScreenState> = _state.asStateFlow()
 
-    // --- Time Slot State ---
-    val morningSlots = mutableStateListOf<TimeSlot>()
-    val eveningSlots = mutableStateListOf<TimeSlot>()
-
-    val months = listOf(
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    )
 
     init {
-        _state.update { it.copy(isInitialLoading = true) }
-        loadInitialTimeSlots()
         loadInitialData()
-
     }
 
     // ============ DATA LOADING ============
 
-     fun loadInitialData() {
+    fun loadInitialData() {
         _state.update { it.copy(isLoading = true, error = null) }
 
         viewModelScope.launch {
@@ -58,319 +52,214 @@ class ScheduleScreenViewModel(
                         availableServicesTypes = services,
                         availableCenters = centers,
                         availableCars = cars,
-                        isLoading = false,
-                        isInitialLoading = false
+                        availableSlots = defaultSlots(), // hardcoded until endpoint exists
+                        isLoading = false
                     )
                 }
             } catch (e: Exception) {
                 _state.update {
-                    it.copy(
-                        isLoading = false,
-                        isInitialLoading = false,
-                        error = "Failed to load data: ${e.message}"
-                    )
+                    it.copy(isLoading = false, error = "Failed to load data: ${e.message}")
                 }
             }
         }
     }
 
-    fun loadInitialTimeSlots() {
-        _state.update { it.copy(isLoading = true, error = null) }
+    // ============ SELECTION ============
 
-        morningSlots.clear()
-        morningSlots.addAll(
-            listOf(
-                TimeSlot("10:00 AM", isAvailable = false  ,),
-                TimeSlot("10:30 AM"),
-                TimeSlot("11:00 AM"),
-                TimeSlot("11:30 AM", isAvailable = false ),
-                TimeSlot("12:00 PM"),
-                TimeSlot("12:30 PM"),
-                TimeSlot("1:30 PM"),
-                TimeSlot("2:00 PM", isAvailable = false ),
-                TimeSlot("3:00 PM"),
-                TimeSlot("3:30 PM"),
-                TimeSlot("4:00 PM"),
-                TimeSlot("4:30 PM"),
-                TimeSlot("5:00 PM", isAvailable = false ),
-                TimeSlot("5:30 PM"),
-            )
-        )
-
-        eveningSlots.clear()
-        eveningSlots.addAll(
-            listOf(
-                TimeSlot("6:00 PM", isAvailable = false ),
-                TimeSlot("6:30 PM"),
-                TimeSlot("7:00 PM"),
-                TimeSlot("7:30 PM"),
-                TimeSlot("8:00 PM"),
-                TimeSlot("8:30 PM", isAvailable = false ),
-                TimeSlot("9:00 PM"),
-                TimeSlot("9:30 PM"),
-                TimeSlot("10:00 PM", isAvailable = false ),
-                TimeSlot("10:30 PM"),
-                TimeSlot("11:00 PM"),
-                TimeSlot("11:30 PM", isAvailable = false ),
-                TimeSlot("12:00 AM"),
-            )
-        )
-    }
-
-    // ============ SERVICE & CENTER SELECTION ============
-
-    fun selectServiceType(serviceName: String, serviceId: Int) {
+    fun selectServiceType(serviceId: Int, serviceName: String) {
         _state.update {
-            it.copy(
-                selectedService = serviceName,
-                selectedServiceId = serviceId,
-                error = null
-            )
+            it.copy(selectedServiceId = serviceId, selectedServiceName = serviceName, error = null)
         }
     }
 
     fun selectCenter(center: Centers) {
         _state.update {
-            it.copy(
-                selectedCenter = center.name,
-                selectedCenterId = center.id,   // ============ Store Int ID (if Centers has id field) ============
-                error = null
-            )
+            it.copy(selectedCenterId = center.id, selectedCenterName = center.name, error = null)
         }
     }
-
-    // ============ VEHICLE SELECTION ============
 
     fun selectVehicle(carId: Int) {
-        val currentCars = _state.value.availableCars
-        val car = currentCars.find { it.id == carId }
-
+        val car = _state.value.availableCars.find { it.id == carId }
         if (car != null) {
-            _state.update { currentState ->
-                currentState.copy(
-                    selectedCarId = car.id,
-                    selectedCarUserId = car.userName,
-                    error = null
-                )
-            }
+            _state.update { it.copy(selectedCarId = car.id, error = null) }
         } else {
-            _state.update {
-                it.copy(error = "Could not find car with ID $carId")
-            }
+            _state.update { it.copy(error = "Car not found") }
         }
     }
 
-    // ============ DATE & TIME SELECTION ============
-
-    fun onDayClick(day: String) {
+    fun selectDay(day: Int) {
         _state.update {
             it.copy(
                 selectedDay = day,
+                selectedTime = null,
+                availableSlots = defaultSlots(),
                 isTimePickerVisible = true,
                 error = null
             )
         }
     }
 
-    fun onTimeClick(time: String) {
-        // Check if time is available
-        val isAvailable = morningSlots.find { it.time == time }?.isAvailable == true ||
-                eveningSlots.find { it.time == time }?.isAvailable == true
+    fun selectTimeSlot(time: String) {
+        val slot = _state.value.availableSlots.find { it.time == time }
 
-        if (isAvailable) {
-            updateSelection(morningSlots, time)
-            updateSelection(eveningSlots, time)
-
-            _state.update {
-                it.copy(
-                    selectedTime = time,
-                    error = null
-                )
-            }
-        } else {
-            _state.update {
-                it.copy(error = "Selected time slot is not available")
-            }
+        if (slot == null || !slot.isAvailable) {
+            _state.update { it.copy(error = "This time slot is not available") }
+            return
         }
-    }
 
-    private fun updateSelection(list: MutableList<TimeSlot>, selectedTime: String) {
-        for (i in list.indices) {
-            list[i] = list[i].copy(isSelected = list[i].time == selectedTime)
-        }
-    }
-
-    fun changeMonth(forward: Boolean) {
-        _state.update { currentState ->
-            var newMonth = currentState.currentMonthIndex
-            var newYear = currentState.currentYear
-
-            if (forward) {
-                if (newMonth < 11) newMonth++ else {
-                    newMonth = 0; newYear++
-                }
-            } else {
-                if (newMonth > 0) newMonth-- else {
-                    newMonth = 11; newYear--
-                }
-            }
-
-            currentState.copy(
-                currentMonthIndex = newMonth,
-                currentYear = newYear,
-                selectedDay = null,
-                selectedTime = null
+        _state.update { current ->
+            current.copy(
+                selectedTime = time,
+                availableSlots = current.availableSlots.map {
+                    it.copy(isSelected = it.time == time)
+                },
+                error = null
             )
-        }
-    }
-    fun changeYear(forward: Boolean) {
-        _state.update { currentState ->
-            val newYear =
-                if (forward) currentState.currentYear + 1
-                else currentState.currentYear - 1
-
-            currentState.copy(
-                currentYear = newYear,
-                selectedDay = null,
-                selectedTime = null
-            )
-        }
-    }
-    fun getSelectedTime(): String? {
-        return _state.value.selectedTime
-    }
-
-    fun getFinalSelectionString(): String? {
-        val state = _state.value
-        return if (state.selectedDay != null && state.selectedTime != null) {
-            "${months[state.currentMonthIndex]} ${state.selectedDay}, ${state.currentYear} at ${state.selectedTime}"
-        } else {
-            null
         }
     }
 
     fun confirmTimeSelection() {
-        val state = _state.value
-        if (state.selectedDay != null && state.selectedTime != null) {
-            _state.update {
-                it.copy(isTimePickerVisible = false)
-            }
+        if (_state.value.selectedDay != null && _state.value.selectedTime != null) {
+            _state.update { it.copy(isTimePickerVisible = false) }
         } else {
-            _state.update {
-                it.copy(error = "Please select both date and time")
-            }
+            _state.update { it.copy(error = "Please select both date and time") }
         }
     }
 
     fun closeTimePicker() {
-        _state.update {
-            it.copy(isTimePickerVisible = false)
+        _state.update { it.copy(isTimePickerVisible = false) }
+    }
+
+    fun changeMonth(forward: Boolean) {
+        _state.update { current ->
+            var month = current.currentMonthIndex
+            var year = current.currentYear
+
+            if (forward) {
+                if (month < 11) month++ else {
+                    month = 0; year++
+                }
+            } else {
+                if (month > 0) month-- else {
+                    month = 11; year--
+                }
+            }
+
+            current.copy(
+                currentMonthIndex = month,
+                currentYear = year,
+                selectedDay = null,
+                selectedTime = null
+            )
         }
     }
 
-    // ============ APPOINTMENT CONFIRMATION ============
+    // ============ BOOKING ============
+    fun changeYear(forward: Boolean) {
+        _state.update { current ->
+            val newYear = if (forward) current.currentYear + 1 else current.currentYear - 1
+            current.copy(currentYear = newYear, selectedDay = null, selectedTime = null)
+        }
+    }
 
     fun confirmAppointment() {
+        val current = _state.value
 
-        val currentState = _state.value
-
-
-
-        if (!isAppointmentValid()) {
-            _state.update {
-                it.copy(error = "Please complete all required fields")
-            }
-            return
-        }
-
-        val isoDateTime = formatDateTimeToISO8601(
-
-            day = currentState.selectedDay.orEmpty(),
-            time = currentState.selectedTime.orEmpty()
-        )
+//        if (!isValid(current)) {
+//            _state.update { it.copy(error = "Please complete all required fields") }
+//            return
+//        }
 
         val request = SetAppointmentRequest(
-            date = isoDateTime,
-            timeSlot = currentState.selectedTime.orEmpty(),
-            vehicleId = currentState.selectedCarId ,           // Already Int
-            serviceId = currentState.selectedServiceId ,       // Use Int directly
-            serviceCenterId = currentState.selectedCenterId   // Use Int directly
+            date = formatToISO8601(
+                current.currentYear,
+                current.currentMonthIndex + 1,
+                current.selectedDay!!,
+                current.selectedTime!!
+            ),
+            timeSlot = current.selectedTime,
+            vehicleId = current.selectedCarId!!,
+            serviceId = current.selectedServiceId!!,
+            serviceCenterId = current.selectedCenterId!!
         )
 
-        println("Request: vehicleId=${request.vehicleId}, serviceId=${request.serviceId}, centerId=${request.serviceCenterId}")
-
-        _state.update { it.copy(isLoading = true, error = null) }
-
         viewModelScope.launch {
-            try {
-                val response = repository.setAppointmentRepo(request)
+            _state.update { it.copy(isLoading = true, error = null, isBookingSuccess = true) }
 
-                if (response.statusCode == 200 || response.statusCode == 201) {
-                    println("Appointment confirmed: ${response.message}")
-                    _state.update { it.copy(isLoading = false) }
-                } else {
+            when (val result: UiResult<AppointmentResponse> =
+                repository.setAppointmentRepo(request)) {
+                is UiResult.Success -> {
                     _state.update {
                         it.copy(
                             isLoading = false,
-                            error = response.message
+                            isBookingSuccess = true,
+                            bookingSuccessMessage = "Appointment Created Successfully"
                         )
                     }
                 }
-            } catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        error = "Failed: ${e.message}"
-                    )
+
+                is UiResult.Error -> {
+                    _state.update { it.copy(isLoading = false, error = result.message) }
                 }
             }
+        }
+    }
+
+    fun onBookingSuccessConsumed() {
+        _state.update { it.copy(isBookingSuccess = false) }
+    }
+
+    // ============ PRIVATE ============
+
+    fun isValid(): Boolean {
+        val state = _state.value
+        return when {
+            state.selectedCarId == null -> {
+                _state.update { it.copy(error = "Please select a vehicle") }
+                false
+            }
+            state.selectedServiceId == null -> {
+                _state.update { it.copy(error = "Please select a service type") }
+                false
+            }
+            state.selectedDay == null -> {
+                _state.update { it.copy(error = "Please select a day") }
+                false
+            }
+            state.selectedTime == null -> {
+                _state.update { it.copy(error = "Please select a time") }
+                false
+            }
+            state.selectedCenterName ==null ->{ _state.update { it.copy(error = "Please select a provider") }
+                false}
+            else -> true
         }
     }
 
     @OptIn(ExperimentalTime::class)
-    private fun formatDateTimeToISO8601(day: String, time: String): String {
+    private fun formatToISO8601(year: Int, month: Int, day: Int, time: String): String {
         return try {
-            val state = _state.value
-            val year = state.currentYear
-            val month = state.currentMonthIndex + 1 // Month is 0-indexed
-
-            // Parse the time (e.g., "10:30 AM")
             val timeParts = time.split(" ")
             val hourMinute = timeParts[0].split(":")
-            val hour = hourMinute[0].toInt().let {
-                if (timeParts[1] == "PM" && it != 12) it + 12
-                else if (timeParts[1] == "AM" && it == 12) 0
-                else it
-            }
+            var hour = hourMinute[0].toInt()
             val minute = hourMinute[1].toInt()
 
-            // Create LocalDateTime using kotlinx.datetime
-            val localDateTime = LocalDateTime(
-                year = year,
-                monthNumber = month,
-                dayOfMonth = day.toInt(),
-                hour = hour,
-                minute = minute,
-                second = 0
-            )
+            if (timeParts[1] == "PM" && hour != 12) hour += 12
+            else if (timeParts[1] == "AM" && hour == 12) hour = 0
 
-            // Convert to ISO 8601 instant string
+            val localDateTime = LocalDateTime(year, month, day, hour, minute, 0)
             localDateTime.toInstant(TimeZone.currentSystemDefault()).toString()
         } catch (e: Exception) {
-            // Fallback if parsing fails
-            println("Date formatting error: ${e.message}")
             Clock.System.now().toString()
         }
     }
-//
 
-    fun isAppointmentValid(): Boolean {
-        val state = _state.value
-        return state.selectedService != null &&
-                state.selectedCenter != null &&
-                state.selectedCarId != null &&
-                state.selectedDay != null &&
-                state.selectedTime != null
+    fun clearErrorMessage() = _state.update {
+        it.copy(
+            error = null,
+            isBookingSuccess = false,
+            bookingSuccessMessage = null
+        )
     }
 
 

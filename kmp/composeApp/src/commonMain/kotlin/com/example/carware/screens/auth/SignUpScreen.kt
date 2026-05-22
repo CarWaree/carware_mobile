@@ -87,9 +87,10 @@ fun SignUpScreen(
                 serverId = "676917884316-co7m5je6ba8ck8ve0074a2apk8fnda4b.apps.googleusercontent.com"
             )
         )
-        authReady = true // ← THIS was missing!
+        authReady = true //
 
     }
+
     val strings = LocalStrings.current
 
     val state by viewModel.state.collectAsState()
@@ -136,11 +137,22 @@ fun SignUpScreen(
     )
 
 
-    Column(modifier = m.verticalScroll(scrollState)) {
+    LaunchedEffect(state.isSuccess) {
+        if (state.isSuccess && !state.needsEmailVerification) {
+            navController.navigate(HomeScreen) {  // or whatever screen
+                popUpTo(SignUpScreen) { inclusive = true }
+            }
+        }
+    }
+    Column( m
+        .fillMaxSize()
+        .appGradBack()
+
+        .verticalScroll(scrollState)
+        ) {
         Column(
-            modifier = m
+             m
                 .fillMaxSize()
-                .appGradBack()
                 .padding(top = 54.dp)
 
 
@@ -152,6 +164,7 @@ fun SignUpScreen(
             ) {
                 if (state.needsEmailVerification) {
                     ToastMessage(message = "Check your email to verify your account", state = true)
+                    navController.navigate(EmailVerificationScreen(email = state.email))
                 }
                 if (state.errorMessage != null) {
                     AnimatedVisibility(
@@ -307,7 +320,7 @@ fun SignUpScreen(
                             shape = RoundedCornerShape(8.dp),
                             colors = textFieldColors
 
-                        ) //user name field
+                        ) //username field
                         Spacer(modifier = m.padding(vertical = 8.dp))
                         OutlinedTextField(
                             modifier = m.size(280.dp, 55.dp),
@@ -548,23 +561,7 @@ fun SignUpScreen(
                                     }
                                 }
                             }
-                                //CONT with google text
-//                            if(authReady){
-//                                Box(modifier=m.fillMaxSize(),
-//                                    contentAlignment = Alignment.Center ){
-//                                    GoogleButtonUiContainer(
-//                                        onGoogleSignInResult = {googleUser->
-//                                            val tokenId=googleUser?.idToken
-//                                            println("TOKEN: $tokenId")
-//                                            println("User: ${googleUser?.displayName}")
-//
-//                                        }
-//                                    ){
-//                                        GoogleSignInButton(onClick={this.onClick()})
-//
-//                                    }
-//                                }
-//                            }
+
 
 
                             } //google button

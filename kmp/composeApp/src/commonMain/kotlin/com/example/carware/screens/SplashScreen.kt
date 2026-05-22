@@ -27,7 +27,6 @@ fun SplashScreen(
             !preferencesManager.isLanguageSelected() -> LanguageSelectionScreen
             !preferencesManager.isOnboardingComplete() -> OnboardingScreen
             !preferencesManager.isLoggedIn() -> SignUpScreen
-            !preferencesManager.isEmailVerified() -> EmailVerificationScreen
             !preferencesManager.hasAddedCar() -> AddCarScreen
             else -> HomeScreen
         }

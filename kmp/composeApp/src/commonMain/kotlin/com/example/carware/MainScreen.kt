@@ -8,6 +8,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,26 +21,36 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import com.example.carware.Notification.RequestNotificationPermission
 import com.example.carware.navigation.AddCarScreen
+import com.example.carware.navigation.EditCarScreen
 import com.example.carware.navigation.EditProfileScreen
 import com.example.carware.navigation.EmailVerificationScreen
 import com.example.carware.navigation.HistoryScreen
 import com.example.carware.navigation.HomeScreen
 import com.example.carware.navigation.LanguageSelectionScreen
 import com.example.carware.navigation.LoginScreen
+import com.example.carware.navigation.MyCarsScreen
 import com.example.carware.navigation.NewPasswordScreen
+import com.example.carware.navigation.NotificationScreen
 import com.example.carware.navigation.OnboardingScreen
 import com.example.carware.navigation.ProfileScreen
+import com.example.carware.navigation.ReminderHistoryScreen
+import com.example.carware.navigation.ReminderScreen
 import com.example.carware.navigation.ResetPasswordScreen
 import com.example.carware.navigation.ScheduleScreen
 import com.example.carware.navigation.SelectLanguageScreen
+import com.example.carware.navigation.ServiceRecordScreen
 import com.example.carware.navigation.SettingsScreen
 import com.example.carware.navigation.SignUpScreen
 import com.example.carware.navigation.SplashScreen
 import com.example.carware.navigation.TestScreen
 import com.example.carware.navigation.VerificationCodeScreen
-import com.example.carware.screens.AddCarScreen
 import com.example.carware.screens.BottomNavBar
+import com.example.carware.screens.NotificationScreen
+import com.example.carware.screens.reminder.ReminderHistoryScreen
+import com.example.carware.screens.reminder.ReminderScreen
 import com.example.carware.screens.SelectLanguageScreen
 import com.example.carware.screens.SplashScreen
 import com.example.carware.screens.auth.EmailVerificationScreen
@@ -51,16 +62,19 @@ import com.example.carware.screens.auth.VerificationCodeScreen
 import com.example.carware.screens.mainScreens.HistoryScreen
 import com.example.carware.screens.mainScreens.HomeScreen
 import com.example.carware.screens.mainScreens.ScheduleScreen
+import com.example.carware.screens.mainScreens.ServiceRecordScreen
 import com.example.carware.screens.mainScreens.SettingsScreen
 import com.example.carware.screens.onBoarding.LanguageSelectionScreen
 import com.example.carware.screens.onBoarding.OnBoardingScreen
 import com.example.carware.screens.profile.EditProfileScreen
+import com.example.carware.screens.profile.MyCarsScreen
 import com.example.carware.screens.profile.ProfileScreen
+import com.example.carware.screens.vehicle.AddCarScreen
+import com.example.carware.screens.vehicle.EditCarScreen
 import com.example.carware.util.lang.AppLanguage
 import com.example.carware.util.lang.LocalizedStrings
 import com.example.carware.util.navBar.bottomTabs
 import com.example.carware.util.storage.PreferencesManager
-import com.example.carware.viewModel.addcar.AddCarViewModel
 import com.example.carware.viewModel.auth.emailVerification.EmailVerificationViewModel
 import com.example.carware.viewModel.auth.forgotPassword.ForgotPasswordViewModel
 import com.example.carware.viewModel.auth.logIn.LogInViewModel
@@ -69,9 +83,14 @@ import com.example.carware.viewModel.auth.otpVerification.OTPViewModel
 import com.example.carware.viewModel.auth.signUp.SignUpViewModel
 import com.example.carware.viewModel.history.HistoryScreenViewModel
 import com.example.carware.viewModel.home.HomeScreenViewModel
+import com.example.carware.viewModel.mycars.MyCarsScreenViewModel
 import com.example.carware.viewModel.notification.NotificationViewModel
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
+import com.example.carware.viewModel.reminder.reminderHistory.ReminderHistoryViewModel
+import com.example.carware.viewModel.reminder.reminderScreen.ReminderScreenViewModel
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
+import com.example.carware.viewModel.vehicle.addcar.AddCarViewModel
+import com.example.carware.viewModel.vehicle.editCar.EditCarViewModel
 import org.koin.compose.koinInject
 
 val m = Modifier
@@ -95,12 +114,18 @@ fun MainScreen() {
     val layoutDirection =
         if (currentLanguage == AppLanguage.AR) LayoutDirection.Rtl else LayoutDirection.Ltr
 
+    val notificationViewModel: NotificationViewModel=koinInject( )
+
     // ✅ Get all ViewModels from Koin once
 
     CompositionLocalProvider(
         LocalStrings provides localizedStrings,
         LocalLayoutDirection provides layoutDirection
     ) {
+        RequestNotificationPermission {  granted ->
+            notificationViewModel.onPermissionResult(granted)
+            if (granted) notificationViewModel.testPushNotification()
+        }
         NavHost(navController = navController, startDestination = SplashScreen) {
 
             composable<HomeScreen> {
@@ -123,7 +148,9 @@ fun MainScreen() {
                             HomeScreen::class -> {
                                 val notificationViewModel: NotificationViewModel = koinInject()
                                 val homeViewModel: HomeScreenViewModel = koinInject()
-                                HomeScreen(navController, homeViewModel, notificationViewModel)
+                                HomeScreen(navController, homeViewModel,
+                                    notificationViewModel
+                                )
                             }
 
                             ScheduleScreen::class -> {
@@ -170,12 +197,12 @@ fun MainScreen() {
                 ResetPasswordScreen(navController, forgetPasswordViewModel)
             }
 
-            composable<VerificationCodeScreen> {
+            composable<VerificationCodeScreen> {backStackEntry->
                 val otpViewModel: OTPViewModel = koinInject()
+                val route: VerificationCodeScreen = backStackEntry.toRoute()
 
-                VerificationCodeScreen(navController, otpViewModel)
+                VerificationCodeScreen(navController, otpViewModel,route.email)
             }
-
             composable<NewPasswordScreen> {
                 val newPasswordViewModel: NewPasswordViewModel = koinInject()
 
@@ -225,16 +252,17 @@ fun MainScreen() {
                 com.example.carware.screens.TestScreen(navController, preferencesManager)
             }
 
-            composable<EmailVerificationScreen> {
+            composable<EmailVerificationScreen> { backStackEntry ->
+                val route: EmailVerificationScreen = backStackEntry.toRoute()
                 val emailVerificationViewModel: EmailVerificationViewModel = koinInject()
-
-                EmailVerificationScreen(navController, emailVerificationViewModel)
+                EmailVerificationScreen(navController, emailVerificationViewModel,route.email)
             }
 
             composable<ProfileScreen> {
                 val profileViewModel: ProfileScreenViewModel = koinInject()
                 ProfileScreen(navController, profileViewModel, preferencesManager)
             }
+
             composable<EditProfileScreen> {
                 val profileViewModel: ProfileScreenViewModel = koinInject()
                 EditProfileScreen(navController, profileViewModel)
@@ -247,6 +275,60 @@ fun MainScreen() {
                         currentLanguage = it
                     })
             }
+
+            composable<ReminderScreen> {
+                val reminderViewModel: ReminderScreenViewModel = koinInject()
+
+                ReminderScreen(
+                    navController,
+                    reminderViewModel,
+                    preferencesManager
+                )
+            }
+
+            composable<ServiceRecordScreen> {
+                val historyScreenViewModel: HistoryScreenViewModel = koinInject()
+
+                ServiceRecordScreen(
+                    navController,
+                    historyScreenViewModel
+
+                )
+            }
+
+            composable<EditCarScreen> { backStackEntry ->
+                val route = backStackEntry.toRoute<EditCarScreen>()
+                val viewModel : EditCarViewModel=koinInject()
+
+                LaunchedEffect(Unit) {
+                    viewModel.loadCar(route.carId)
+                }
+
+                EditCarScreen(navController = navController, viewModel = viewModel)
+            }
+
+            composable<NotificationScreen> {
+                val notificationViewModel: NotificationViewModel = koinInject()
+                NotificationScreen(
+                    navController,
+                    notificationViewModel
+                )
+            }
+            composable<MyCarsScreen> {
+                val myCarsScreenViewModel: MyCarsScreenViewModel = koinInject()
+                MyCarsScreen(
+                    navController,
+                    myCarsScreenViewModel
+                )
+            }
+            composable<ReminderHistoryScreen> {
+                val reminderHistoryViewModel: ReminderHistoryViewModel = koinInject()
+                ReminderHistoryScreen(
+                    navController,
+                    reminderHistoryViewModel
+
+                )
+            }
         }
     }
-}
+}   

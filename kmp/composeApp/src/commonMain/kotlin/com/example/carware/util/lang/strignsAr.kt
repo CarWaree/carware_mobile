@@ -1,4 +1,5 @@
 package com.example.carware.util.lang
+
 val StringsAr = mapOf(
 
     "CHOOSE_LANG" to "اختر لغتك",
@@ -7,9 +8,8 @@ val StringsAr = mapOf(
     "ARABIC" to "العربية",
     "CONTINUE" to "متابعة",
     "CHANGE_LANG" to "يمكنك تغيير ذلك لاحقًا من الإعدادات",
-    "HEADER_TITLE"  to "لغه التطبيق",
-    "SAVE_CHANGES"  to "احفظ التغيرات ",
-
+    "HEADER_TITLE" to "لغه التطبيق",
+    "SAVE_CHANGES" to "حفظ التغييرات",
 
 
     // Onboarding
@@ -65,6 +65,8 @@ val StringsAr = mapOf(
     "CONTINUE" to "متابعة",
     "BACK_TO" to "العودة إلى",
     "LOGIN" to "تسجيل الدخول",
+    "SIGNUP" to "انشاء حساب ",
+
 
     // New Password
     "CREATE_NEW_PASSWORD" to "إنشاء كلمة مرور جديدة",
@@ -110,11 +112,13 @@ val StringsAr = mapOf(
     "LOADING_CAR_DATA" to "يتم تحميل بيانات السيارة",
     "SCHEDULED_SERVICES" to "الخدمات المحجوزه",
     "NO_UPCOMING_APPOINTMENTS" to "لا يوجد مواعيد قادمه",
-    "UP_COMING_MAINTENANCE" to "مواعيد قادمه ",
+    "UP_COMING_REMINDER" to "مواعيد قادمه ",
+    "CREATE_REMINDER" to "إضافة تذكير",
     // schedule screen
     "SCHEDULE_SERVICE" to "خدمه الحجز ",
     "SELECT_CAR" to "اختر سيارتك",
-    "SELECT_SERVICE"  to "اخنر الخدمه",
+    "SELECT_SERVICE" to "اخنر الخدمه",
+    "SELECT_SERVICES" to "اختر الخدمات",
     "SELECT_YOUR_PROVIDER" to "اختر موفر الخدمه",
     "PROCESSING" to "قيد المعالجة",
     "CONFIRM_RESERVATION" to "تأكيد الحجز",
@@ -156,5 +160,28 @@ val StringsAr = mapOf(
     "PREFERENCES" to "التفضيلات",
     "CHANGE_LANGUAGE" to "تغيير اللغة",
     "HELP_SUPPORT" to "المساعدة والدعم",
-    "LOG_OUT" to "تسجيل الخروج"
-)
+    "LOG_OUT" to "تسجيل الخروج",
+
+    // Profile
+    "PROFILE" to "الملف الشخصي",
+    "MEMBER_SINCE" to "عضو منذ",
+    "MY_PRIMARY_VEHICLE" to "سيارتي الأساسية",
+    "MY_CARS" to "سياراتي",
+    "VISA_ENDING_IN" to "فيزا تنتهي بـ",
+    "EXPIRES" to "تنتهي في",
+    "ADD_NEW_METHOD" to "إضافة وسيلة دفع جديدة",
+    "CHANGE_PHOTO" to "تغيير صورة الملف الشخصي",
+    "DISCARD_CHANGES" to "تجاهل التغييرات",
+    "EMAIL_ADDRESS" to "البريد الإلكتروني",
+    "FULL_NAME_LABEL" to "الاسم الكامل",
+
+    // Reminder
+    "REMINDER" to "تذكير",
+    "ADD_REMINDER" to "إضافة تذكير",
+    "NOTE_LABEL" to "ملاحظة",
+    "ADD_NOTE_PLACEHOLDER" to "أضف ملاحظتك",
+    // Reminder History
+    "REMINDER_HISTORY" to "سجل التذكيرات",
+    "REMINDER_SUBTITLE" to "عرض وإدارة سجل التذكيرات لجميع مركباتك.",
+
+    )

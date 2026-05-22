@@ -1,5 +1,10 @@
-package com.example.carware.screens
+package com.example.carware.screens.vehicle
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -24,10 +29,10 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,10 +58,12 @@ import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.LocalStrings
 import com.example.carware.m
-import com.example.carware.util.lang.AppLanguage
-import com.example.carware.util.lang.StringsEn
-import com.example.carware.util.storage.PreferencesManager
-import com.example.carware.viewModel.addcar.AddCarViewModel
+import com.example.carware.screens.SelectDropdown
+import com.example.carware.screens.ToastMessage
+import com.example.carware.screens.appButtonBack
+import com.example.carware.screens.appGradBack
+import com.example.carware.viewModel.vehicle.addcar.AddCarViewModel
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 
@@ -156,10 +163,9 @@ fun AddCarIntDropdown(
                         )
                     },
                     onClick = {
-                        // 3. Convert the selected String back to Int before calling onSelect
                         val selectedInt = optionString.toIntOrNull()
                         if (selectedInt != null) {
-                            onSelect(selectedInt) // Call the callback with the Int
+                            onSelect(selectedInt)
                         }
                         expanded = false
                     }
@@ -183,6 +189,22 @@ fun AddCarScreen(
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
 
+
+    AnimatedVisibility(
+        visible = state.errorMessage != null,
+        enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+        exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
+        modifier = Modifier.padding(top = 20.dp)
+    ) {
+        state.errorMessage?.let { msg ->
+            ToastMessage(message = msg, state = false)
+
+            LaunchedEffect(msg) {
+                delay(3000)
+                viewModel.clearErrorMessage()
+            }
+        }
+    }
     Column(
         m
             .background(Color(230, 230, 230, 255))
@@ -207,6 +229,7 @@ fun AddCarScreen(
                 Icon(
                     painter = painterResource(Res.drawable.arrow_1),
                     contentDescription = null,
+
                     tint = Color(245, 245, 245),
                     modifier = Modifier
                         .size(26.dp)
@@ -219,7 +242,7 @@ fun AddCarScreen(
                     strings.get("ADD_CAR"),
                     fontFamily = popMid,
                     fontSize = 26.sp,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = Bold,
                     color = Color(235, 235, 235),
                     modifier = Modifier.align(Alignment.Center)
                 )
@@ -342,11 +365,9 @@ fun AddCarScreen(
                         strings.get("ADD_CAR"),
                         fontFamily = popSemi,
                         fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = Bold,
                         color = Color(217, 217, 217, 255)
                     )
-
-
 
 
                 }
@@ -359,50 +380,4 @@ fun AddCarScreen(
     }
 
 }
-
-
-//// Brand Dropdown
-//AddCarDropdown(
-//label = "Brand",
-//selectedValue = state.selectedBrand,
-//options = state.availableBrands,
-//onSelect = viewModel::selectBrand // Calls the ViewModel function
-//)
-//
-//// Model Dropdown (Options change based on Brand selection)
-//AddCarDropdown(
-//label = "Model",
-//selectedValue = state.selectedModel,
-//options = state.availableModels,
-//onSelect = viewModel::selectModel // Calls the ViewModel function
-//)
-//
-//// Color Dropdown
-//AddCarDropdown(
-//label = "Color",
-//selectedValue = state.selectedColor,
-//options = state.availableColors,
-//onSelect = viewModel::selectColor
-//)
-//
-//// Year Dropdown
-//AddCarDropdown(
-//label = "Year",
-//selectedValue = state.selectedYear,
-//options = state.availableYears,
-//onSelect = viewModel::selectYear
-//)
-//
-//Spacer(Modifier.height(8.dp))
-//
-//// Save Button (Enabled based on state validation)
-//Button(
-//onClick = { /* TODO: Implement save logic */ },
-//enabled = state.isSaveButtonEnabled,
-//modifier = Modifier.fillMaxWidth()
-//) {
-//    Text("Add Car")
-//}
-//}
-
 

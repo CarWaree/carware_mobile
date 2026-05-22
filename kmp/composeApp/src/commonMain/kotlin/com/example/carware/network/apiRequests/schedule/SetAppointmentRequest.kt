@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class SetAppointmentRequest(
     val date: String,
     val timeSlot: String,
-    val vehicleId: Int?,
-    val serviceId: Int?,
-    val serviceCenterId: Int?
+    val vehicleId: Int,
+    val serviceId: Int,
+    val serviceCenterId: Int
 )

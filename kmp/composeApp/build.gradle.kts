@@ -59,16 +59,18 @@ kotlin {
             implementation(libs.bundles.ktor)
             implementation("com.russhwolf:multiplatform-settings-no-arg:1.1.1")
             implementation("com.russhwolf:multiplatform-settings:1.1.1")
-            implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0")
+            implementation(libs.kotlinx.datetime)
             implementation(libs.kstore)
             implementation(libs.kstore.file)
-
             implementation("io.insert-koin:koin-compose:4.0.0")
             implementation(libs.koin.core)
+            implementation("io.coil-kt.coil3:coil-compose:3.1.0")
+            implementation("io.coil-kt.coil3:coil-network-ktor3:3.1.0")
 
 
             implementation("io.github.mirzemehdi:kmpauth-google:2.5.0-alpha01") //Google One Tap Sign-In
             implementation("io.github.mirzemehdi:kmpauth-uihelper:2.5.0-alpha01")
+            implementation("com.plusmobileapps:konnectivity:0.1-alpha01")
         }
 
         nativeMain.dependencies {
@@ -78,7 +80,10 @@ kotlin {
         }//ios
 
         commonTest.dependencies {
+
             implementation(libs.kotlin.test)
+            implementation(libs.ktor.client.mock)
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }

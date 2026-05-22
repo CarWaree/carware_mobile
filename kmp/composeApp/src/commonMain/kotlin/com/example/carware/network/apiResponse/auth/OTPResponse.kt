@@ -13,4 +13,5 @@ data class OTPResponse(
 @Serializable
 data class OTP(
     val token : String
+
 )
