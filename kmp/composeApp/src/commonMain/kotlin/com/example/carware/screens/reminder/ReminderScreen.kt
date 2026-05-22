@@ -43,9 +43,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
@@ -192,7 +194,14 @@ fun ReminderScreen(
                 m
                     .fillMaxSize()
                     .background(Color(217, 217, 217, 255))
-                    .padding(bottom = 28.dp)
+                    .graphicsLayer {
+                        if (  showConfirmDialog) {
+                            renderEffect = BlurEffect(
+                                radiusX = 10f,
+                                radiusY = 10f,
+                            )
+                        }
+                    }
                     .padding(vertical = 28.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
 
@@ -214,8 +223,8 @@ fun ReminderScreen(
                     exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
                     modifier = Modifier.padding(top = 20.dp)
                 ) {
-                    state.isBookingSuccessMessage?.let { msg ->
-                        ToastMessage(message = "${state.isBookingSuccessMessage}", state = true)
+                    state.isBookingSuccessMessage?.let {
+                        ToastMessage(message = it, state = true)
 
 
                     }
@@ -224,8 +233,8 @@ fun ReminderScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp)
-                        .padding(10.dp),
+                        .padding(horizontal = 10.dp)
+                        .padding(top=10.dp),
 
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -245,7 +254,7 @@ fun ReminderScreen(
                     ) //return arrow
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
-                        text = strings.get("ADD_REMINDER"),
+                        text = strings.get("REMINDER"),
                         fontFamily = pop,
                         fontSize = 25.sp,
                         fontWeight = FontWeight.Medium,
@@ -268,7 +277,7 @@ fun ReminderScreen(
                     ) //reminder history
                 }
 
-                Spacer(m.height(32.dp))
+                Spacer(m.height(12.dp))
 
                 Column(
                     m.fillMaxSize()
@@ -346,7 +355,6 @@ fun ReminderScreen(
                     }
 
                     Spacer(m.height(18.dp))
-                    val intervals = listOf(3, 6, 9)
                     val units = listOf("Day", "Month", "Year")
                     Text(
                         "Repeat Every :",
@@ -395,7 +403,7 @@ fun ReminderScreen(
                                 onClick = { selectRepeatCountExpanded = true },
                                 shape = RoundedCornerShape(8.dp),
                             ) {
-                                Text(state.repeatUnit?.ifEmpty { "Select Unit" } ?: "Select Unit")
+                                Text(state.repeatUnit.ifEmpty { "Select Unit" })
                             }
                             DropdownMenu(
                                 containerColor = Color(217, 217, 217).copy(alpha = 0.8f),
@@ -562,7 +570,7 @@ fun ReminderScreen(
 
                     // ============ CONFIRM BUTTON & DETAILS SECTION ============
 
-                    Spacer(m.height(82.dp))
+                    Spacer(m.height(62.dp))
 
                     // Confirm Button
                     Card(
@@ -609,6 +617,19 @@ fun ReminderScreen(
             }
         }
         if (showConfirmDialog) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.4f))  // Semi-transparent dark overlay
+                    .blur(10.dp)  // Blur effect
+                    .pointerInput(Unit) {
+                        awaitPointerEventScope {
+                            while (true) {
+                                awaitPointerEvent()
+                            }
+                        }
+                    }
+            )
             ConfirmSchedule(
                 reminderViewmodel = viewModel,
                 onDismiss = { showConfirmDialog = false },

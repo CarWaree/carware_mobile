@@ -578,8 +578,8 @@ fun NoInternetDialog() {
         Column(
             modifier = m
                 .clip(RoundedCornerShape(8.dp))
-                .fillMaxWidth(0.8f)
-                .fillMaxHeight(0.25f)
+                .fillMaxWidth(0.75f)
+                .fillMaxHeight(0.3f)
                 .background(Color(204, 204, 204, 242))
                 .padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,

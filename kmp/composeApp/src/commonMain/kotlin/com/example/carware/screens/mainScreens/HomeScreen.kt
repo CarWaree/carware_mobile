@@ -1,10 +1,6 @@
 package com.example.carware.screens.mainScreens
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -37,10 +33,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -66,7 +65,6 @@ import com.example.carware.screens.CarCard
 import com.example.carware.screens.ConfirmDeleteCar
 import com.example.carware.screens.ServiceHistoryItem
 import com.example.carware.screens.ShimmerCarCard
-import com.example.carware.screens.ShimmerReminderPreview
 import com.example.carware.screens.ToastMessage
 import com.example.carware.screens.UpcomingReminder
 import com.example.carware.screens.appGradBack
@@ -100,10 +98,7 @@ fun HomeScreen(
         is HomeScreenState.Success -> state.cars.firstOrNull()?.userName ?: "User"
         else -> "Guest"
     }
-//    RequestNotificationPermission { granted ->
-//        notificationViewModel.onPermissionResult(granted)
-//        if (granted) notificationViewModel.testPushNotification()
-//    }
+
     var showDeleteDialog by remember { mutableStateOf(false) }
 
 
@@ -174,6 +169,14 @@ fun HomeScreen(
         Column(
             m
                 .fillMaxSize()
+                .graphicsLayer {
+                    if (showDeleteDialog) {
+                        renderEffect = BlurEffect(
+                            radiusX = 10f,
+                            radiusY = 10f,
+                        )
+                    }
+                }
                 .appGradBack(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -298,7 +301,8 @@ fun HomeScreen(
 
                                 // Use cached if available, otherwise use state vehicles
                                 val vehiclesToDisplay =
-                                    if (cachedVehicles.isNotEmpty()) cachedVehicles else state.cars
+
+                                    cachedVehicles.ifEmpty { state.cars }
 
                                 SuccessCarPagerContent(vehiclesToDisplay, navController)
 
@@ -387,18 +391,31 @@ fun HomeScreen(
 
 
         if (showDeleteDialog) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.4f))  // Semi-transparent dark overlay
+                    .blur(10.dp)  // Blur effect
+                    .pointerInput(Unit) {
+                        awaitPointerEventScope {
+                            while (true) {
+                                awaitPointerEvent()
+                            }
+                        }
+                    }
+            )
             ConfirmDeleteCar(
                 viewModel = viewModel,
                 onDismiss = { showDeleteDialog = false }
             )
-        }  // Show success toast
+        }
         AnimatedVisibility(
             visible = state is HomeScreenState.Success && state.successMessage != null,
             modifier = Modifier
                 .padding(top = 50.dp) // Gap from the very top of the phone
         ) {
             if (state is HomeScreenState.Success && state.successMessage != null) {
-                ToastMessage(message = state.successMessage!!, state = true)
+                ToastMessage(message = state.successMessage, state = true)
                 LaunchedEffect(state.successMessage) {
                     delay(3000)
         //                    viewModel.loadVehicles()

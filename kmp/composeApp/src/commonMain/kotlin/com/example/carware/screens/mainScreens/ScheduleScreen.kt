@@ -33,9 +33,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -128,7 +131,15 @@ fun ScheduleScreen(
             Column(
                 m
                     .fillMaxSize()
-                    .background(Color(217, 217, 217, 255)),
+                    .background(Color(217, 217, 217, 255))
+                    .graphicsLayer {
+                        if (!isConnected || showConfirmDialog) {
+                            renderEffect = BlurEffect(
+                                radiusX = 10f,
+                                radiusY = 10f,
+                            )
+                        }
+                    },
 
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -381,12 +392,12 @@ fun ScheduleScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.Transparent)
+                        .background(Color.Black.copy(alpha = 0.4f))  // Semi-transparent dark overlay
+                        .blur(10.dp)  // Blur effect
                         .pointerInput(Unit) {
                             awaitPointerEventScope {
                                 while (true) {
                                     awaitPointerEvent()
-                                    // Blocks all touches
                                 }
                             }
                         }
