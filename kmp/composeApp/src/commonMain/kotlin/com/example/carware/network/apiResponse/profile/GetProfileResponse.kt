@@ -15,7 +15,7 @@ data class GetProfileResponse(
 
 data class ProfileDetails(
     val fullName: String =" ",
-    val phoneNumber: String?="01028472447",
+    val phoneNumber: String?=null,
     val email : String,
     val profileImageUrl: String =" "
 )

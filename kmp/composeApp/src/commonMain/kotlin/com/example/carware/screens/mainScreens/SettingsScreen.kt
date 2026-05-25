@@ -48,6 +48,7 @@ import carware.composeapp.generated.resources.settings_lock
 import carware.composeapp.generated.resources.settings_logout
 import carware.composeapp.generated.resources.settings_profile
 import carware.composeapp.generated.resources.settings_update
+import coil3.compose.LocalPlatformContext
 import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.navigation.ProfileScreen
@@ -67,6 +68,8 @@ fun SettingsScreen(
     val strings = LocalStrings.current
     val popMid = FontFamily(Font(Res.font.poppins_medium))
     val scrollState = rememberScrollState()
+    val context = LocalPlatformContext.current
+
     Column(
         m
             .fillMaxSize()

@@ -12,7 +12,7 @@ sealed class ProfileScreenState {
 data class EditProfileState(
     val fullName: String = "",
     val email: String = "",
-    val phone: String = "+20 ....",
+    val phone: String = "010",
 
     val errorMessage: String? = null,
 

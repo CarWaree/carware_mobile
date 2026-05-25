@@ -155,7 +155,7 @@ val StringsEn = mapOf(
 
     // Settings
     "ACCOUNT" to "Account",
-    "EDIT_PROFILE" to "Edit Profile",
+    "EDIT_PROFILE" to "Profile",
     "CHANGE_PASSWORD" to "Change Password",
     "NOTIFICATIONS" to "Notifications",
     "SERVICE_REMINDER" to "Service Reminder",

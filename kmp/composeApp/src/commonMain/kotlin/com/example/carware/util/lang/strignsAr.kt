@@ -152,7 +152,7 @@ val StringsAr = mapOf(
 
     // Settings
     "ACCOUNT" to "الحساب",
-    "EDIT_PROFILE" to "تعديل الملف الشخصي",
+    "EDIT_PROFILE" to "الملف الشخصي",
     "CHANGE_PASSWORD" to "تغيير كلمة المرور",
     "NOTIFICATIONS" to "الإشعارات",
     "SERVICE_REMINDER" to "تذكير الخدمة",

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -29,6 +30,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -40,6 +42,7 @@ import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import com.example.carware.LocalStrings
 import com.example.carware.network.api.baseUrl
+import com.example.carware.screens.ShimmerProfileScreen
 import com.example.carware.screens.ToastMessage
 import com.example.carware.util.rememberImagePickerLauncher
 import com.example.carware.viewModel.profile.ProfileScreenState
@@ -89,9 +92,8 @@ fun EditProfileScreen(
 
     when (state) {
         is ProfileScreenState.Loading -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
+            ShimmerProfileScreen()
+
         }
 
         is ProfileScreenState.Error -> {
@@ -258,7 +260,9 @@ fun EditProfileScreen(
                         onValueChange = { viewModel.onFullNameChange(it) },
                         icon = Res.drawable.contact,
                         fontFamily = popMid,
-                        primaryGradientBrush = primaryGradientBrush
+                        primaryGradientBrush = primaryGradientBrush,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+
                     )
 
                     Spacer(modifier = Modifier.height(20.dp))
@@ -270,22 +274,24 @@ fun EditProfileScreen(
                         onValueChange = { viewModel.onEmailChange(it) },
                         icon = Res.drawable.email,
                         fontFamily = popMid,
-                        primaryGradientBrush = primaryGradientBrush
+                        primaryGradientBrush = primaryGradientBrush,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
                     )
 
                     Spacer(modifier = Modifier.height(20.dp))
 
-                    profile.phoneNumber?.let {
                         EditProfileField(
                             label = strings.get("PHONE"),
-                            placeholder = profile.phoneNumber,
+                            placeholder = profile.phoneNumber?:" ",
                             value = editState.phone,
                             onValueChange = { viewModel.onPhoneChange(it) },
                             icon = Res.drawable.phone,
                             fontFamily = popMid,
-                            primaryGradientBrush = primaryGradientBrush
+                            primaryGradientBrush = primaryGradientBrush,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+
                         )
-                    }
+
                 }
 
                 Spacer(modifier = Modifier.height(48.dp))
@@ -347,8 +353,9 @@ fun EditProfileField(
     onValueChange: (String) -> Unit,
     icon: DrawableResource,
     fontFamily: FontFamily,
-    primaryGradientBrush: Brush
-) {
+    primaryGradientBrush: Brush,
+    keyboardOptions : KeyboardOptions,
+    ) {
 
     Column {
         Text(
@@ -405,7 +412,9 @@ fun EditProfileField(
                 color = Color.Gray
             ),
             singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Unspecified),
 
-        )
+
+            )
     }
 }

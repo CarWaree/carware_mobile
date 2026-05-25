@@ -68,4 +68,3 @@ fun appModule(preferencesManager: PreferencesManager) = module {
     // AppFonts.kt
 
 }
-

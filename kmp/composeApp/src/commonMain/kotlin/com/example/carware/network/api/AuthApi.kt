@@ -5,6 +5,7 @@ import com.example.carware.network.apiRequests.auth.ForgotPasswordRequest
 import com.example.carware.network.apiRequests.auth.GoogleSignInRequest
 import com.example.carware.network.apiRequests.auth.LoginRequest
 import com.example.carware.network.apiRequests.auth.OTPRequest
+import com.example.carware.network.apiRequests.auth.RefreshTokenRequest
 import com.example.carware.network.apiRequests.auth.ResetPasswordRequest
 import com.example.carware.network.apiRequests.auth.SignUpRequest
 import com.example.carware.network.apiResponse.auth.AuthResponse
@@ -12,6 +13,7 @@ import com.example.carware.network.apiResponse.auth.EmailVerificationResponse
 import com.example.carware.network.apiResponse.auth.ForgotPasswordResponse
 import com.example.carware.network.apiResponse.auth.GoogleSignInResponse
 import com.example.carware.network.apiResponse.auth.OTPResponse
+import com.example.carware.network.apiResponse.auth.RefreshTokenResponse
 import com.example.carware.network.apiResponse.auth.ResetPasswordResponse
 import com.example.carware.network.apiResponse.auth.SignUpResponse
 import com.example.carware.network.core.ApiResult
@@ -101,6 +103,18 @@ suspend fun googleSignIn(
 ): ApiResult<GoogleSignInResponse> =
     safeApiCall {
         client.post("$baseUrl/api/Auth/google-mobile") {
+            contentType(ContentType.Application.Json)
+            setBody(request)
+        }
+    }
+
+
+suspend fun refreshTokenCall(
+    request: RefreshTokenRequest,
+    client: HttpClient
+): ApiResult<RefreshTokenResponse> =
+    safeApiCall {
+        client.post ("$baseUrl/api/Auth/refresh-token"){
             contentType(ContentType.Application.Json)
             setBody(request)
         }

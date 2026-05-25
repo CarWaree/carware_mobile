@@ -392,10 +392,10 @@ fun HomeScreen(
 
         if (showDeleteDialog) {
             Box(
-                modifier = Modifier
+                modifier = m
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.4f))  // Semi-transparent dark overlay
-                    .blur(10.dp)  // Blur effect
+                    .blur(10.dp)
                     .pointerInput(Unit) {
                         awaitPointerEventScope {
                             while (true) {
