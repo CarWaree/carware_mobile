@@ -154,7 +154,8 @@ class SignUpViewModel(
             when (val result: UiResult<GoogleSignInResponse> = repository.googleSignInRepo(request)) {
                 is UiResult.Success -> {
                     val response = result.data
-                    preferencesManager.performLogin(token = response.accessToken)
+                    preferencesManager.performLogin(token = response.data.accessToken)
+                    preferencesManager.saveRefreshToken(response.data.refreshToken)
                     preferencesManager.saveEmailVerified(true)
 
                     val vehicles = vehicleRepository.getVehiclesRepo()

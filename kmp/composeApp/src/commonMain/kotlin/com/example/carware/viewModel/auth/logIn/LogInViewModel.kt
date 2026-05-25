@@ -88,6 +88,7 @@ class LogInViewModel(
 
                     preferencesManager.performLogin(token)
                     val expireToken = response.data.refreshTokenExpiration
+                    preferencesManager.saveRefreshToken(response.data.refreshToken) // ← add this
                     preferencesManager.saveExpiresOn(expireToken)
 
                     val isEmailVerified = response.data?.isAuthenticated ?: false
@@ -128,8 +129,10 @@ class LogInViewModel(
                 repository.googleSignInRepo(request)) {
                 is UiResult.Success -> {
                     val response = result.data
-                    preferencesManager.performLogin(token = response.accessToken)
+                    preferencesManager.performLogin(token = response.data.accessToken)
+                    preferencesManager.saveRefreshToken(response.data.refreshToken) // ← add this
                     preferencesManager.saveEmailVerified(true)
+
 
                     val vehicles = vehicleRepository.getVehiclesRepo()
                     val hasAddedCar = vehicles.isNotEmpty()
