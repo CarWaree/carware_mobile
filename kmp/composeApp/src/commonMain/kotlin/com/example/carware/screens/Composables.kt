@@ -566,7 +566,9 @@ fun ConfirmSchedule(
 }
 
 @Composable
-fun NoInternetDialog() {
+fun NoInternetDialog(
+    onDismiss: (() -> Unit)? = null,
+) {
     val popMid = FontFamily(Font(Res.font.poppins_medium))
     Column(
         Modifier
@@ -623,11 +625,46 @@ fun NoInternetDialog() {
 
                 )
 //            Spacer(m.height(12.dp))
+            if (onDismiss != null) {
 
+                Card(
+                    onClick = {
+                        onDismiss()
+                    },
+
+                    modifier = m
+                        .fillMaxWidth(0.9f)
+                        .height(40.dp)
+                        .border(
+                            width = 0.8.dp,
+                            color = Color(30, 30, 30, 110),
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .clip(shape = RoundedCornerShape(8.dp))
+                        .appButtonBack(),
+                    colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+
+                    ) {
+
+                    Row(
+                        modifier = m.fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            "Ok",
+                            fontFamily = popMid,
+                            fontSize = 14.sp,
+                            color = Color(245, 245, 245, 255),
+                            fontWeight = FontWeight.W500
+                        )
+                    }
+
+                }
+            }
         }
+
     }
-
-
 }
 
 @Preview
@@ -649,6 +686,7 @@ fun CarCard(
     image: DrawableResource,
     onEditClick: () -> Unit,  // add this
     onDeleteClick: () -> Unit,  // ← add this
+    onAddClick: () -> Unit
 
 
 ) {
@@ -719,7 +757,7 @@ fun CarCard(
                                 )
                             },
                             onClick = {
-                                navController.navigate(AddCarScreen)
+                                onAddClick
                                 expanded = false
                             }
                         )

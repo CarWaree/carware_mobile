@@ -12,6 +12,7 @@ import com.example.carware.repository.VehicleRepository
 import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.home.HomeScreenState
 import com.example.carware.viewModel.profile.ProfileScreenState
+import com.plusmobileapps.konnectivity.Konnectivity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,9 +28,11 @@ import kotlin.time.Instant
 
 class HomeScreenViewModel(
     private val repository: VehicleRepository,
+    connectivityManager: Konnectivity
 
 ) : ViewModel() {
 
+    val isConnected = connectivityManager.isConnectedState
 
     private val _state = MutableStateFlow<HomeScreenState>(HomeScreenState.Loading)
     val state: StateFlow<HomeScreenState> = _state.asStateFlow()

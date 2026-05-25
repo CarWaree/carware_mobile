@@ -49,7 +49,7 @@ fun appModule(preferencesManager: PreferencesManager) = module {
     single { ReminderRepository(get()) }
 
     // ViewModels
-    factory { HomeScreenViewModel(get()) }
+    factory { HomeScreenViewModel(get(),get()) }
     factory { SignUpViewModel(get(), get(), get()) }
     factory { LogInViewModel(get(), get(), get()) }
     factory { OTPViewModel(get(), get()) }

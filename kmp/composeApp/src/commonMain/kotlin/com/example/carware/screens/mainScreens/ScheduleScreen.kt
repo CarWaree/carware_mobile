@@ -337,18 +337,6 @@ fun ScheduleScreen(
                             .padding(horizontal = 26.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        // Display error if any
-                        if (state.error != null) {
-                            Text(
-                                text = state.error ?: "",
-                                color = Color.Red,
-                                fontSize = 12.sp,
-                                fontFamily = popSemi,
-                                modifier = m.padding(bottom = 8.dp)
-                            )
-                        }
-
-                        //
                         Card(
                             onClick = {
                                 if (viewModel.isValid()) {
@@ -380,7 +368,7 @@ fun ScheduleScreen(
                                     fontFamily = popSemi,
                                     fontSize = 18.sp,
                                     color = Color(217, 217, 217, 255)
-                                )
+                                ) //confirm
                             }
                         }
                     }

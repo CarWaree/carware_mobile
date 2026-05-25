@@ -56,6 +56,7 @@ import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.LocalStrings
 import com.example.carware.m
+import com.example.carware.navigation.AddCarScreen
 import com.example.carware.navigation.EditCarScreen
 import com.example.carware.navigation.NotificationScreen
 import com.example.carware.navigation.ProfileScreen
@@ -63,6 +64,7 @@ import com.example.carware.network.apiResponse.appointment.Appointments
 import com.example.carware.network.apiResponse.vehicle.Vehicles
 import com.example.carware.screens.CarCard
 import com.example.carware.screens.ConfirmDeleteCar
+import com.example.carware.screens.NoInternetDialog
 import com.example.carware.screens.ServiceHistoryItem
 import com.example.carware.screens.ShimmerCarCard
 import com.example.carware.screens.ToastMessage
@@ -75,6 +77,7 @@ import com.example.carware.viewModel.notification.NotificationViewModel
 import com.example.carware.viewModel.notification.NotificationsUiState
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.Font
+import org.jetbrains.compose.resources.getResourceUri
 import org.jetbrains.compose.resources.painterResource
 
 @Suppress("SuspiciousIndentation")
@@ -86,6 +89,12 @@ fun HomeScreen(
 ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
     val popMid = FontFamily(Font(Res.font.poppins_medium))
+
+    val isConnected by viewModel.isConnected.collectAsStateWithLifecycle()
+    var showNoInternetDialog by remember { mutableStateOf(false) }
+    LaunchedEffect(isConnected) {
+        if (!isConnected) showNoInternetDialog = true
+    }
 
     val scrollState = rememberScrollState()
     val strings = LocalStrings.current
@@ -129,8 +138,14 @@ fun HomeScreen(
                         image = Res.drawable.audi,
                         navController = navController,
                         viewModel = viewModel,
+                        onAddClick = {
+                            if (!isConnected) showNoInternetDialog=true
+                            else navController.navigate(AddCarScreen)
+//not working !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        },
                         onEditClick = {
-                            navController.navigate(EditCarScreen(carId = car.id))
+                            if (!isConnected) showNoInternetDialog = true
+                            else navController.navigate(EditCarScreen(carId = car.id))
                         },
                         onDeleteClick = { showDeleteDialog = true },
 
@@ -163,7 +178,8 @@ fun HomeScreen(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize(),
+    Box(
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.TopCenter
     ) {
         Column(
@@ -263,8 +279,10 @@ fun HomeScreen(
 
             PullToRefreshBox(
                 isRefreshing = isRefreshing,
-                onRefresh = { viewModel.loadVehicles()
-                viewModel.loadNextReminder()}
+                onRefresh = {
+                    viewModel.loadVehicles()
+                    viewModel.loadNextReminder()
+                }
             ) {
 
 
@@ -287,7 +305,7 @@ fun HomeScreen(
                             is HomeScreenState.Error -> {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     Spacer(modifier = m.padding(vertical = 16.dp))
-                                                                        ShimmerCarCard()
+                                    ShimmerCarCard()
 
                                 }
                             }
@@ -389,13 +407,12 @@ fun HomeScreen(
 
         }
 
-
-        if (showDeleteDialog) {
+        if (showNoInternetDialog) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.4f))  // Semi-transparent dark overlay
-                    .blur(10.dp)  // Blur effect
+                    .background(Color.Black.copy(alpha = 0.4f))
+                    .blur(10.dp)
                     .pointerInput(Unit) {
                         awaitPointerEventScope {
                             while (true) {
@@ -404,10 +421,34 @@ fun HomeScreen(
                         }
                     }
             )
-            ConfirmDeleteCar(
-                viewModel = viewModel,
-                onDismiss = { showDeleteDialog = false }
+
+            NoInternetDialog{ showNoInternetDialog = false }
+        }
+        if (showDeleteDialog) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.4f))
+                    .blur(10.dp)
+                    .pointerInput(Unit) {
+                        awaitPointerEventScope {
+                            while (true) {
+                                awaitPointerEvent()
+                            }
+                        }
+                    }
             )
+
+            if (!isConnected) {
+                NoInternetDialog(
+                    onDismiss = { showDeleteDialog = false }
+                )
+            } else {
+                ConfirmDeleteCar(
+                    viewModel = viewModel,
+                    onDismiss = { showDeleteDialog = false }
+                )
+            }
         }
         AnimatedVisibility(
             visible = state is HomeScreenState.Success && state.successMessage != null,
@@ -418,20 +459,19 @@ fun HomeScreen(
                 ToastMessage(message = state.successMessage, state = true)
                 LaunchedEffect(state.successMessage) {
                     delay(3000)
-        //                    viewModel.loadVehicles()
+                    //                    viewModel.loadVehicles()
                     viewModel.clearMessage()
                 }
             }
         }
-//        Spacer(modifier = m.padding(vertical = 50.dp))
-//        Text("Error: ${state.message}", color = Color.Red)
+
         AnimatedVisibility(
-            visible = state is HomeScreenState.Error && state.message!=null,
+            visible = state is HomeScreenState.Error && state.message != null,
             modifier = Modifier
                 .padding(top = 50.dp) // Gap from the very top of the phone
         ) {
-            if (state is HomeScreenState.Error ) {
-                ToastMessage(message = "${state.message}".take(20), state = false )
+            if (state is HomeScreenState.Error) {
+                ToastMessage(message = "${state.message}".take(20), state = false)
                 LaunchedEffect(state.message) {
                     delay(3000)
                     viewModel.clearMessage()
