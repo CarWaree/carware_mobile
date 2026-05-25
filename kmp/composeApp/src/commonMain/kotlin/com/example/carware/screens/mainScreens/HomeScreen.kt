@@ -92,9 +92,14 @@ fun HomeScreen(
 
     val isConnected by viewModel.isConnected.collectAsStateWithLifecycle()
     var showNoInternetDialog by remember { mutableStateOf(false) }
+
     LaunchedEffect(isConnected) {
         if (!isConnected) showNoInternetDialog = true
     }
+    var editButtonPressed by remember { mutableStateOf(false) }
+
+    var addButtonPressed by remember { mutableStateOf(false) }
+
 
     val scrollState = rememberScrollState()
     val strings = LocalStrings.current
@@ -139,13 +144,14 @@ fun HomeScreen(
                         navController = navController,
                         viewModel = viewModel,
                         onAddClick = {
-                            if (!isConnected) showNoInternetDialog=true
+                            if (!isConnected) showNoInternetDialog = true
                             else navController.navigate(AddCarScreen)
-//not working !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                            addButtonPressed = true
                         },
                         onEditClick = {
                             if (!isConnected) showNoInternetDialog = true
                             else navController.navigate(EditCarScreen(carId = car.id))
+                            editButtonPressed = true
                         },
                         onDeleteClick = { showDeleteDialog = true },
 
@@ -407,7 +413,7 @@ fun HomeScreen(
 
         }
 
-        if (showNoInternetDialog) {
+        if (showNoInternetDialog && (editButtonPressed || addButtonPressed)) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -422,7 +428,7 @@ fun HomeScreen(
                     }
             )
 
-            NoInternetDialog{ showNoInternetDialog = false }
+            NoInternetDialog { showNoInternetDialog = false }
         }
         if (showDeleteDialog) {
             Box(

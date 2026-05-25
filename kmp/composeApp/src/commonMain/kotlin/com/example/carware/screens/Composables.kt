@@ -757,7 +757,7 @@ fun CarCard(
                                 )
                             },
                             onClick = {
-                                onAddClick
+                                onAddClick()
                                 expanded = false
                             }
                         )
