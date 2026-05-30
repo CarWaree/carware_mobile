@@ -63,7 +63,7 @@ class OTPViewModel(
             when (val result: UiResult<OTPResponse> = repository.otpVerificationRepo(request)) {
                 is UiResult.Success -> {
                     val response = result.data
-                    val token = response.data?.token
+                    val token = response.data?.resetPasswordToken
 
                     if (token == null) {
                         _state.update {

@@ -161,7 +161,7 @@ fun HomeScreen(
 
             //  page indicator
             Row(
-                Modifier.fillMaxWidth().padding(top = 8.dp),
+                Modifier.fillMaxWidth().padding(top = 8.dp),    
                 horizontalArrangement = Arrangement.Center
             ) {
                 repeat(cars.size) { iteration ->

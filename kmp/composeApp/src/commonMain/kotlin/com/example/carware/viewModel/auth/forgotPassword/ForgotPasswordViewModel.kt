@@ -3,6 +3,8 @@ package com.example.carware.viewModel.auth.forgotPassword
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.carware.network.apiRequests.auth.ForgotPasswordRequest
+import com.example.carware.network.apiResponse.auth.ForgotPasswordResponse
+import com.example.carware.network.core.UiResult
 import com.example.carware.repository.auth.AuthRepository
 import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,23 +46,40 @@ class ForgotPasswordViewModel (
         }
 
         viewModelScope.launch {
-            try {
-                _state.update { it.copy(isLoading = true, errorMessage = null) }
-                val request = ForgotPasswordRequest(
-                    email = _state.value.email
-                )
-                val response=repository.forgotPasswordRepo(request)
+            _state.update { it.copy(isLoading = true, errorMessage = null) }
+
+            val request = ForgotPasswordRequest(
+                email = _state.value.email
+            )
+            when (val result: UiResult<ForgotPasswordResponse> =repository.forgotPasswordRepo(request)){
+                is UiResult.Success->{
+                    val response =result.data
                  _state.update { it.copy(isLoading = false, isSuccess = true) }
-
-            }catch (e: Exception){
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = e.message ?: "An error occurred"
-                    )
                 }
-
+                is UiResult.Error -> {
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = result.message
+                        )
+                    }
+                }
             }
+
+//            try {
+//
+//                val response=repository.forgotPasswordRepo(request)
+//                 _state.update { it.copy(isLoading = false, isSuccess = true) }
+//
+//            }catch (e: Exception){
+//                _state.update {
+//                    it.copy(
+//                        isLoading = false,
+//                        errorMessage = e.message ?: "An error occurred"
+//                    )
+//                }
+//
+//            }
         }
 
     }

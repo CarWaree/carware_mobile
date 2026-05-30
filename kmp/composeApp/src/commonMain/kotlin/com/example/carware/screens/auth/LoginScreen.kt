@@ -39,6 +39,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -253,7 +254,9 @@ fun LoginScreen(
                     },
                     isError = state.emailOrUsernameError,
                     keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Email
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Next
+
                     ),
                     singleLine = true,
                     shape = RoundedCornerShape(8.dp),
@@ -285,7 +288,9 @@ fun LoginScreen(
                         )
                     },
                     keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Password
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Done
+
                     ),
                     isError = state.passError,
                     visualTransformation = if (isPassVisible) VisualTransformation.None

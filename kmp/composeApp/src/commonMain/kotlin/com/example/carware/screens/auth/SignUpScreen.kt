@@ -42,6 +42,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -265,6 +266,11 @@ fun SignUpScreen(
                                     )
                                 },
                                 singleLine = true,
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    keyboardType = KeyboardType.Text,
+                                    imeAction = ImeAction.Next
+
+                                ),
                                 shape = RoundedCornerShape(8.dp),
                                 colors = textFieldColors
                             ) //Fname field
@@ -281,6 +287,11 @@ fun SignUpScreen(
                                         color = Color(30, 30, 30, 168)
                                     )
                                 },
+                                keyboardOptions = KeyboardOptions.Default.copy(
+                                    keyboardType = KeyboardType.Text,
+                                    imeAction = ImeAction.Next
+
+                                ),
                                 singleLine = true,
                                 shape = RoundedCornerShape(8.dp),
                                 colors = textFieldColors
@@ -295,6 +306,11 @@ fun SignUpScreen(
                             onValueChange = {
                                 viewModel.onUserNameChange(it)
                             },
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Next
+
+                            ),
                             placeholder = {
                                 Text(
                                     text = if (state.userNameError) strings.get("USERNAME_REQUIRED")
@@ -342,9 +358,11 @@ fun SignUpScreen(
                                     )
                                 )
                             },
+
                             isError = state.emailError,
                             keyboardOptions = KeyboardOptions.Default.copy(
-                                keyboardType = KeyboardType.Email
+                                keyboardType = KeyboardType.Email,
+                                imeAction = ImeAction.Next
                             ),
                             singleLine = true,
                             shape = RoundedCornerShape(8.dp),
@@ -380,7 +398,10 @@ fun SignUpScreen(
                             visualTransformation = if (isPassVisible) VisualTransformation.None
                             else PasswordVisualTransformation(),
                             keyboardOptions = KeyboardOptions.Default.copy(
-                                keyboardType = KeyboardType.Password
+                                keyboardType = KeyboardType.Password,
+                                imeAction = ImeAction.Next
+
+
                             ),
                             singleLine = true,
                             shape = RoundedCornerShape(8.dp),
@@ -439,7 +460,9 @@ fun SignUpScreen(
                             visualTransformation = if (isPassVisible) VisualTransformation.None
                             else PasswordVisualTransformation(),
                             keyboardOptions = KeyboardOptions.Default.copy(
-                                keyboardType = KeyboardType.Password
+                                keyboardType = KeyboardType.Password,
+                                imeAction = ImeAction.Done
+
                             ),
                             singleLine = true,
                             shape = RoundedCornerShape(8.dp),

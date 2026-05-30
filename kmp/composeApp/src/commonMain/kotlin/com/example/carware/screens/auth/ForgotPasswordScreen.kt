@@ -1,4 +1,5 @@
 package com.example.carware.screens.auth
+
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -52,8 +53,9 @@ import org.jetbrains.compose.resources.painterResource
 
 
 @Composable
-fun ResetPasswordScreen(navController: NavController,
-                        viewModel: ForgotPasswordViewModel
+fun ResetPasswordScreen(
+    navController: NavController,
+    viewModel: ForgotPasswordViewModel
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -61,13 +63,10 @@ fun ResetPasswordScreen(navController: NavController,
 //    val currentLang = AppLanguage.fromCode(preferencesManager.getLanguageCode())
 
     val popSemi = FontFamily(
-        Font(Res.font.poppins_semibold ) // name of your font file without extension
+        Font(Res.font.poppins_semibold) // name of your font file without extension
     )
 
     val popMid = FontFamily(Font(Res.font.poppins_medium))
-
-
-
 
 
     val textFieldColors = TextFieldDefaults.colors(
@@ -178,11 +177,13 @@ fun ResetPasswordScreen(navController: NavController,
                         modifier = m.size(280.dp, 55.dp),
                         value = state.email,
                         onValueChange = {
-                          viewModel.onEmailChange(it)
+                            viewModel.onEmailChange(it)
                         },
                         placeholder = {
                             Text(
-                                text = if (state.emailError) strings.get("EMAIL_REQUIRED") else strings.get("EMAIL"),
+                                text = if (state.emailError) strings.get("EMAIL_REQUIRED") else strings.get(
+                                    "EMAIL"
+                                ),
                                 fontFamily = popMid,
                                 fontSize = 12.sp,
                                 color = if (state.emailError) Color(194, 0, 0, 255)
@@ -209,7 +210,8 @@ fun ResetPasswordScreen(navController: NavController,
                     Spacer(modifier = m.padding(vertical = 8.dp))
 
                     Card(
-                        onClick = {viewModel.forgotPassword()
+                        onClick = {
+                            viewModel.forgotPassword()
                         },
                         modifier = m
 

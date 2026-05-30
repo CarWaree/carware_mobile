@@ -186,5 +186,13 @@ val StringsEn = mapOf(
     // Reminder History
     "REMINDER_HISTORY" to "Reminder History",
     "REMINDER_SUBTITLE" to "View and manage your Reminder records for all your vehicles.",
+    //Change Password
+
+    "CHANGE_PASS" to "Change Password",
+    "OLD_PASS" to "Enter your old password",
+    "NEW_PASS" to "Enter your new password",
+    "CONF_NEW_PASS" to "Confirm password",
+    "CONF_BTTN_PASS" to "Confirm Change"
+
 
     )

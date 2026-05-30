@@ -1,5 +1,6 @@
 package com.example.carware.network.api
 
+import com.example.carware.network.apiRequests.auth.ChangePassRequest
 import com.example.carware.network.apiRequests.auth.EmailVerificationRequest
 import com.example.carware.network.apiRequests.auth.ForgotPasswordRequest
 import com.example.carware.network.apiRequests.auth.GoogleSignInRequest
@@ -9,6 +10,7 @@ import com.example.carware.network.apiRequests.auth.RefreshTokenRequest
 import com.example.carware.network.apiRequests.auth.ResetPasswordRequest
 import com.example.carware.network.apiRequests.auth.SignUpRequest
 import com.example.carware.network.apiResponse.auth.AuthResponse
+import com.example.carware.network.apiResponse.auth.ChangePassResponse
 import com.example.carware.network.apiResponse.auth.EmailVerificationResponse
 import com.example.carware.network.apiResponse.auth.ForgotPasswordResponse
 import com.example.carware.network.apiResponse.auth.GoogleSignInResponse
@@ -119,3 +121,12 @@ suspend fun refreshTokenCall(
             setBody(request)
         }
     }
+
+suspend fun changePass(
+    request: ChangePassRequest,
+    client: HttpClient
+): ApiResult<ChangePassResponse> =
+    safeApiCall {client.post ("$baseUrl/api/Auth/change-password"){
+        contentType(ContentType.Application.Json)
+        setBody(request)
+    }  }

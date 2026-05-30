@@ -1,4 +1,4 @@
-package com.example.carware.screens.profile
+package com.example.carware.screens.settings.profile
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn

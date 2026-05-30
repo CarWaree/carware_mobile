@@ -23,7 +23,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.carware.Notification.RequestNotificationPermission
+import com.example.carware.kalamna.AssistantFab
 import com.example.carware.navigation.AddCarScreen
+import com.example.carware.navigation.ChangePassScreen
 import com.example.carware.navigation.EditCarScreen
 import com.example.carware.navigation.EditProfileScreen
 import com.example.carware.navigation.EmailVerificationScreen
@@ -51,7 +53,7 @@ import com.example.carware.screens.BottomNavBar
 import com.example.carware.screens.NotificationScreen
 import com.example.carware.screens.reminder.ReminderHistoryScreen
 import com.example.carware.screens.reminder.ReminderScreen
-import com.example.carware.screens.SelectLanguageScreen
+import com.example.carware.screens.settings.SelectLanguageScreen
 import com.example.carware.screens.SplashScreen
 import com.example.carware.screens.auth.EmailVerificationScreen
 import com.example.carware.screens.auth.LoginScreen
@@ -66,15 +68,17 @@ import com.example.carware.screens.mainScreens.ServiceRecordScreen
 import com.example.carware.screens.mainScreens.SettingsScreen
 import com.example.carware.screens.onBoarding.LanguageSelectionScreen
 import com.example.carware.screens.onBoarding.OnBoardingScreen
-import com.example.carware.screens.profile.EditProfileScreen
-import com.example.carware.screens.profile.MyCarsScreen
-import com.example.carware.screens.profile.ProfileScreen
+import com.example.carware.screens.settings.ChangePassScreen
+import com.example.carware.screens.settings.profile.EditProfileScreen
+import com.example.carware.screens.settings.profile.MyCarsScreen
+import com.example.carware.screens.settings.profile.ProfileScreen
 import com.example.carware.screens.vehicle.AddCarScreen
 import com.example.carware.screens.vehicle.EditCarScreen
 import com.example.carware.util.lang.AppLanguage
 import com.example.carware.util.lang.LocalizedStrings
 import com.example.carware.util.navBar.bottomTabs
 import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.viewModel.auth.changePass.ChangePassViewModel
 import com.example.carware.viewModel.auth.emailVerification.EmailVerificationViewModel
 import com.example.carware.viewModel.auth.forgotPassword.ForgotPasswordViewModel
 import com.example.carware.viewModel.auth.logIn.LogInViewModel
@@ -116,8 +120,6 @@ fun MainScreen() {
 
     val notificationViewModel: NotificationViewModel=koinInject( )
 
-    // ✅ Get all ViewModels from Koin once
-
     CompositionLocalProvider(
         LocalStrings provides localizedStrings,
         LocalLayoutDirection provides layoutDirection
@@ -137,7 +139,11 @@ fun MainScreen() {
                             tabs = bottomTabs,
                             modifier = Modifier.navigationBarsPadding()
                         )
+                    },
+                    floatingActionButton = {
+                        AssistantFab(apiKey = "YOUR_API_KEY")
                     }
+
                 ) { _ ->
                     HorizontalPager(
                         state = pagerState,
@@ -327,6 +333,14 @@ fun MainScreen() {
                     navController,
                     reminderHistoryViewModel
 
+                )
+            }
+
+            composable<ChangePassScreen> {
+                val changePassViewModel: ChangePassViewModel = koinInject()
+                ChangePassScreen(
+                    navController,
+                    changePassViewModel
                 )
             }
         }

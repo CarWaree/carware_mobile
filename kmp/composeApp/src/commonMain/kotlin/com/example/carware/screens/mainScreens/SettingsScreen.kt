@@ -51,6 +51,7 @@ import carware.composeapp.generated.resources.settings_update
 import coil3.compose.LocalPlatformContext
 import com.example.carware.LocalStrings
 import com.example.carware.m
+import com.example.carware.navigation.ChangePassScreen
 import com.example.carware.navigation.ProfileScreen
 import com.example.carware.navigation.SelectLanguageScreen
 import com.example.carware.navigation.SignUpScreen
@@ -132,7 +133,7 @@ fun SettingsScreen(
             SettingsRowButton(
                 painterResource(Res.drawable.settings_lock),
                 strings.get("CHANGE_PASSWORD"),
-                {}
+                {navController.navigate(ChangePassScreen)}
             )
             Spacer(m.height(42.dp))
 

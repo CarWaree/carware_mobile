@@ -11,6 +11,7 @@ import com.example.carware.repository.VehicleRepository
 import com.example.carware.repository.auth.AuthRepository
 import com.example.carware.util.CalendarLauncher
 import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.viewModel.auth.changePass.ChangePassViewModel
 import com.example.carware.viewModel.vehicle.addcar.AddCarViewModel
 import com.example.carware.viewModel.auth.emailVerification.EmailVerificationViewModel
 import com.example.carware.viewModel.auth.forgotPassword.ForgotPasswordViewModel
@@ -65,6 +66,7 @@ fun appModule(preferencesManager: PreferencesManager) = module {
     factory { ReminderScreenViewModel(get(), get(), get(), get()) }
     factory { MyCarsScreenViewModel(get(), get()) }
     factory { ReminderHistoryViewModel(get()) }
+    factory { ChangePassViewModel(get(),get()) }
     // AppFonts.kt
 
 }

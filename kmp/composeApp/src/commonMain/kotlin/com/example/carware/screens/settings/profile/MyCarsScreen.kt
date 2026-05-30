@@ -1,4 +1,4 @@
-package com.example.carware.screens.profile
+package com.example.carware.screens.settings.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -40,14 +40,10 @@ import carware.composeapp.generated.resources.poppins
 import carware.composeapp.generated.resources.poppins_medium
 import com.example.carware.LocalStrings
 import com.example.carware.m
-import com.example.carware.navigation.MyCarsScreen
 import com.example.carware.viewModel.mycars.MyCarsScreenState
 import com.example.carware.viewModel.mycars.MyCarsScreenViewModel
-import com.example.carware.viewModel.profile.ProfileScreenState
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.koin.compose.koinInject
 
 @Composable
 fun MyCarsScreen(

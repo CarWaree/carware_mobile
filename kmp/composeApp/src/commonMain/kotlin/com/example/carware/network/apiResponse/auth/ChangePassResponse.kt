@@ -3,15 +3,7 @@ package com.example.carware.network.apiResponse.auth
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class OTPResponse(
-    val data: OTP,
+data class ChangePassResponse(
     val statusCode: Int,
-    val message:String
-
-)
-
-@Serializable
-data class OTP(
-    val resetPasswordToken : String
-
+    val message: String
 )

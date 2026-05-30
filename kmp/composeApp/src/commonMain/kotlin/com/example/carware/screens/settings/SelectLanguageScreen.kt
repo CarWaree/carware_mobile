@@ -1,7 +1,6 @@
-package com.example.carware.screens
+package com.example.carware.screens.settings
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +19,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -46,8 +44,8 @@ import carware.composeapp.generated.resources.en_flag
 import carware.composeapp.generated.resources.poppins
 import com.example.carware.LocalStrings
 import com.example.carware.m
-import com.example.carware.navigation.LanguageSelectionScreen
-import com.example.carware.navigation.OnboardingScreen
+import com.example.carware.screens.appGradBack
+import com.example.carware.screens.backgroundColor
 import com.example.carware.util.lang.AppLanguage
 import com.example.carware.util.storage.PreferencesManager
 import org.jetbrains.compose.resources.Font

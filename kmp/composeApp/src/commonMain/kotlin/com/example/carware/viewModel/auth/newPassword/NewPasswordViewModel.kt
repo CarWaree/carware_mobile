@@ -63,7 +63,7 @@ class NewPasswordViewModel (
                 _state.update { it.copy(isLoading = true, errorMessage = null) }
 
                 val request = ResetPasswordRequest(
-                    accessToken = preferencesManager.getResetToken(),
+                    resetPasswordToken = preferencesManager.getResetToken(),
                     newPassword = _state.value.pass,
                     confirmPassword =_state.value.confPass
                 )

@@ -1,5 +1,6 @@
 package com.example.carware.repository.auth
 
+import com.example.carware.network.api.changePass
 import com.example.carware.network.api.forgotPasswordUser
 import com.example.carware.network.api.googleSignIn
 import com.example.carware.network.api.loginUser
@@ -8,6 +9,7 @@ import com.example.carware.network.api.refreshTokenCall
 import com.example.carware.network.api.resetPasswordUser
 import com.example.carware.network.api.signupUser
 import com.example.carware.network.api.verifyEmailUser
+import com.example.carware.network.apiRequests.auth.ChangePassRequest
 import com.example.carware.network.apiRequests.auth.EmailVerificationRequest
 import com.example.carware.network.apiRequests.auth.ForgotPasswordRequest
 import com.example.carware.network.apiRequests.auth.GoogleSignInRequest
@@ -18,6 +20,7 @@ import com.example.carware.network.apiRequests.auth.ResetPasswordRequest
 import com.example.carware.network.apiRequests.auth.SignUpRequest
 import com.example.carware.network.apiResponse.auth.GoogleSignInResponse
 import com.example.carware.network.apiResponse.auth.AuthResponse
+import com.example.carware.network.apiResponse.auth.ChangePassResponse
 import com.example.carware.network.apiResponse.auth.EmailVerificationResponse
 import com.example.carware.network.apiResponse.auth.ForgotPasswordResponse
 import com.example.carware.network.apiResponse.auth.OTPResponse
@@ -153,6 +156,23 @@ class AuthRepository(
             }
 
         }
+    }
+
+    suspend fun changePassRepo(request: ChangePassRequest) : UiResult<ChangePassResponse>{
+        return  when (val result = changePass(request,client)){
+            is ApiResult.Success -> {
+                UiResult.Success(result.data)
+            }
+
+            is ApiResult.Error -> {
+                UiResult.Error(result.message)
+            }
+
+            is ApiResult.Exception -> {
+                UiResult.Error(result.throwable.message ?: "Unknown error occurred")
+            }
+        }
+        
     }
 
     suspend fun refreshTokenRepo(request: RefreshTokenRequest): RefreshTokenResponse {

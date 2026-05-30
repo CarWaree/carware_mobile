@@ -77,3 +77,6 @@ object MyCarsScreen
 
 @Serializable
 object ReminderHistoryScreen
+
+@Serializable
+object ChangePassScreen

@@ -1,4 +1,4 @@
-package com.example.carware.screens.profile
+package com.example.carware.screens.settings.profile
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,7 +24,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -76,7 +75,6 @@ import com.example.carware.navigation.MyCarsScreen
 import com.example.carware.navigation.SignUpScreen
 import com.example.carware.network.api.baseUrl
 import com.example.carware.screens.ShimmerProfileScreen
-import com.example.carware.util.rememberImagePickerLauncher
 import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.profile.ProfileScreenState
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
