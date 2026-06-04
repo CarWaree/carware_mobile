@@ -27,6 +27,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -171,7 +172,7 @@ fun AddCarIntDropdown(
                     }
                 )
                 if (index < displayOptions.size - 1) {
-                    Divider(color = Color(118, 118, 118, 128), thickness = 1.dp)
+                    HorizontalDivider(color = Color(118, 118, 118, 128), thickness = 1.dp)
                 }
             }
         }

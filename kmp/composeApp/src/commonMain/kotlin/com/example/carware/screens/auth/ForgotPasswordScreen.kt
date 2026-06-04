@@ -1,5 +1,10 @@
 package com.example.carware.screens.auth
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -8,6 +13,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -45,9 +52,11 @@ import com.example.carware.navigation.LoginScreen
 import com.example.carware.navigation.ResetPasswordScreen
 import com.example.carware.navigation.VerificationCodeScreen
 import com.example.carware.screens.LoadingOverlay
+import com.example.carware.screens.ToastMessage
 import com.example.carware.screens.appButtonBack
 import com.example.carware.screens.appGradBack
 import com.example.carware.viewModel.auth.forgotPassword.ForgotPasswordViewModel
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 
@@ -112,6 +121,25 @@ fun ResetPasswordScreen(
             .padding(top = 100.dp)
 
     ) {
+        Column(m.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+            AnimatedVisibility(
+                visible = state.errorMessage != null,
+                enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+                exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut(),
+                modifier = Modifier
+                    .padding(top = 20.dp) // Gap from the very top of the phone
+            ) {
+                state.errorMessage?.let { msg ->
+                    ToastMessage(message = msg, state = false)
+
+                    LaunchedEffect(msg) {
+                        delay(3000)
+                    }
+                }
+            }
+        }
+        Spacer(modifier = m.height(8.dp))
+
         Box(
             modifier = m
                 .padding(start = 95.dp),

@@ -30,12 +30,15 @@ class ProfileScreenViewModel(
     init {
         loadProfile()
     }
+
     fun onFullNameChange(value: String) {
         _editState.value = _editState.value.copy(fullName = value)
     }
+
     fun onEmailChange(value: String) {
         _editState.value = _editState.value.copy(email = value)
     }
+
     fun onPhoneChange(value: String) {
         _editState.value = _editState.value.copy(phone = value)
     }
@@ -55,17 +58,20 @@ class ProfileScreenViewModel(
         viewModelScope.launch {
             _editState.update { it.copy(isLoading = true, errorMessage = null) }
 
+            println("EditProfile -> fullName: ${_editState.value.fullName}, phone: ${_editState.value.phone}, email: ${_editState.value.email}")
             when (val result: UiResult<UpdateProfileResponse> = repository.updateProfileRepo(
                 UpdateProfileRequest(
                     fullName = _editState.value.fullName,
                     phoneNumber = _editState.value.phone,
-                    pendingEmail = _editState.value.email
+                    email = _editState.value.email
                 )
             )) {
+
                 is UiResult.Success -> {
                     _editState.update { it.copy(isLoading = false) }
                     loadProfile()  // refresh after save
                 }
+
                 is UiResult.Error -> {
                     _editState.update {
                         it.copy(
@@ -80,9 +86,16 @@ class ProfileScreenViewModel(
 
     fun uploadPhoto(bytes: ByteArray) {
         viewModelScope.launch {
-            _editState.update { it.copy(isUploadingPhoto = true, errorMessage = null, uploadSuccess = false) }
+            _editState.update {
+                it.copy(
+                    isUploadingPhoto = true,
+                    errorMessage = null,
+                    uploadSuccess = false
+                )
+            }
 
-            when (val result: UiResult<UpdatePictureResponse> = repository.uploadProfileImageRepo(bytes)) {
+            when (val result: UiResult<UpdatePictureResponse> =
+                repository.uploadProfileImageRepo(bytes)) {
                 is UiResult.Success -> {
                     _editState.update { it.copy(isUploadingPhoto = false, uploadSuccess = true) }
                     loadProfile()  // refresh after upload
@@ -92,6 +105,7 @@ class ProfileScreenViewModel(
                         println("--- IMAGE URL: ${currentState.profile.profileImageUrl}")
                     }
                 }
+
                 is UiResult.Error -> {
                     _editState.update {
                         it.copy(
@@ -114,7 +128,8 @@ class ProfileScreenViewModel(
                 val profileDetails = profile.data
 
                 val vehicleList = vehiclesRepository.getVehiclesRepo()
-                _state.value = ProfileScreenState.Success(profileDetails, vehicleList) // always set success
+                _state.value =
+                    ProfileScreenState.Success(profileDetails, vehicleList) // always set success
 
                 loadEditState()
 
@@ -124,6 +139,7 @@ class ProfileScreenViewModel(
             }
         }
     }
+
     fun clearErrorMessage() = _editState.update { it.copy(errorMessage = null) }
 
 }

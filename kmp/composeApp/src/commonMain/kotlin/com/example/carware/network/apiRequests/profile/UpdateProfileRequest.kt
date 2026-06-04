@@ -6,5 +6,5 @@ import kotlinx.serialization.Serializable
 data class UpdateProfileRequest(
     val fullName: String?="",
     val phoneNumber: String?="",
-    val pendingEmail : String?="",
+    val email : String?="",
 )

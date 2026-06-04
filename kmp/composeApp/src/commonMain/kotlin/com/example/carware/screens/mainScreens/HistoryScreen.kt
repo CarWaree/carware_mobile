@@ -507,8 +507,6 @@ fun ServiceRecordScreen(
                 Spacer(Modifier.height(100.dp))
             }
     }
-
-        else -> {}
     }
 
 

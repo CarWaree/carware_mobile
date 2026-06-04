@@ -23,7 +23,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.carware.Notification.RequestNotificationPermission
-import com.example.carware.kalamna.AssistantFab
 import com.example.carware.navigation.AddCarScreen
 import com.example.carware.navigation.ChangePassScreen
 import com.example.carware.navigation.EditCarScreen
@@ -140,9 +139,6 @@ fun MainScreen() {
                             modifier = Modifier.navigationBarsPadding()
                         )
                     },
-                    floatingActionButton = {
-                        AssistantFab(apiKey = "YOUR_API_KEY")
-                    }
 
                 ) { _ ->
                     HorizontalPager(
