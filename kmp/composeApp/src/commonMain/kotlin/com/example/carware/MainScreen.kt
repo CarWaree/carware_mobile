@@ -130,6 +130,8 @@ fun MainScreen() {
         NavHost(navController = navController, startDestination = SplashScreen) {
 
             composable<HomeScreen> {
+                var showChat by remember { mutableStateOf(false) }
+
                 Scaffold(
                     bottomBar = {
                         BottomNavBar(
@@ -139,7 +141,19 @@ fun MainScreen() {
                             modifier = Modifier.navigationBarsPadding()
                         )
                     },
-
+                    floatingActionButton = {
+                        FloatingActionButton(
+                            onClick = { showChat = true },
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            shape = CircleShape
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Chat,
+                                contentDescription = "Chat with AI",
+                                tint = Color.White
+                            )
+                        }
+                    }
                 ) { _ ->
                     HorizontalPager(
                         state = pagerState,
@@ -150,20 +164,16 @@ fun MainScreen() {
                             HomeScreen::class -> {
                                 val notificationViewModel: NotificationViewModel = koinInject()
                                 val homeViewModel: HomeScreenViewModel = koinInject()
-                                HomeScreen(navController, homeViewModel,
-                                    notificationViewModel
-                                )
+                                HomeScreen(navController, homeViewModel, notificationViewModel)
                             }
 
                             ScheduleScreen::class -> {
                                 val scheduleViewModel: ScheduleScreenViewModel = koinInject()
-
                                 ScheduleScreen(navController, scheduleViewModel, preferencesManager)
                             }
 
                             HistoryScreen::class -> {
                                 val historyViewModel: HistoryScreenViewModel = koinInject()
-
                                 HistoryScreen(navController, historyViewModel)
                             }
 
@@ -173,11 +183,13 @@ fun MainScreen() {
 
                             else -> Box(Modifier.fillMaxSize())
                         }
+                    }
 
+                    if (showChat) {
+                        ChatBotSheet(onDismiss = { showChat = false })
                     }
                 }
             }
-
             composable<OnboardingScreen> {
                 OnBoardingScreen(navController, preferencesManager)
             }
