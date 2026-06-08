@@ -1,6 +1,7 @@
 package com.example.carware.di
 
 import com.example.carware.Notification.getPushTokenProvider
+import com.example.carware.chatbot.ChatViewModel
 import com.example.carware.network.core.createHttpClient
 import com.example.carware.repository.HistoryRepository
 import com.example.carware.repository.NotificationsRepository
@@ -29,6 +30,7 @@ import com.example.carware.viewModel.reminder.reminderScreen.ReminderScreenViewM
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
 import com.example.carware.viewModel.vehicle.editCar.EditCarViewModel
 import com.plusmobileapps.konnectivity.Konnectivity
+import kotlinx.coroutines.MainScope
 import org.koin.dsl.module
 
 fun appModule(preferencesManager: PreferencesManager) = module {
@@ -67,6 +69,7 @@ fun appModule(preferencesManager: PreferencesManager) = module {
     factory { MyCarsScreenViewModel(get(), get()) }
     factory { ReminderHistoryViewModel(get()) }
     factory { ChangePassViewModel(get(),get()) }
+    single { ChatViewModel(get(), MainScope()) }
     // AppFonts.kt
 
 }

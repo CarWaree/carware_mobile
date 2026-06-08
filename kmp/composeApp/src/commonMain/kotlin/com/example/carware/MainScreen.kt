@@ -1,10 +1,15 @@
 package com.example.carware
 
+import com.example.carware.chatbot.ChatBotSheet
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -16,12 +21,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import carware.composeapp.generated.resources.Res
+import carware.composeapp.generated.resources.person
 import com.example.carware.Notification.RequestNotificationPermission
 import com.example.carware.navigation.AddCarScreen
 import com.example.carware.navigation.ChangePassScreen
@@ -94,6 +102,7 @@ import com.example.carware.viewModel.reminder.reminderScreen.ReminderScreenViewM
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
 import com.example.carware.viewModel.vehicle.addcar.AddCarViewModel
 import com.example.carware.viewModel.vehicle.editCar.EditCarViewModel
+import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.koinInject
 
 val m = Modifier
@@ -148,7 +157,7 @@ fun MainScreen() {
                             shape = CircleShape
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Chat,
+                                painter = painterResource( Res.drawable.person),
                                 contentDescription = "Chat with AI",
                                 tint = Color.White
                             )

@@ -1,3 +1,4 @@
+package com.example.carware.chatbot
 import androidx.compose.animation.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -6,9 +7,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,7 +18,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.launch
+import carware.composeapp.generated.resources.Res
+import carware.composeapp.generated.resources.failed
+import org.jetbrains.compose.resources.painterResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,7 +64,7 @@ fun ChatBotSheet(
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 IconButton(onClick = onDismiss) {
-                    Icon(Icons.Default.Close, contentDescription = "Close")
+                    Icon(painter = painterResource(Res.drawable.failed), contentDescription = "Close")
                 }
             }
 
@@ -135,7 +135,7 @@ fun ChatBotSheet(
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.primary)
                 ) {
-                    Icon(Icons.Default.Send, contentDescription = "Send", tint = Color.White)
+                    Icon(painter = painterResource(Res.drawable.failed), contentDescription = "Close")
                 }
             }
         }
