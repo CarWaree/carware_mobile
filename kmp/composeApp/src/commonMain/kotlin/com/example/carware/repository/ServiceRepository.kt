@@ -7,16 +7,18 @@ import com.example.carware.network.apiRequests.schedule.SetAppointmentRequest
 import com.example.carware.network.apiResponse.appointment.AppointmentResponse
 import com.example.carware.network.apiResponse.schedule.Centers
 import com.example.carware.network.apiResponse.schedule.Service
+import com.example.carware.network.apiResponse.schedule.ServiceCentersResponse
+import com.example.carware.network.apiResponse.schedule.ServiceTypesResponse
 import com.example.carware.network.core.ApiResult
 import com.example.carware.network.core.UiResult
 import io.ktor.client.HttpClient
 
 class ServiceRepository(private val client: HttpClient) {
 
-    suspend fun getServiceTypeRepo(): List<Service> {
-        return when (val result = getServiceType(client)) {
+    suspend fun getServiceTypeRepo(centerId: Int): ServiceTypesResponse {
+        return when (val result = getServiceType(client, centerId)) {
             is ApiResult.Success -> {
-                result.data.data  // ServiceTypesResponse has .data property with List<Service>
+                result.data  // ServiceTypesResponse has .data property with List<Service>
             }
 
             is ApiResult.Error -> {
@@ -29,7 +31,7 @@ class ServiceRepository(private val client: HttpClient) {
         }
     }
 
-    suspend fun getServiceCentersRepo(): List<Centers> {
+    suspend fun getServiceCentersRepo(): ServiceCentersResponse {
         return when (val result = getServiceCenters(client)) {
             is ApiResult.Success -> {
                 result.data  // ServiceTypesResponse has .data property with List<Service>

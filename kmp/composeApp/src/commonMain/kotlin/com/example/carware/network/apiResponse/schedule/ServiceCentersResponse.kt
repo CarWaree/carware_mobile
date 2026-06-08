@@ -15,5 +15,5 @@ data class Centers(
     val id: Int?=null,
     val name: String?=null,
     val location: String?=null,
-    val phone: String?=null
+//    val phone: String?=null
 )

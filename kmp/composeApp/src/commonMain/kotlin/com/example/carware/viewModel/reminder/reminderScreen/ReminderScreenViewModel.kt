@@ -7,6 +7,7 @@ import com.example.carware.cache.servicesStore
 import com.example.carware.cache.vehiclesStore
 import com.example.carware.network.apiRequests.reminder.ReminderRequest
 import com.example.carware.network.apiResponse.reminder.ReminderResponse
+import com.example.carware.network.apiResponse.schedule.Service
 import com.example.carware.network.cache.ReminderCacheData
 import com.example.carware.network.core.UiResult
 import com.example.carware.repository.ReminderRepository
@@ -42,6 +43,17 @@ class ReminderScreenViewModel(
         loadNextReminder()
         loadInitialData()
     }
+    private val hardcodedServices = listOf(
+        Service(id = 1, name = "Oil Change"),
+        Service(id = 2, name = "Brake Fluid"),
+        Service(id = 3, name = "Tires & Battery Services"),
+        Service(id = 4, name = "Engine Check"),
+        Service(id = 5, name = "General Service"),
+        Service(id = 6, name = "Transmission Service"),
+        Service(id = 7, name = "Electric Services"),
+        Service(id = 8, name = "Body & Paint Services"),
+        Service(id = 9, name = "Suspension Services")
+    )
 
     private fun loadInitialData() {
         _state.update { it.copy(isLoading = true, error = null) }
@@ -63,7 +75,7 @@ class ReminderScreenViewModel(
 
             // 2. Try to fetch fresh data from server
             try {
-                val services = serviceRepo.getServiceTypeRepo()
+                val services = hardcodedServices
                 val cars = vehicleRepo.getVehiclesRepo()
 
                 // 3. Update cache

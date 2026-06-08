@@ -29,15 +29,20 @@ import kotlinx.serialization.json.Json
 //    }.body<ServiceTypesResponse>().data
 //}
 
-suspend fun getServiceType(client: HttpClient): ApiResult<ServiceTypesResponse> =
+suspend fun getServiceType(
+    client: HttpClient,
+    centerId: Int
+): ApiResult<ServiceTypesResponse> =
     safeApiCall {
-        client.get("$baseUrl/api/Service")
+        client.get("$baseUrl/api/CenterMobile/$centerId/services") // need to handle the cetner ID
     }
 
-suspend fun getServiceCenters(client: HttpClient): ApiResult<List<Centers>> =
+suspend fun getServiceCenters(client: HttpClient): ApiResult<ServiceCentersResponse> =
     safeApiCall {
-        client.get("$baseUrl/api/ServiceCenters")
+        client.get("$baseUrl/api/CenterMobile")
     }
+
+
 suspend fun getAppointments(client: HttpClient): ApiResult<GetAppointmentResponse> =
     safeApiCall {
         client.get {

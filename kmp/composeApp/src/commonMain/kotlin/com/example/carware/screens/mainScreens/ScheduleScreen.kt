@@ -242,6 +242,39 @@ fun ScheduleScreen(
                     }
 
                     Spacer(m.height(18.dp))
+                    // ============ SELECT PROVIDER SECTION ============
+                    Text(
+                        strings.get("SELECT_YOUR_PROVIDER"),
+                        fontFamily = popSemi,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        style = TextStyle(
+                            brush = Brush.linearGradient(
+                                listOf(
+                                    Color(194, 0, 0, 255),
+                                    Color(92, 0, 0, 255)
+                                )
+                            ),
+                        ),
+                        modifier = m.padding(horizontal = 16.dp)
+                    )
+                    Spacer(m.height(6.dp))
+
+                    Column(m.padding(horizontal = 26.dp)) {
+                        SelectDropdown(
+                            label = strings.get("SELECT_YOUR_PROVIDER"),
+                            selectedValue = state.selectedCenterName ?: "",
+                            options = state.availableCenters.mapNotNull { it.name },
+                            onSelect = { name ->
+                                state.availableCenters.firstOrNull { it.name == name }?.let {
+                                    viewModel.selectCenter(it)
+                                }
+
+                            }
+                        )
+                    }
+
+                    Spacer(m.height(18.dp))
 
                     // ============ SELECT SERVICES SECTION ============
                     Text(
@@ -279,38 +312,6 @@ fun ScheduleScreen(
 
                     Spacer(m.height(18.dp))
 
-                    // ============ SELECT PROVIDER SECTION ============
-                    Text(
-                        strings.get("SELECT_YOUR_PROVIDER"),
-                        fontFamily = popSemi,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        style = TextStyle(
-                            brush = Brush.linearGradient(
-                                listOf(
-                                    Color(194, 0, 0, 255),
-                                    Color(92, 0, 0, 255)
-                                )
-                            ),
-                        ),
-                        modifier = m.padding(horizontal = 16.dp)
-                    )
-                    Spacer(m.height(6.dp))
-
-                    Column(m.padding(horizontal = 26.dp)) {
-                        SelectDropdown(
-                            label = strings.get("SELECT_YOUR_PROVIDER"),
-                            selectedValue = state.selectedCenterName ?: "",
-                            options = state.availableCenters.mapNotNull { it.name },
-                            onSelect = { name ->
-                                state.availableCenters.firstOrNull { it.name == name }?.let {
-                                    viewModel.selectCenter(it)
-                                }
-                            }
-                        )
-                    }
-
-                    Spacer(m.height(18.dp))
 
                     // ============ CALENDAR SECTION ============
                     Column(

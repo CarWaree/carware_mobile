@@ -43,16 +43,14 @@ class ScheduleScreenViewModel(
 
         viewModelScope.launch {
             try {
-                val services = repository.getServiceTypeRepo()
-                val centers = repository.getServiceCentersRepo()
+                val centers = repository.getServiceCentersRepo().data
                 val cars = vehicleRepository.getVehiclesRepo()
 
                 _state.update {
                     it.copy(
-                        availableServicesTypes = services,
                         availableCenters = centers,
                         availableCars = cars,
-                        availableSlots = defaultSlots(), // hardcoded until endpoint exists
+                        availableSlots = defaultSlots(),
                         isLoading = false
                     )
                 }
@@ -64,6 +62,16 @@ class ScheduleScreenViewModel(
         }
     }
 
+    fun onCenterSelected(centerId: Int) {
+        viewModelScope.launch {
+            try {
+                val services = repository.getServiceTypeRepo(centerId).data
+                _state.update { it.copy(availableServicesTypes = services) }
+            } catch (e: Exception) {
+                _state.update { it.copy(error = "Failed to load services: ${e.message}") }
+            }
+        }
+    }
     // ============ SELECTION ============
 
     fun selectServiceType(serviceId: Int, serviceName: String) {
@@ -76,8 +84,8 @@ class ScheduleScreenViewModel(
         _state.update {
             it.copy(selectedCenterId = center.id, selectedCenterName = center.name, error = null)
         }
+        center.id?.let { onCenterSelected(it) }
     }
-
     fun selectVehicle(carId: Int) {
         val car = _state.value.availableCars.find { it.id == carId }
         if (car != null) {
