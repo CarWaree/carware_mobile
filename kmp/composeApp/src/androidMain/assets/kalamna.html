@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kalamna</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; background: transparent; }
+    </style>
+</head>
+<body>
+<script>
+    function forceWidgetVisible(container) {
+        // 1. Force the container itself
+        container.style.cssText =
+            'position:fixed!important;top:0!important;left:0!important;' +
+            'width:100vw!important;height:100vh!important;' +
+            'z-index:2147483647!important;display:block!important;';
+
+        console.log('[Kalamna] container forced, H=' + container.offsetHeight);
+
+        // 2. Force every direct child of the container
+        Array.from(container.children).forEach(function(child, i) {
+            child.style.cssText =
+                'position:fixed!important;top:0!important;left:0!important;' +
+                'width:100vw!important;height:100vh!important;' +
+                'display:block!important;z-index:2147483647!important;';
+            console.log('[Kalamna] child[' + i + '] tag=' + child.tagName
+                + ' H=' + child.offsetHeight);
+
+            // 3. If child has a shadow root, inject a <style> into it
+            if (child.shadowRoot) {
+                console.log('[Kalamna] shadow root found on child[' + i + ']');
+
+                var style = document.createElement('style');
+                style.textContent = [
+                    ':host {',
+                    '  display: block !important;',
+                    '  position: fixed !important;',
+                    '  top: 0 !important;',
+                    '  left: 0 !important;',
+                    '  width: 100vw !important;',
+                    '  height: 100vh !important;',
+                    '  z-index: 2147483647 !important;',
+                    '}',
+                    '* {',
+                    '  box-sizing: border-box;',
+                    '}',
+                    // Target common widget root element names
+                    'div, section, main, #root, #app, #widget, #chat {',
+                    '  width: 100% !important;',
+                    '  height: 100% !important;',
+                    '  min-height: 100vh !important;',
+                    '}'
+                ].join('\n');
+
+                child.shadowRoot.insertBefore(
+                    style,
+                    child.shadowRoot.firstChild
+                );
+
+                // Log what's inside the shadow root
+                Array.from(child.shadowRoot.children).forEach(function(el, j) {
+                    console.log('[Kalamna] shadowRoot child[' + j + '] '
+                        + el.tagName + '#' + el.id
+                        + ' H=' + el.offsetHeight
+                        + ' display=' + getComputedStyle(el).display);
+                });
+            }
+        });
+    }
+
+    var observer = new MutationObserver(function() {
+        var container = document.getElementById('kalamna-widget-container');
+        if (!container) return;
+        observer.disconnect();
+        console.log('[Kalamna] container appeared');
+        forceWidgetVisible(container);
+
+        setTimeout(function() {
+            // Re-apply after widget finishes its own init
+            forceWidgetVisible(container);
+            if (window.KalamnaWidgetAPI) {
+                console.log('[Kalamna] calling open()');
+                window.KalamnaWidgetAPI.open();
+            }
+            // Log final state
+            setTimeout(function() {
+                var c = document.getElementById('kalamna-widget-container');
+                if (c && c.children[0] && c.children[0].shadowRoot) {
+                    var sr = c.children[0].shadowRoot;
+                    Array.from(sr.children).forEach(function(el, j) {
+                        console.log('[Kalamna] FINAL shadowRoot[' + j + '] '
+                            + el.tagName + '#' + el.id
+                            + ' H=' + el.offsetHeight
+                            + ' display=' + getComputedStyle(el).display
+                            + ' visibility=' + getComputedStyle(el).visibility);
+                    });
+                }
+            }, 500);
+        }, 300);
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    window.addEventListener('kalamna:requestClose', function() {
+        Android.onRequestClose();
+    });
+</script>
+
+<script
+        src="https://widget.kalamna.tech/widget.iife.js"
+        data-kalamna-api-key="621069afc21fac66e456ff6a36b30f503685307b78411a98006226bd599ec325"
+        data-kalamna-mode="embedded"
+        data-kalamna-show-embedded-close="true"
+        data-kalamna-theme="dark"
+        data-kalamna-language="ar">
+</script>
+</body>
+</html>

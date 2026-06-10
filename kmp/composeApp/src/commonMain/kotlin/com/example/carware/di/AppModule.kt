@@ -69,7 +69,7 @@ fun appModule(preferencesManager: PreferencesManager) = module {
     factory { MyCarsScreenViewModel(get(), get()) }
     factory { ReminderHistoryViewModel(get()) }
     factory { ChangePassViewModel(get(),get()) }
-    single { ChatViewModel(get(), MainScope()) }
+    single { ChatViewModel( MainScope()) }
     // AppFonts.kt
 
 }
