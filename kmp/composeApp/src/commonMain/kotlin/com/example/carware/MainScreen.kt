@@ -22,7 +22,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import coil3.ImageLoader
+import coil3.SingletonImageLoader
+import coil3.compose.LocalPlatformContext
 import com.example.carware.Notification.RequestNotificationPermission
+import com.example.carware.cache.createImageLoader
 import com.example.carware.navigation.AddCarScreen
 import com.example.carware.navigation.ChangePassScreen
 import com.example.carware.navigation.EditCarScreen
@@ -117,13 +121,17 @@ fun MainScreen() {
     val layoutDirection =
         if (currentLanguage == AppLanguage.AR) LayoutDirection.Rtl else LayoutDirection.Ltr
 
-    val notificationViewModel: NotificationViewModel=koinInject( )
+    val notificationViewModel: NotificationViewModel = koinInject()
+
+    val imageLoader: ImageLoader = koinInject()
+    SingletonImageLoader.setSafe { imageLoader }
 
     CompositionLocalProvider(
         LocalStrings provides localizedStrings,
-        LocalLayoutDirection provides layoutDirection
+        LocalLayoutDirection provides layoutDirection,
+
     ) {
-        RequestNotificationPermission {  granted ->
+        RequestNotificationPermission { granted ->
             notificationViewModel.onPermissionResult(granted)
             if (granted) notificationViewModel.testPushNotification()
         }
@@ -140,7 +148,7 @@ fun MainScreen() {
                         )
                     },
 
-                ) { _ ->
+                    ) { _ ->
                     HorizontalPager(
                         state = pagerState,
                         modifier = Modifier.fillMaxSize(),
@@ -150,7 +158,8 @@ fun MainScreen() {
                             HomeScreen::class -> {
                                 val notificationViewModel: NotificationViewModel = koinInject()
                                 val homeViewModel: HomeScreenViewModel = koinInject()
-                                HomeScreen(navController, homeViewModel,
+                                HomeScreen(
+                                    navController, homeViewModel,
                                     notificationViewModel
                                 )
                             }
@@ -199,11 +208,11 @@ fun MainScreen() {
                 ResetPasswordScreen(navController, forgetPasswordViewModel)
             }
 
-            composable<VerificationCodeScreen> {backStackEntry->
+            composable<VerificationCodeScreen> { backStackEntry ->
                 val otpViewModel: OTPViewModel = koinInject()
                 val route: VerificationCodeScreen = backStackEntry.toRoute()
 
-                VerificationCodeScreen(navController, otpViewModel,route.email)
+                VerificationCodeScreen(navController, otpViewModel, route.email)
             }
             composable<NewPasswordScreen> {
                 val newPasswordViewModel: NewPasswordViewModel = koinInject()
@@ -257,7 +266,7 @@ fun MainScreen() {
             composable<EmailVerificationScreen> { backStackEntry ->
                 val route: EmailVerificationScreen = backStackEntry.toRoute()
                 val emailVerificationViewModel: EmailVerificationViewModel = koinInject()
-                EmailVerificationScreen(navController, emailVerificationViewModel,route.email)
+                EmailVerificationScreen(navController, emailVerificationViewModel, route.email)
             }
 
             composable<ProfileScreen> {
@@ -300,7 +309,7 @@ fun MainScreen() {
 
             composable<EditCarScreen> { backStackEntry ->
                 val route = backStackEntry.toRoute<EditCarScreen>()
-                val viewModel : EditCarViewModel=koinInject()
+                val viewModel: EditCarViewModel = koinInject()
 
                 LaunchedEffect(Unit) {
                     viewModel.loadCar(route.carId)

@@ -58,6 +58,7 @@ import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.LocalStrings
 import com.example.carware.m
+import com.example.carware.navigation.AddCarScreen
 import com.example.carware.navigation.EmailVerificationScreen
 import com.example.carware.navigation.HomeScreen
 import com.example.carware.navigation.LoginScreen
@@ -139,20 +140,30 @@ fun SignUpScreen(
 
 
     LaunchedEffect(state.isSuccess) {
-        if (state.isSuccess && !state.needsEmailVerification) {
-            navController.navigate(HomeScreen) {  // or whatever screen
-                popUpTo(SignUpScreen) { inclusive = true }
+
+        if (state.isSuccess) {
+            val destination = if (state.isCarAdded) {
+                HomeScreen
+            } else {
+                AddCarScreen
+            }
+
+            if (state.isSuccess && !state.needsEmailVerification) {
+                navController.navigate(destination) {  // or whatever screen
+                    popUpTo(SignUpScreen) { inclusive = true }
+                }
             }
         }
     }
-    Column( m
-        .fillMaxSize()
-        .appGradBack()
+    Column(
+        m
+            .fillMaxSize()
+            .appGradBack()
 
-        .verticalScroll(scrollState)
-        ) {
+            .verticalScroll(scrollState)
+    ) {
         Column(
-             m
+            m
                 .fillMaxSize()
                 .padding(top = 54.dp)
 
@@ -586,42 +597,41 @@ fun SignUpScreen(
                             }
 
 
-
-                            } //google button
-                            Spacer(modifier = m.padding(vertical = 8.dp))
-                            Row() {
-                                Text(
-                                    strings.get("ALREADY_HAVE_ACCOUNT"), fontFamily = popMid,
-                                    fontSize = 12.sp,
-                                    color = Color(30, 30, 30, 168)
-                                )
-                                Text(
-                                    strings.get("LOGIN"), fontFamily = popMid,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color(194, 0, 0, 255),
-                                    modifier = m.clickable { navController.navigate(LoginScreen) }
-                                )
-                            }
-                            Spacer(Modifier.padding(vertical = 8.dp))
-
-
+                        } //google button
+                        Spacer(modifier = m.padding(vertical = 8.dp))
+                        Row() {
+                            Text(
+                                strings.get("ALREADY_HAVE_ACCOUNT"), fontFamily = popMid,
+                                fontSize = 12.sp,
+                                color = Color(30, 30, 30, 168)
+                            )
+                            Text(
+                                strings.get("LOGIN"), fontFamily = popMid,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(194, 0, 0, 255),
+                                modifier = m.clickable { navController.navigate(LoginScreen) }
+                            )
                         }
+                        Spacer(Modifier.padding(vertical = 8.dp))
 
 
                     }
 
+
                 }
 
-
             }
-        }
 
-        if (state.isLoading) {
-            LoadingOverlay()
-        }
 
+        }
     }
+
+    if (state.isLoading) {
+        LoadingOverlay()
+    }
+
+}
 
 
 

@@ -165,8 +165,6 @@ fun EditProfileScreen(
                             AsyncImage(
                                 model = ImageRequest.Builder(LocalPlatformContext.current)
                                     .data("$baseUrl${profile.profileImageUrl}")
-                                    .diskCachePolicy(CachePolicy.DISABLED)
-                                    .memoryCachePolicy(CachePolicy.DISABLED)
                                     .build(),
                                 contentDescription = strings.get("PROFILE"),
                                 modifier = Modifier

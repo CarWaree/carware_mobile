@@ -1,6 +1,7 @@
 package com.example.carware.di
 
 import com.example.carware.Notification.getPushTokenProvider
+import com.example.carware.cache.createImageLoader
 import com.example.carware.network.core.createHttpClient
 import com.example.carware.repository.HistoryRepository
 import com.example.carware.repository.NotificationsRepository
@@ -48,6 +49,8 @@ fun appModule(preferencesManager: PreferencesManager) = module {
     single { ServiceRepository(get()) }
     single { NotificationsRepository(get()) }
     single { ReminderRepository(get()) }
+    single { createImageLoader(get()) }
+
 
     // ViewModels
     factory { HomeScreenViewModel(get(),get()) }
