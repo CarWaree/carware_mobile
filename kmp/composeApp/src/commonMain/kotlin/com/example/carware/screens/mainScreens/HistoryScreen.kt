@@ -31,6 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -47,9 +48,13 @@ import carware.composeapp.generated.resources.history_visa
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import carware.composeapp.generated.resources.arrow_1
+import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.request.ImageRequest
 import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.navigation.ServiceRecordScreen
+import com.example.carware.network.api.baseUrl
 import com.example.carware.screens.ShimmerHistoryCard
 import com.example.carware.viewModel.history.HistoryItemState
 import com.example.carware.viewModel.history.HistoryScreenState
@@ -149,12 +154,14 @@ fun HistoryScreen(
 
                 is HistoryScreenState.Success -> {
                     currentState.historyItems.forEach { item ->
+                        val matchedCar = currentState.cars.find { it.modelName == item.carName }
                         ServiceHistoryCard(
                             carName = item.carName,
                             serviceName = item.providerName,
                             date = item.date,
                             location = "BNU",
                             cost = item.totalPrice,
+                            image = matchedCar?.imageUrl ?: "",
                             paymentMethod = item.paymentMethod,
                             onClick = {
                                 viewModel.loadHistoryItem(item.id)
@@ -175,6 +182,7 @@ fun ServiceHistoryCard(
     date: String,
     location: String,
     cost: String,
+    image: String,
     paymentMethod: String,
     onClick: () -> Unit
 ) {
@@ -197,16 +205,28 @@ fun ServiceHistoryCard(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
+
             Box(
                 m.size(38.dp)
                     .clip(CircleShape)
                     .border(1.dp, Color(30, 30, 30, 51), CircleShape)
             ) {
-                Image(
-                    painter = painterResource(Res.drawable.audi),
-                    contentDescription = "Car Logo",
-                    modifier = m.size(32.dp)
-                        .align(Alignment.Center)
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalPlatformContext.current)
+                        .data("$baseUrl$image")
+                        .build(),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .height(32.dp)
+//                        .padding(horizontal = 27.dp)
+                    ,
+                    contentScale = ContentScale.Crop,
+                    onError = { error ->
+                        println("--- COIL ERROR: ${error.result.throwable}")
+                    },
+                    onSuccess = {
+                        println("--- COIL SUCCESS")
+                    }
                 )
             }
 

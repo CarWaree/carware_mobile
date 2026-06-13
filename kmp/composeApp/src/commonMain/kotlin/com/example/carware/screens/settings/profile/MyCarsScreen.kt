@@ -145,6 +145,7 @@ fun MyCarsScreen(
                             brandName = primaryCar.brandName,
                             modelYear = primaryCar.year.toString(),
                             color = primaryCar.color,
+                            carImage = primaryCar.imageUrl,
                             isPrimary = true
                         )
 
@@ -168,6 +169,7 @@ fun MyCarsScreen(
                             brandName = car.brandName,
                             modelYear = car.year.toString(),
                             color = car.color,
+                            carImage = car.imageUrl,
                             isPrimary = false,
                             onMakePrimary = {
                                 viewModel.setPrimaryVehicle(car.id)

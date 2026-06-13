@@ -4,6 +4,7 @@ import androidx.compose.material3.Text
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.carware.repository.HistoryRepository
+import com.example.carware.repository.VehicleRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,6 +12,7 @@ import kotlinx.coroutines.launch
 
 class HistoryScreenViewModel(
     private val repository: HistoryRepository,
+    private val vehiclesRepository: VehicleRepository,
 ) : ViewModel() {
 
     private val _historyState = MutableStateFlow<HistoryScreenState>(HistoryScreenState.Loading)
@@ -21,17 +23,20 @@ class HistoryScreenViewModel(
 
     init {
         loadHistory()
+
     }
 
     fun loadHistory() {
         viewModelScope.launch {
             _historyState.value = HistoryScreenState.Loading
             try {
+                val cars =vehiclesRepository.getVehiclesRepo()
+
                 val items = repository.getHistoryRepo()
                 _historyState.value = if (items.isEmpty()) {
                     HistoryScreenState.Error("No History Found")
                 } else {
-                    HistoryScreenState.Success(items)
+                    HistoryScreenState.Success(items,cars)
                 }
             } catch (e: Exception) {
                 _historyState.value = HistoryScreenState.Error(

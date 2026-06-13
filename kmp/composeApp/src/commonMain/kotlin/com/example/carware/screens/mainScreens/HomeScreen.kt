@@ -46,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.audi
@@ -55,6 +56,7 @@ import carware.composeapp.generated.resources.person
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.LocalStrings
+import com.example.carware.cache.vehiclesStore
 import com.example.carware.m
 import com.example.carware.navigation.AddCarScreen
 import com.example.carware.navigation.EditCarScreen
@@ -140,7 +142,7 @@ fun HomeScreen(
                         model = car.modelName,
                         modelYear = car.year.toString(),
                         color = car.color,
-                        image = Res.drawable.audi,
+                        image = car.imageUrl,
                         navController = navController,
                         viewModel = viewModel,
                         onAddClick = {
@@ -362,7 +364,7 @@ fun HomeScreen(
                         when (state) {
                             is HomeScreenState.Success -> {
                                 if (state.appointments.isNotEmpty()) {
-                                    SuccessServicePagerContent(state.appointments)
+                                    SuccessServicePagerContent(state.appointments,state.cars)
 
                                 } else {
                                     Spacer(modifier = m.padding(vertical = 50.dp))
@@ -491,7 +493,7 @@ fun HomeScreen(
 
 
 @Composable
-fun SuccessServicePagerContent(appointments: List<Appointments>) {
+fun SuccessServicePagerContent(appointments: List<Appointments>,cars: List<Vehicles>) {
     val scrollState = rememberScrollState()
 
     Row(
@@ -502,12 +504,13 @@ fun SuccessServicePagerContent(appointments: List<Appointments>) {
         horizontalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         appointments.forEach { appointment ->
-            // Replace with your AppointmentCard component
+            val matchedCar = cars.find { it.brandName == appointment.vehicleName }
             ServiceHistoryItem(
                 carName = appointment.vehicleName,
                 serviceName = appointment.serviceName,
                 date = appointment.date,
                 status = appointment.status,
+                image = matchedCar?.imageUrl ?: "",
                 onDeleteClick = { }
             )
         }

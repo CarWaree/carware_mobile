@@ -59,6 +59,8 @@ class HomeScreenViewModel(
             }
             try {
                 val vehicleList = repository.getVehiclesRepo()
+                println("vehicleList: $vehicleList")
+
                 val appointmentsList = repository.getAppointmentsRepo()
 
                 if (vehicleList.isEmpty()) {

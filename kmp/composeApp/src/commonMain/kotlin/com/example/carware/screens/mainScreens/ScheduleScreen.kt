@@ -232,6 +232,7 @@ fun ScheduleScreen(
                             UsersCar(
                                 brand = car.brandName,
                                 model = car.modelName,
+                                image = car.imageUrl,
                                 isSelected = state.selectedCarId == car.id,
                                 onClick = {
                                     viewModel.selectVehicle(car.id)

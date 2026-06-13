@@ -264,6 +264,7 @@ fun ProfileScreen(
                                 brandName = primaryCar.brandName,
                                 modelYear = primaryCar.year.toString(),
                                 color = primaryCar.color,
+                                carImage = primaryCar.imageUrl
                             )
                         }
                     }
@@ -427,6 +428,7 @@ fun PrimaryCarCard(
     brandName: String,
     modelYear: String,
     color: String,
+    carImage: String,
     isPrimary: Boolean = true,
     onMakePrimary: () -> Unit = {}
 ) {
@@ -442,10 +444,23 @@ fun PrimaryCarCard(
             modifier = m.padding(horizontal = 20.dp, vertical = 18.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painter = painterResource(Res.drawable.audi),
+            AsyncImage(
+                model = ImageRequest.Builder(LocalPlatformContext.current)
+                    .data("$baseUrl$carImage")
+                    .build(),
                 contentDescription = null,
-                modifier = m.size(150.dp, 110.dp)
+                modifier = Modifier
+                    .height(110.dp)
+                    .width(200.dp)
+//                        .padding(horizontal = 27.dp)
+                ,
+                contentScale = ContentScale.Crop,
+                onError = { error ->
+                    println("--- COIL ERROR: ${error.result.throwable}")
+                },
+                onSuccess = {
+                    println("--- COIL SUCCESS")
+                }
             )
 
             Row(

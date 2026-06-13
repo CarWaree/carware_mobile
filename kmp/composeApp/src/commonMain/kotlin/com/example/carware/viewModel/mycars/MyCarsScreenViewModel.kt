@@ -25,14 +25,11 @@ class MyCarsScreenViewModel(
 
     fun loadCars() {
         viewModelScope.launch {
-            if (_state.value !is MyCarsScreenState.Success) {
-                _state.value = MyCarsScreenState.Loading
-            }
+            _state.value = MyCarsScreenState.Loading
             try {
                 val vehicleList = vehiclesRepository.getVehiclesRepo()
                 _state.value = MyCarsScreenState.Success(vehicleList)
             } catch (e: Exception) {
-                // Try cache before showing error
                 val cached = vehiclesStore.get()
                 if (cached != null && cached.vehicles.isNotEmpty()) {
                     _state.value = MyCarsScreenState.Success(cached.vehicles)
@@ -41,15 +38,17 @@ class MyCarsScreenViewModel(
                 }
             }
         }
-
-         }
+    }
 
     fun setPrimaryVehicle(carId: Int) {
         preferencesManager.setPrimaryCarId(carId)
+        loadCars()
+
     }
 
     fun getPrimaryCarId(): Int {
         return preferencesManager.getPrimaryCarId()
+
     }
 
 

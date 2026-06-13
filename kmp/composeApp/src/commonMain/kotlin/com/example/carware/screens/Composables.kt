@@ -59,6 +59,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -82,13 +83,18 @@ import carware.composeapp.generated.resources.keyboard_arrow_up
 import carware.composeapp.generated.resources.modelyear
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
+import carware.composeapp.generated.resources.pp
 import carware.composeapp.generated.resources.recycle_bin
 import carware.composeapp.generated.resources.success
 import carware.composeapp.generated.resources.x_time_slot
+import coil3.compose.AsyncImage
+import coil3.compose.LocalPlatformContext
+import coil3.request.ImageRequest
 import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.navigation.AddCarScreen
 import com.example.carware.navigation.ReminderScreen
+import com.example.carware.network.api.baseUrl
 import com.example.carware.util.navBar.TabItem
 import com.example.carware.util.storage.PreferencesManager
 import com.example.carware.viewModel.home.HomeScreenViewModel
@@ -683,7 +689,7 @@ fun CarCard(
     model: String,
     modelYear: String,
     color: String,
-    image: DrawableResource,
+    image: String,
     onEditClick: () -> Unit,  // add this
     onDeleteClick: () -> Unit,  // ← add this
     onAddClick: () -> Unit
@@ -794,12 +800,35 @@ fun CarCard(
                     }
                 }
             } // top dots
-            Image(
-                painter = painterResource(image),
-                contentDescription = null,
-                modifier = m.size(230.dp, 160.dp)
 
-            ) //car image
+
+//            Image(
+//                painter = painterResource(image),
+//                contentDescription = null,
+//                modifier = m.size(230.dp, 160.dp)
+//
+//            )
+            AsyncImage(
+                model = ImageRequest.Builder(LocalPlatformContext.current)
+                    .data("$baseUrl$image")
+                    .build(),
+                contentDescription = null,
+                modifier = Modifier
+                    .height(150.dp)
+                    .padding(horizontal = 27.dp)
+                ,
+                contentScale = ContentScale.Crop,
+                onError = { error ->
+                    println("--- COIL ERROR: ${error.result.throwable}")
+                },
+                onSuccess = {
+                    println("--- COIL SUCCESS")
+                }
+            )
+
+            //car image
+
+
             Row(
                 modifier = m.fillMaxWidth().padding(horizontal = 20.dp),
                 horizontalArrangement = Arrangement.Start
@@ -1661,6 +1690,7 @@ fun LoadingOverlay() {
 fun UsersCar(
     brand: String,
     model: String,
+    image: String,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
@@ -1675,13 +1705,24 @@ fun UsersCar(
                 .clip(CircleShape) // This makes it a circle
                 .border(1.dp, Color(30, 30, 30, 51), CircleShape)
         ) {
-            Image(
-                painter = painterResource(Res.drawable.audi),
-                contentDescription = "Car Logo",
-                modifier = Modifier.size(42.dp) // Set the size of the circle
-                    .align(Alignment.Center)
-
+            AsyncImage(
+                model = ImageRequest.Builder(LocalPlatformContext.current)
+                    .data("$baseUrl$image")
+                    .build(),
+                contentDescription = null,
+                modifier = Modifier
+                    .height(42.dp)
+//                    .padding(horizontal = 27.dp)
+                ,
+                contentScale = ContentScale.Crop,
+                onError = { error ->
+                    println("--- COIL ERROR: ${error.result.throwable}")
+                },
+                onSuccess = {
+                    println("--- COIL SUCCESS")
+                }
             )
+
         } // car image
         Spacer(modifier = Modifier.width(22.dp))
         Column(
@@ -1723,6 +1764,7 @@ fun ServiceHistoryItem(
     serviceName: String, // e.g., "oil changes"
     date: String,
     status: String,
+    image: String,
     onDeleteClick: () -> Unit,
 ) {
     val popSemi = FontFamily(Font(Res.font.poppins_semibold))
@@ -1746,13 +1788,24 @@ fun ServiceHistoryItem(
                     .clip(CircleShape) // This makes it a circle
                     .border(1.dp, Color(30, 30, 30, 51), CircleShape)
             ) {
-                Image(
-                    painter = painterResource(Res.drawable.audi),
-                    contentDescription = "Car Logo",
-                    modifier = Modifier.size(23.dp) // Set the size of the circle
-                        .align(Alignment.Center)
-
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalPlatformContext.current)
+                        .data("$baseUrl$image")
+                        .build(),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .height(23.dp)
+//                        .padding(horizontal = 27.dp)
+                    ,
+                    contentScale = ContentScale.Crop,
+                    onError = { error ->
+                        println("--- COIL ERROR: ${error.result.throwable}")
+                    },
+                    onSuccess = {
+                        println("--- COIL SUCCESS")
+                    }
                 )
+
             } // car image
             Spacer(m.padding(start = 2.dp))
             Text(
