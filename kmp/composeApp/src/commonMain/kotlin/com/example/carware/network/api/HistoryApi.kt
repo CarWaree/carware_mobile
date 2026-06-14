@@ -14,5 +14,5 @@ suspend fun getHistory(client: HttpClient): ApiResult<List<GetHistoryResponse>> 
 
 suspend fun getHistoryItem(client: HttpClient,id: Int?): ApiResult<GetHistoryItemResponse> =
     safeApiCall {
-        client.get { "$baseUrl/api/history/$id" }
+        client.get ("$baseUrl/api/history/$id" )
     }

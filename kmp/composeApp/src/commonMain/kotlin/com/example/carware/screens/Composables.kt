@@ -69,7 +69,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.arrow_1
-import carware.composeapp.generated.resources.audi
 import carware.composeapp.generated.resources.car
 import carware.composeapp.generated.resources.check_circle
 import carware.composeapp.generated.resources.check_time_slot
@@ -83,7 +82,6 @@ import carware.composeapp.generated.resources.keyboard_arrow_up
 import carware.composeapp.generated.resources.modelyear
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
-import carware.composeapp.generated.resources.pp
 import carware.composeapp.generated.resources.recycle_bin
 import carware.composeapp.generated.resources.success
 import carware.composeapp.generated.resources.x_time_slot
@@ -92,7 +90,6 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import com.example.carware.LocalStrings
 import com.example.carware.m
-import com.example.carware.navigation.AddCarScreen
 import com.example.carware.navigation.ReminderScreen
 import com.example.carware.network.api.baseUrl
 import com.example.carware.util.navBar.TabItem
@@ -106,7 +103,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
-import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -689,7 +685,7 @@ fun CarCard(
     model: String,
     modelYear: String,
     color: String,
-    image: String,
+    image: String?,
     onEditClick: () -> Unit,  // add this
     onDeleteClick: () -> Unit,  // ← add this
     onAddClick: () -> Unit
@@ -1690,7 +1686,7 @@ fun LoadingOverlay() {
 fun UsersCar(
     brand: String,
     model: String,
-    image: String,
+    image: String?,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {

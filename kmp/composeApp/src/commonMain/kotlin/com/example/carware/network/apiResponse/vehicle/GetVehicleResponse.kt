@@ -17,5 +17,5 @@ data class Vehicles(
     val year: Int,
     val color: String,
     val userName: String,
-    val imageUrl: String
+    val imageUrl: String?=null
 )

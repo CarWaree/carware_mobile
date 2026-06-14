@@ -51,7 +51,6 @@ import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.add_new
 import carware.composeapp.generated.resources.arrow_left
-import carware.composeapp.generated.resources.audi
 import carware.composeapp.generated.resources.car
 import carware.composeapp.generated.resources.check_onboard
 import carware.composeapp.generated.resources.color
@@ -66,7 +65,6 @@ import carware.composeapp.generated.resources.visa
 import carware.composeapp.generated.resources.x_time_slot
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
-import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import com.example.carware.LocalStrings
 import com.example.carware.m
@@ -428,7 +426,7 @@ fun PrimaryCarCard(
     brandName: String,
     modelYear: String,
     color: String,
-    carImage: String,
+    carImage: String?,
     isPrimary: Boolean = true,
     onMakePrimary: () -> Unit = {}
 ) {

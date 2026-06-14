@@ -46,17 +46,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
-import carware.composeapp.generated.resources.audi
 import carware.composeapp.generated.resources.home_line
 import carware.composeapp.generated.resources.notification
 import carware.composeapp.generated.resources.person
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.LocalStrings
-import com.example.carware.cache.vehiclesStore
 import com.example.carware.m
 import com.example.carware.navigation.AddCarScreen
 import com.example.carware.navigation.EditCarScreen
@@ -79,7 +76,6 @@ import com.example.carware.viewModel.notification.NotificationViewModel
 import com.example.carware.viewModel.notification.NotificationsUiState
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.Font
-import org.jetbrains.compose.resources.getResourceUri
 import org.jetbrains.compose.resources.painterResource
 
 @Suppress("SuspiciousIndentation")

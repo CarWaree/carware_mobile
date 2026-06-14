@@ -145,7 +145,7 @@ fun MyCarsScreen(
                             brandName = primaryCar.brandName,
                             modelYear = primaryCar.year.toString(),
                             color = primaryCar.color,
-                            carImage = primaryCar.imageUrl,
+                            carImage =  primaryCar.imageUrl,
                             isPrimary = true
                         )
 

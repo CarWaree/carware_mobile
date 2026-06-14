@@ -10,7 +10,7 @@ data class GetHistoryItemResponse(
     val serviceName: String,
     val providerName:String,
     val date:String,
-    val totalPrice:Int,
+    val totalPrice: Float,
     val paymentMethod:String,
     val serviceDetails: String? = null,
 )
