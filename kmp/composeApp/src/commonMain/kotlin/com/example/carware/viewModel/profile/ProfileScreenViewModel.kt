@@ -126,6 +126,8 @@ class ProfileScreenViewModel(
             try {
                 val profile = repository.getProfileRepo()
                 val profileDetails = profile.data
+                println("profile: $profileDetails")
+
 
                 val vehicleList = vehiclesRepository.getVehiclesRepo()
                 _state.value =

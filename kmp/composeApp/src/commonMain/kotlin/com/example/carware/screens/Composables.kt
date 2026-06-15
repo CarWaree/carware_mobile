@@ -75,6 +75,7 @@ import carware.composeapp.generated.resources.check_time_slot
 import carware.composeapp.generated.resources.clander_right_arrow
 import carware.composeapp.generated.resources.color
 import carware.composeapp.generated.resources.cuate
+import carware.composeapp.generated.resources.deafult_car
 import carware.composeapp.generated.resources.dots
 import carware.composeapp.generated.resources.failed
 import carware.composeapp.generated.resources.keyboard_arrow_down
@@ -804,23 +805,33 @@ fun CarCard(
 //                modifier = m.size(230.dp, 160.dp)
 //
 //            )
-            AsyncImage(
-                model = ImageRequest.Builder(LocalPlatformContext.current)
-                    .data("$baseUrl$image")
-                    .build(),
-                contentDescription = null,
-                modifier = Modifier
-                    .height(150.dp)
-                    .padding(horizontal = 27.dp)
-                ,
-                contentScale = ContentScale.Crop,
-                onError = { error ->
-                    println("--- COIL ERROR: ${error.result.throwable}")
-                },
-                onSuccess = {
-                    println("--- COIL SUCCESS")
-                }
-            )
+            if (image!!.isEmpty()) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalPlatformContext.current)
+                        .data("$baseUrl$image")
+                        .build(),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .height(150.dp)
+                        .padding(horizontal = 27.dp),
+                    contentScale = ContentScale.Crop,
+                    onError = { error ->
+                        println("--- COIL ERROR: ${error.result.throwable}")
+                    },
+                    onSuccess = {
+                        println("--- COIL SUCCESS")
+                    }
+                )
+            } else {
+                Image(
+                    painter = painterResource(Res.drawable.deafult_car),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(190.dp, 150.dp)
+//                    .clip(CircleShape)
+//                    .background(Color.LightGray)
+                )
+            }
 
             //car image
 
@@ -1701,23 +1712,40 @@ fun UsersCar(
                 .clip(CircleShape) // This makes it a circle
                 .border(1.dp, Color(30, 30, 30, 51), CircleShape)
         ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalPlatformContext.current)
-                    .data("$baseUrl$image")
-                    .build(),
-                contentDescription = null,
-                modifier = Modifier
-                    .height(42.dp)
+            var showFallback by remember { mutableStateOf(false) }
+
+            if (!image.isNullOrBlank() && !showFallback) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalPlatformContext.current)
+                        .data("https://carware.online$image")
+                        .build(),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .height(42.dp)
 //                    .padding(horizontal = 27.dp)
-                ,
-                contentScale = ContentScale.Crop,
-                onError = { error ->
-                    println("--- COIL ERROR: ${error.result.throwable}")
-                },
-                onSuccess = {
-                    println("--- COIL SUCCESS")
-                }
-            )
+                    ,
+                    contentScale = ContentScale.Crop,
+                    onError = { error ->
+                        println("--- COIL URL: $image")
+                        println("--- COIL ERROR: ${error.result.throwable}")
+                        showFallback = true
+
+                    },
+                    onSuccess = {
+                        println("--- COIL SUCCESS")
+                    }
+                )
+            } else {
+                Image(
+                    painter = painterResource(Res.drawable.deafult_car),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(42.dp)
+//                    .clip(CircleShape)
+//                    .background(Color.LightGray)
+                )
+            }
+
 
         } // car image
         Spacer(modifier = Modifier.width(22.dp))
@@ -1784,24 +1812,36 @@ fun ServiceHistoryItem(
                     .clip(CircleShape) // This makes it a circle
                     .border(1.dp, Color(30, 30, 30, 51), CircleShape)
             ) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalPlatformContext.current)
-                        .data("$baseUrl$image")
-                        .build(),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .height(23.dp)
+                if (image.isNotBlank()) {
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalPlatformContext.current)
+                            .data("$baseUrl$image")
+                            .build(),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .height(23.dp)
 //                        .padding(horizontal = 27.dp)
-                    ,
-                    contentScale = ContentScale.Crop,
-                    onError = { error ->
-                        println("--- COIL ERROR: ${error.result.throwable}")
-                    },
-                    onSuccess = {
-                        println("--- COIL SUCCESS")
-                    }
-                )
+                        ,
+                        contentScale = ContentScale.Crop,
+                        onError = { error ->
+                            println("--- COIL ERROR: ${error.result.throwable}")
+                        },
+                        onSuccess = {
+                            println("--- COIL SUCCESS")
+                        }
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(Res.drawable.deafult_car),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(23.dp)
+//                    .clip(CircleShape)
+//                    .background(Color.LightGray)
+                    )
 
+
+                }
             } // car image
             Spacer(m.padding(start = 2.dp))
             Text(

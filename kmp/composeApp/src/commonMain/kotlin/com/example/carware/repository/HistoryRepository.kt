@@ -43,7 +43,7 @@ class HistoryRepository(
                 historyStore.set(
                     HistoryCacheData(historyItem = history)
                 )
-                history  // ✅ Return the data
+                history  
             }
 
             is ApiResult.Error -> {

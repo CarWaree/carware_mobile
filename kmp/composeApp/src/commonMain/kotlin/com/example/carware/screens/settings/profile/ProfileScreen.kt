@@ -30,7 +30,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -54,6 +57,7 @@ import carware.composeapp.generated.resources.arrow_left
 import carware.composeapp.generated.resources.car
 import carware.composeapp.generated.resources.check_onboard
 import carware.composeapp.generated.resources.color
+import carware.composeapp.generated.resources.deafult_car
 import carware.composeapp.generated.resources.edit
 import carware.composeapp.generated.resources.keyboard_arrow_right
 import carware.composeapp.generated.resources.modelyear
@@ -442,25 +446,39 @@ fun PrimaryCarCard(
             modifier = m.padding(horizontal = 20.dp, vertical = 18.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalPlatformContext.current)
-                    .data("$baseUrl$carImage")
-                    .build(),
-                contentDescription = null,
-                modifier = Modifier
-                    .height(110.dp)
-                    .width(200.dp)
-//                        .padding(horizontal = 27.dp)
-                ,
-                contentScale = ContentScale.Crop,
-                onError = { error ->
-                    println("--- COIL ERROR: ${error.result.throwable}")
-                },
-                onSuccess = {
-                    println("--- COIL SUCCESS")
-                }
-            )
+            var showFallback by remember { mutableStateOf(false) }
 
+            if (!carImage.isNullOrBlank() && !showFallback) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalPlatformContext.current)
+                        .data("$baseUrl$carImage")
+                        .build(),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .height(110.dp)
+                        .width(200.dp)
+//                        .padding(horizontal = 27.dp)
+                    ,
+                    contentScale = ContentScale.Crop,
+                    onError = { error ->
+                        println("--- COIL ERROR: ${error.result.throwable}")
+                        showFallback= true
+                    },
+                    onSuccess = {
+                        println("--- COIL SUCCESS")
+                    }
+                )
+            }
+            else {
+                Image(
+                    painter = painterResource(Res.drawable.deafult_car),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(200.dp,110.dp)
+//                    .clip(CircleShape)
+//                    .background(Color.LightGray)
+                )
+            }
             Row(
                 modifier = m.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,

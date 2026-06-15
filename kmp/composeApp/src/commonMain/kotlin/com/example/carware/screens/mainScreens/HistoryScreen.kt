@@ -48,6 +48,8 @@ import carware.composeapp.generated.resources.history_visa
 import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import carware.composeapp.generated.resources.arrow_1
+import carware.composeapp.generated.resources.deafult_car
+import carware.composeapp.generated.resources.pp
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
@@ -211,23 +213,35 @@ fun ServiceHistoryCard(
                     .clip(CircleShape)
                     .border(1.dp, Color(30, 30, 30, 51), CircleShape)
             ) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalPlatformContext.current)
-                        .data("$baseUrl$image")
-                        .build(),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .height(32.dp)
+                if (image.isNotBlank()){
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalPlatformContext.current)
+                            .data("$baseUrl$image")
+                            .build(),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .height(32.dp)
 //                        .padding(horizontal = 27.dp)
-                    ,
-                    contentScale = ContentScale.Crop,
-                    onError = { error ->
-                        println("--- COIL ERROR: ${error.result.throwable}")
-                    },
-                    onSuccess = {
-                        println("--- COIL SUCCESS")
-                    }
-                )
+                        ,
+                        contentScale = ContentScale.Crop,
+                        onError = { error ->
+                            println("--- COIL ERROR: ${error.result.throwable}")
+                        },
+                        onSuccess = {
+                            println("--- COIL SUCCESS")
+                        }
+                    )
+                }
+                else {
+                    Image(
+                        painter = painterResource(Res.drawable.deafult_car),
+                        contentDescription = strings.get("PROFILE"),
+                        modifier = Modifier
+                            .size(38.dp)
+
+                    )
+                }
+
             }
 
             Spacer(m.width(10.dp))
