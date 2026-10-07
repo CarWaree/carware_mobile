@@ -1,4 +1,4 @@
-package com.example.carware.screens
+package com.example.carware.core.presentation.components
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background

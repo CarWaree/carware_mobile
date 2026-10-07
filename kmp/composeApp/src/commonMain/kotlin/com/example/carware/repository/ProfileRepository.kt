@@ -6,13 +6,11 @@ import com.example.carware.network.api.updateProfile
 import com.example.carware.network.api.uploadProfileImage
 import com.example.carware.network.apiRequests.profile.UpdateProfileRequest
 import com.example.carware.network.apiResponse.profile.GetProfileResponse
-import com.example.carware.network.apiResponse.profile.ProfileDetails
 import com.example.carware.network.apiResponse.profile.UpdatePictureResponse
 import com.example.carware.network.apiResponse.profile.UpdateProfileResponse
 import com.example.carware.network.cache.ProfileCacheData
-import com.example.carware.network.core.ApiResult
-import com.example.carware.network.core.UiResult
-import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.core.network.ApiResult
+import com.example.carware.core.network.UiResult
 import io.ktor.client.HttpClient
 
 class ProfileRepository(

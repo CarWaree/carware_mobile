@@ -47,7 +47,7 @@ import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.m
 import com.example.carware.util.lang.AppLanguage
 import com.example.carware.util.lang.LocalizedStrings
-import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.core.storage.PreferencesManager
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.Font
 

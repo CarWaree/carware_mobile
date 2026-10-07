@@ -3,9 +3,8 @@ package com.example.carware.viewModel.auth.changePass
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.carware.network.apiRequests.auth.ChangePassRequest
-import com.example.carware.network.apiResponse.auth.AuthResponse
 import com.example.carware.network.apiResponse.auth.ChangePassResponse
-import com.example.carware.network.core.UiResult
+import com.example.carware.core.network.UiResult
 import com.example.carware.repository.auth.AuthRepository
 import com.plusmobileapps.konnectivity.Konnectivity
 import kotlinx.coroutines.flow.MutableStateFlow

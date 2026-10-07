@@ -1,6 +1,6 @@
 package com.example.carware.util.lang
 
-import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.core.storage.PreferencesManager
 
 class LocalizedStrings(private val prefs: PreferencesManager) {
 

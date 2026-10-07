@@ -48,7 +48,7 @@ import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.LocalStrings
 import com.example.carware.m
-import com.example.carware.screens.ShimmerHistoryCard
+import com.example.carware.core.presentation.components.ShimmerHistoryCard
 import com.example.carware.viewModel.reminder.reminderHistory.ReminderHistoryState
 import com.example.carware.viewModel.reminder.reminderHistory.ReminderHistoryViewModel
 import kotlinx.datetime.LocalDateTime

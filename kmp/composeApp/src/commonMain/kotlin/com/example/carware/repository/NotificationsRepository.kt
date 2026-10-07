@@ -7,7 +7,7 @@ import com.example.carware.network.api.testFcmNotification
 import com.example.carware.network.apiRequests.notifications.RegisterTokenRequest
 import com.example.carware.network.apiResponse.notifications.RegisterTokenResponse
 import com.example.carware.network.cache.NotificationCacheData
-import com.example.carware.network.core.ApiResult
+import com.example.carware.core.network.ApiResult
 import io.ktor.client.HttpClient
 
 class NotificationsRepository(private val client: HttpClient) {

@@ -1,12 +1,11 @@
 package com.example.carware
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
-import com.example.carware.di.appModule
-import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.core.di.appModule
+import com.example.carware.core.storage.PreferencesManager
 import com.russhwolf.settings.SharedPreferencesSettings
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin

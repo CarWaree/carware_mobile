@@ -1,6 +1,5 @@
-package com.example.carware.navigation
+package com.example.carware.core.navigation
 
-import com.example.carware.network.apiResponse.vehicle.Vehicles
 import kotlinx.serialization.Serializable
 
 @Serializable

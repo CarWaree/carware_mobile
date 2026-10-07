@@ -40,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
-import carware.composeapp.generated.resources.audi
 import carware.composeapp.generated.resources.history_date
 import carware.composeapp.generated.resources.history_filter
 import carware.composeapp.generated.resources.history_location
@@ -49,15 +48,14 @@ import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import carware.composeapp.generated.resources.arrow_1
 import carware.composeapp.generated.resources.deafult_car
-import carware.composeapp.generated.resources.pp
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import com.example.carware.LocalStrings
 import com.example.carware.m
-import com.example.carware.navigation.ServiceRecordScreen
+import com.example.carware.core.navigation.ServiceRecordScreen
 import com.example.carware.network.api.baseUrl
-import com.example.carware.screens.ShimmerHistoryCard
+import com.example.carware.core.presentation.components.ShimmerHistoryCard
 import com.example.carware.viewModel.history.HistoryItemState
 import com.example.carware.viewModel.history.HistoryScreenState
 import com.example.carware.viewModel.history.HistoryScreenViewModel

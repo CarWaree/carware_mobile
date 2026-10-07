@@ -20,11 +20,9 @@ import com.example.carware.network.apiResponse.vehicle.Vehicle
 import com.example.carware.network.apiResponse.vehicle.VehicleResponse
 import com.example.carware.network.apiResponse.vehicle.Vehicles
 import com.example.carware.network.cache.VehiclesCacheData
-import com.example.carware.network.core.ApiResult
-import com.example.carware.network.core.UiResult
-import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.core.network.ApiResult
+import com.example.carware.core.network.UiResult
 import io.ktor.client.HttpClient
-import kotlinx.coroutines.flow.Flow
 
 class VehicleRepository(
     private val client: HttpClient

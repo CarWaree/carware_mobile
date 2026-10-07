@@ -2,13 +2,12 @@ package com.example.carware.screens
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import com.example.carware.navigation.AddCarScreen
-import com.example.carware.navigation.EmailVerificationScreen
-import com.example.carware.navigation.HomeScreen
-import com.example.carware.navigation.LanguageSelectionScreen
-import com.example.carware.navigation.OnboardingScreen
-import com.example.carware.navigation.SignUpScreen
-import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.core.navigation.AddCarScreen
+import com.example.carware.core.navigation.HomeScreen
+import com.example.carware.core.navigation.LanguageSelectionScreen
+import com.example.carware.core.navigation.OnboardingScreen
+import com.example.carware.core.navigation.SignUpScreen
+import com.example.carware.core.storage.PreferencesManager
 import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 

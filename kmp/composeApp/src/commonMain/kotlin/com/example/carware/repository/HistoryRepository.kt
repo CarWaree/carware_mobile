@@ -1,7 +1,7 @@
 package com.example.carware.repository
 
 import com.example.carware.cache.historyStore
-import com.example.carware.network.core.ApiResult
+import com.example.carware.core.network.ApiResult
 import com.example.carware.network.api.getHistory
 import com.example.carware.network.api.getHistoryItem
 import com.example.carware.network.apiResponse.history.GetHistoryItemResponse

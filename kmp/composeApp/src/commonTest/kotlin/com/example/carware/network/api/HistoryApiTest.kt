@@ -1,6 +1,6 @@
 package com.example.carware.network.api
 
-import com.example.carware.network.core.ApiResult
+import com.example.carware.core.network.ApiResult
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond

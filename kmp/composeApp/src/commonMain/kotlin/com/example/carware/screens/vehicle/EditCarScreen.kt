@@ -45,11 +45,10 @@ import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.LocalStrings
 import com.example.carware.m
-import com.example.carware.screens.SelectDropdown
-import com.example.carware.screens.ToastMessage
-import com.example.carware.screens.appButtonBack
-import com.example.carware.screens.appGradBack
-import com.example.carware.viewModel.vehicle.addcar.AddCarViewModel
+import com.example.carware.core.presentation.components.SelectDropdown
+import com.example.carware.core.presentation.components.ToastMessage
+import com.example.carware.core.presentation.components.appButtonBack
+import com.example.carware.core.presentation.components.appGradBack
 import com.example.carware.viewModel.vehicle.editCar.EditCarViewModel
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.Font

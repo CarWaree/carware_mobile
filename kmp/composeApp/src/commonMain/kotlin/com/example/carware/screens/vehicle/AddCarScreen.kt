@@ -24,7 +24,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -59,10 +58,10 @@ import carware.composeapp.generated.resources.poppins_medium
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.LocalStrings
 import com.example.carware.m
-import com.example.carware.screens.SelectDropdown
-import com.example.carware.screens.ToastMessage
-import com.example.carware.screens.appButtonBack
-import com.example.carware.screens.appGradBack
+import com.example.carware.core.presentation.components.SelectDropdown
+import com.example.carware.core.presentation.components.ToastMessage
+import com.example.carware.core.presentation.components.appButtonBack
+import com.example.carware.core.presentation.components.appGradBack
 import com.example.carware.viewModel.vehicle.addcar.AddCarViewModel
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.Font

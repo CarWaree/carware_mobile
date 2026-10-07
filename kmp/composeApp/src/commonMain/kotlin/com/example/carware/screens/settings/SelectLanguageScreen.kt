@@ -44,10 +44,10 @@ import carware.composeapp.generated.resources.en_flag
 import carware.composeapp.generated.resources.poppins
 import com.example.carware.LocalStrings
 import com.example.carware.m
-import com.example.carware.screens.appGradBack
-import com.example.carware.screens.backgroundColor
+import com.example.carware.core.presentation.components.appGradBack
+import com.example.carware.core.presentation.components.backgroundColor
 import com.example.carware.util.lang.AppLanguage
-import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.core.storage.PreferencesManager
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 

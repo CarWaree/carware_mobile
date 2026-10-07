@@ -7,8 +7,8 @@ import com.example.carware.network.apiRequests.reminder.ReminderRequest
 import com.example.carware.network.apiResponse.reminder.Reminder
 import com.example.carware.network.apiResponse.reminder.ReminderResponse
 import com.example.carware.network.cache.ReminderCacheData
-import com.example.carware.network.core.ApiResult
-import com.example.carware.network.core.UiResult
+import com.example.carware.core.network.ApiResult
+import com.example.carware.core.network.UiResult
 import io.ktor.client.HttpClient
 
 class ReminderRepository(private val  client: HttpClient) {

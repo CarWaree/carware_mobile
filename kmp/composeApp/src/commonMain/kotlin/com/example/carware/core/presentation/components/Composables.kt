@@ -1,4 +1,4 @@
-package com.example.carware.screens
+package com.example.carware.core.presentation.components
 
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
@@ -91,10 +91,10 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import com.example.carware.LocalStrings
 import com.example.carware.m
-import com.example.carware.navigation.ReminderScreen
+import com.example.carware.core.navigation.ReminderScreen
 import com.example.carware.network.api.baseUrl
 import com.example.carware.util.navBar.TabItem
-import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.core.storage.PreferencesManager
 import com.example.carware.viewModel.home.HomeScreenViewModel
 import com.example.carware.viewModel.reminder.reminderScreen.ReminderScreenViewModel
 import com.example.carware.viewModel.schedule.screen.ScheduleScreenViewModel
@@ -827,7 +827,7 @@ fun CarCard(
                     painter = painterResource(Res.drawable.deafult_car),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(190.dp, 150.dp)
+                        .size(190.dp, 140.dp)
 //                    .clip(CircleShape)
 //                    .background(Color.LightGray)
                 )

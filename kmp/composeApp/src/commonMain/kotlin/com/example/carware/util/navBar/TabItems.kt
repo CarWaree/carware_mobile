@@ -5,10 +5,10 @@ import carware.composeapp.generated.resources.history
 import carware.composeapp.generated.resources.home
 import carware.composeapp.generated.resources.schedule
 import carware.composeapp.generated.resources.setting__1__6
-import com.example.carware.navigation.HistoryScreen
-import com.example.carware.navigation.HomeScreen
-import com.example.carware.navigation.ScheduleScreen
-import com.example.carware.navigation.SettingsScreen
+import com.example.carware.core.navigation.HistoryScreen
+import com.example.carware.core.navigation.HomeScreen
+import com.example.carware.core.navigation.ScheduleScreen
+import com.example.carware.core.navigation.SettingsScreen
 
 val bottomTabs = listOf(
     TabItem(

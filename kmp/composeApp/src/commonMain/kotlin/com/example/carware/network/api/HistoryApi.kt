@@ -1,9 +1,9 @@
 package com.example.carware.network.api
 
-import com.example.carware.network.core.ApiResult
+import com.example.carware.core.network.ApiResult
 import com.example.carware.network.apiResponse.history.GetHistoryItemResponse
 import com.example.carware.network.apiResponse.history.GetHistoryResponse
-import com.example.carware.network.core.safeApiCall
+import com.example.carware.core.network.safeApiCall
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 

@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.carware.network.apiRequests.schedule.SetAppointmentRequest
 import com.example.carware.network.apiResponse.appointment.AppointmentResponse
 import com.example.carware.network.apiResponse.schedule.Centers
-import com.example.carware.network.core.UiResult
+import com.example.carware.core.network.UiResult
 import com.example.carware.repository.ServiceRepository
 import com.example.carware.repository.VehicleRepository
 import com.example.carware.viewModel.defaultSlots

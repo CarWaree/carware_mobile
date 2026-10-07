@@ -27,9 +27,8 @@ import com.example.carware.network.apiResponse.auth.OTPResponse
 import com.example.carware.network.apiResponse.auth.RefreshTokenResponse
 import com.example.carware.network.apiResponse.auth.ResetPasswordResponse
 import com.example.carware.network.apiResponse.auth.SignUpResponse
-import com.example.carware.network.core.ApiResult
-import com.example.carware.network.core.UiResult
-import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.core.network.ApiResult
+import com.example.carware.core.network.UiResult
 import io.ktor.client.HttpClient
 
 class AuthRepository(

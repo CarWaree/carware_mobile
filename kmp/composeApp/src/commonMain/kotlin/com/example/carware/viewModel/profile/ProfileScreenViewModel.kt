@@ -3,14 +3,11 @@ package com.example.carware.viewModel.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.carware.network.apiRequests.profile.UpdateProfileRequest
-import com.example.carware.network.apiResponse.profile.GetProfileResponse
 import com.example.carware.network.apiResponse.profile.UpdatePictureResponse
 import com.example.carware.network.apiResponse.profile.UpdateProfileResponse
-import com.example.carware.network.cache.VehiclesCacheData
-import com.example.carware.network.core.UiResult
+import com.example.carware.core.network.UiResult
 import com.example.carware.repository.ProfileRepository
 import com.example.carware.repository.VehicleRepository
-import com.example.carware.util.storage.PreferencesManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

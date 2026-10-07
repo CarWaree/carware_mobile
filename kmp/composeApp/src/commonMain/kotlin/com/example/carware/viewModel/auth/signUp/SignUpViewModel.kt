@@ -6,10 +6,10 @@ import com.example.carware.network.apiRequests.auth.GoogleSignInRequest
 import com.example.carware.network.apiRequests.auth.SignUpRequest
 import com.example.carware.network.apiResponse.auth.GoogleSignInResponse
 import com.example.carware.network.apiResponse.auth.SignUpResponse
-import com.example.carware.network.core.UiResult
+import com.example.carware.core.network.UiResult
 import com.example.carware.repository.VehicleRepository
 import com.example.carware.repository.auth.AuthRepository
-import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.core.storage.PreferencesManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

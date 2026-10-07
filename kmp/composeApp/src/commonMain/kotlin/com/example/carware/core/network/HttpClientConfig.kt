@@ -1,7 +1,4 @@
-package com.example.carware
-
-import com.example.carware.network.core.ApiLogger
-
+package com.example.carware.core.network
 
 object HttpClientConfig {
     // Toggle logging on/off

@@ -1,4 +1,4 @@
-package com.example.carware.network.core
+package com.example.carware.core.network
 
 sealed class ApiResult<T> {
     data class Success<T>(val data: T) : ApiResult<T>()

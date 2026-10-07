@@ -6,21 +6,19 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.example.carware.navigation.AddCarScreen
-import com.example.carware.navigation.HomeScreen
+import com.example.carware.core.navigation.AddCarScreen
+import com.example.carware.core.navigation.HomeScreen
 import com.example.carware.network.apiRequests.vehicle.VehicleRequest
 import com.example.carware.network.apiResponse.vehicle.Brand
 import com.example.carware.network.apiResponse.vehicle.Model
 import com.example.carware.network.apiResponse.vehicle.VehicleResponse
-import com.example.carware.network.core.UiResult
+import com.example.carware.core.network.UiResult
 import com.example.carware.repository.VehicleRepository
-import com.example.carware.util.storage.PreferencesManager
-import kotlinx.coroutines.Dispatchers
+import com.example.carware.core.storage.PreferencesManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class AddCarViewModel( private val repository: VehicleRepository,
                        private  val preferencesManager: PreferencesManager

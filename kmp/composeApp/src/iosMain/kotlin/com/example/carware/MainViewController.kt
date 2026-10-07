@@ -1,7 +1,7 @@
 package com.example.carware
 import androidx.compose.ui.window.ComposeUIViewController
-import com.example.carware.di.appModule
-import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.core.di.appModule
+import com.example.carware.core.storage.PreferencesManager
 import com.russhwolf.settings.Settings
 import org.koin.core.context.startKoin
 import platform.UIKit.UIViewController

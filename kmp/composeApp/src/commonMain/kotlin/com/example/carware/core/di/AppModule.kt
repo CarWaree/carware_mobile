@@ -1,8 +1,8 @@
-package com.example.carware.di
+package com.example.carware.core.di
 
 import com.example.carware.Notification.getPushTokenProvider
 import com.example.carware.cache.createImageLoader
-import com.example.carware.network.core.createHttpClient
+import com.example.carware.core.network.createHttpClient
 import com.example.carware.repository.HistoryRepository
 import com.example.carware.repository.NotificationsRepository
 import com.example.carware.repository.ProfileRepository
@@ -11,7 +11,7 @@ import com.example.carware.repository.ServiceRepository
 import com.example.carware.repository.VehicleRepository
 import com.example.carware.repository.auth.AuthRepository
 import com.example.carware.util.CalendarLauncher
-import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.core.storage.PreferencesManager
 import com.example.carware.viewModel.auth.changePass.ChangePassViewModel
 import com.example.carware.viewModel.vehicle.addcar.AddCarViewModel
 import com.example.carware.viewModel.auth.emailVerification.EmailVerificationViewModel

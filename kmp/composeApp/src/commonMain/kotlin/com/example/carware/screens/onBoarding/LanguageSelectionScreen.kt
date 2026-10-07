@@ -30,19 +30,17 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.ar_flag
-import carware.composeapp.generated.resources.carware
 import carware.composeapp.generated.resources.check_onboard
 import carware.composeapp.generated.resources.en_flag
-import carware.composeapp.generated.resources.line_1
 import carware.composeapp.generated.resources.new_logo
 import carware.composeapp.generated.resources.poppins_semibold
 import com.example.carware.LocalStrings
 import com.example.carware.m
-import com.example.carware.navigation.LanguageSelectionScreen
-import com.example.carware.navigation.OnboardingScreen
-import com.example.carware.screens.appGradBack
+import com.example.carware.core.navigation.LanguageSelectionScreen
+import com.example.carware.core.navigation.OnboardingScreen
+import com.example.carware.core.presentation.components.appGradBack
 import com.example.carware.util.lang.AppLanguage
-import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.core.storage.PreferencesManager
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
 

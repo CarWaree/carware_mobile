@@ -10,7 +10,7 @@ import com.example.carware.network.apiRequests.vehicle.UpdateVehicleRequest
 import com.example.carware.network.apiResponse.vehicle.Brand
 import com.example.carware.network.apiResponse.vehicle.Model
 import com.example.carware.network.apiResponse.vehicle.UpdateVehicleResponse
-import com.example.carware.network.core.UiResult
+import com.example.carware.core.network.UiResult
 import com.example.carware.repository.VehicleRepository
 import com.example.carware.viewModel.vehicle.addcar.AddCarScreenState
 import kotlinx.coroutines.flow.MutableStateFlow

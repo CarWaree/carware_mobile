@@ -1,4 +1,4 @@
-package com.example.carware.network.core
+package com.example.carware.core.network
 
 object ApiLogger {
     var isEnabled = true

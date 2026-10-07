@@ -1,5 +1,4 @@
-package com.example.carware.util.storage
-
+package com.example.carware.core.storage
 
 import com.example.carware.cache.historyStore
 import com.example.carware.cache.notificationStore

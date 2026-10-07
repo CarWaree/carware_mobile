@@ -1,6 +1,6 @@
 package com.example.carware
 
-import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.core.storage.PreferencesManager
 
 object CarwareApp {
     lateinit var preferences: PreferencesManager

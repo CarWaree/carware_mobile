@@ -1,6 +1,6 @@
 package com.example.carware.preferences
 
-import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.core.storage.PreferencesManager
 import com.russhwolf.settings.Settings
 import platform.Foundation.NSUserDefaults
 

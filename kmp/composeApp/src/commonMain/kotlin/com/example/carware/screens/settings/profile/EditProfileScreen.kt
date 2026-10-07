@@ -38,12 +38,11 @@ import carware.composeapp.generated.resources.Res
 import carware.composeapp.generated.resources.*
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
-import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import com.example.carware.LocalStrings
 import com.example.carware.network.api.baseUrl
-import com.example.carware.screens.ShimmerProfileScreen
-import com.example.carware.screens.ToastMessage
+import com.example.carware.core.presentation.components.ShimmerProfileScreen
+import com.example.carware.core.presentation.components.ToastMessage
 import com.example.carware.util.rememberImagePickerLauncher
 import com.example.carware.viewModel.profile.ProfileScreenState
 import com.example.carware.viewModel.profile.ProfileScreenViewModel

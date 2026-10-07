@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.carware.network.api.resetPasswordUser
 import com.example.carware.network.apiRequests.auth.ResetPasswordRequest
 import com.example.carware.repository.auth.AuthRepository
-import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.core.storage.PreferencesManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

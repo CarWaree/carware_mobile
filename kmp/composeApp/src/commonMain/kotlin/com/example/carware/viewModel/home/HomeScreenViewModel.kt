@@ -4,16 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.carware.cache.reminderStore
 import com.example.carware.cache.vehiclesStore
-import com.example.carware.network.api.deleteVehicle
 import com.example.carware.network.apiResponse.vehicle.DeleteVehicleResponse
 import com.example.carware.network.apiResponse.vehicle.Vehicles
-import com.example.carware.network.core.UiResult
+import com.example.carware.core.network.UiResult
 import com.example.carware.repository.VehicleRepository
-import com.example.carware.util.storage.PreferencesManager
-import com.example.carware.viewModel.home.HomeScreenState
-import com.example.carware.viewModel.profile.ProfileScreenState
 import com.plusmobileapps.konnectivity.Konnectivity
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

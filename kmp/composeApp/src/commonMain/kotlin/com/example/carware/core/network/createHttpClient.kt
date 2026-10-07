@@ -1,14 +1,11 @@
-package com.example.carware.network.core
+package com.example.carware.core.network
 
-import com.example.carware.HttpClientConfig
-import com.example.carware.network.api.baseUrl
+import com.example.carware.core.network.HttpClientConfig
 import com.example.carware.network.api.refreshTokenCall
 import com.example.carware.network.apiRequests.auth.RefreshTokenRequest
-import com.example.carware.network.apiResponse.auth.RefreshTokenResponse
-import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.core.storage.PreferencesManager
 import getHttpClientEngine
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
@@ -16,8 +13,6 @@ import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.cookies.AcceptAllCookiesStorage
 import io.ktor.client.plugins.cookies.HttpCookies
-import io.ktor.client.request.post
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json

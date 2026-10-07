@@ -1,4 +1,4 @@
-package com.example.carware.network.core
+package com.example.carware.core.network
 
 import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse

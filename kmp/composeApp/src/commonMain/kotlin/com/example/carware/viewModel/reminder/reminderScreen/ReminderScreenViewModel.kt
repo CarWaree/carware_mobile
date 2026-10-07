@@ -9,7 +9,7 @@ import com.example.carware.network.apiRequests.reminder.ReminderRequest
 import com.example.carware.network.apiResponse.reminder.ReminderResponse
 import com.example.carware.network.apiResponse.schedule.Service
 import com.example.carware.network.cache.ReminderCacheData
-import com.example.carware.network.core.UiResult
+import com.example.carware.core.network.UiResult
 import com.example.carware.repository.ReminderRepository
 import com.example.carware.repository.ServiceRepository
 import com.example.carware.repository.VehicleRepository

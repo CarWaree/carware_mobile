@@ -72,12 +72,12 @@ import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import com.example.carware.LocalStrings
 import com.example.carware.m
-import com.example.carware.navigation.EditProfileScreen
-import com.example.carware.navigation.MyCarsScreen
-import com.example.carware.navigation.SignUpScreen
+import com.example.carware.core.navigation.EditProfileScreen
+import com.example.carware.core.navigation.MyCarsScreen
+import com.example.carware.core.navigation.SignUpScreen
 import com.example.carware.network.api.baseUrl
-import com.example.carware.screens.ShimmerProfileScreen
-import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.core.presentation.components.ShimmerProfileScreen
+import com.example.carware.core.storage.PreferencesManager
 import com.example.carware.viewModel.profile.ProfileScreenState
 import com.example.carware.viewModel.profile.ProfileScreenViewModel
 import kotlinx.coroutines.launch

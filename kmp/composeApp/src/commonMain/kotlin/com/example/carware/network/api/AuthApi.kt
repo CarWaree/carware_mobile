@@ -18,17 +18,17 @@ import com.example.carware.network.apiResponse.auth.OTPResponse
 import com.example.carware.network.apiResponse.auth.RefreshTokenResponse
 import com.example.carware.network.apiResponse.auth.ResetPasswordResponse
 import com.example.carware.network.apiResponse.auth.SignUpResponse
-import com.example.carware.network.core.ApiResult
-import com.example.carware.network.core.safeApiCall
+import com.example.carware.core.network.ApiResult
+import com.example.carware.core.network.safeApiCall
 import io.ktor.client.HttpClient
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
-//const val baseUrl = "https://63nw61z7-8081.euw.devtunnels.ms" //abdo
+const val baseUrl = "https://articulatorily-unerupted-nikki.ngrok-free.dev" //abdo
 
-const val baseUrl = "https://carware.online"
+//const val baseUrl = "https://carware.online"
 suspend fun signupUser(
     request: SignUpRequest,
     client: HttpClient

@@ -51,12 +51,11 @@ import carware.composeapp.generated.resources.settings_update
 import coil3.compose.LocalPlatformContext
 import com.example.carware.LocalStrings
 import com.example.carware.m
-import com.example.carware.navigation.ChangePassScreen
-import com.example.carware.navigation.ProfileScreen
-import com.example.carware.navigation.SelectLanguageScreen
-import com.example.carware.navigation.SignUpScreen
-import com.example.carware.screens.auth.SignUpScreen
-import com.example.carware.util.storage.PreferencesManager
+import com.example.carware.core.navigation.ChangePassScreen
+import com.example.carware.core.navigation.ProfileScreen
+import com.example.carware.core.navigation.SelectLanguageScreen
+import com.example.carware.core.navigation.SignUpScreen
+import com.example.carware.core.storage.PreferencesManager
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource

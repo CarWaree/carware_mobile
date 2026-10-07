@@ -5,12 +5,10 @@ import com.example.carware.network.api.getServiceType
 import com.example.carware.network.api.setAppointment
 import com.example.carware.network.apiRequests.schedule.SetAppointmentRequest
 import com.example.carware.network.apiResponse.appointment.AppointmentResponse
-import com.example.carware.network.apiResponse.schedule.Centers
-import com.example.carware.network.apiResponse.schedule.Service
 import com.example.carware.network.apiResponse.schedule.ServiceCentersResponse
 import com.example.carware.network.apiResponse.schedule.ServiceTypesResponse
-import com.example.carware.network.core.ApiResult
-import com.example.carware.network.core.UiResult
+import com.example.carware.core.network.ApiResult
+import com.example.carware.core.network.UiResult
 import io.ktor.client.HttpClient
 
 class ServiceRepository(private val client: HttpClient) {
