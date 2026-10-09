@@ -5,7 +5,7 @@ import com.example.carware.network.apiRequests.auth.ForgotPasswordRequest
 import com.example.carware.network.apiRequests.auth.LoginRequest
 import com.example.carware.network.apiRequests.auth.OTPRequest
 import com.example.carware.network.apiRequests.auth.ResetPasswordRequest
-import com.example.carware.network.apiRequests.auth.SignUpRequest
+import com.example.carware.feature.auth.data.remote.SignUpRequest
 import com.example.carware.core.network.ApiResult
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine

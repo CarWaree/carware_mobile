@@ -2,23 +2,21 @@ package com.example.carware.repository.auth
 
 import com.example.carware.network.api.changePass
 import com.example.carware.network.api.forgotPasswordUser
-import com.example.carware.network.api.googleSignIn
 import com.example.carware.network.api.loginUser
 import com.example.carware.network.api.otpVerificationUser
 import com.example.carware.network.api.refreshTokenCall
 import com.example.carware.network.api.resetPasswordUser
-import com.example.carware.network.api.signupUser
 import com.example.carware.network.api.verifyEmailUser
 import com.example.carware.network.apiRequests.auth.ChangePassRequest
 import com.example.carware.network.apiRequests.auth.EmailVerificationRequest
 import com.example.carware.network.apiRequests.auth.ForgotPasswordRequest
-import com.example.carware.network.apiRequests.auth.GoogleSignInRequest
+import com.example.carware.feature.auth.data.remote.GoogleSignInRequest
 import com.example.carware.network.apiRequests.auth.LoginRequest
 import com.example.carware.network.apiRequests.auth.OTPRequest
 import com.example.carware.network.apiRequests.auth.RefreshTokenRequest
 import com.example.carware.network.apiRequests.auth.ResetPasswordRequest
-import com.example.carware.network.apiRequests.auth.SignUpRequest
-import com.example.carware.network.apiResponse.auth.GoogleSignInResponse
+import com.example.carware.feature.auth.data.remote.SignUpRequest
+import com.example.carware.feature.auth.data.remote.GoogleSignInResponse
 import com.example.carware.network.apiResponse.auth.AuthResponse
 import com.example.carware.network.apiResponse.auth.ChangePassResponse
 import com.example.carware.network.apiResponse.auth.EmailVerificationResponse
@@ -26,7 +24,7 @@ import com.example.carware.network.apiResponse.auth.ForgotPasswordResponse
 import com.example.carware.network.apiResponse.auth.OTPResponse
 import com.example.carware.network.apiResponse.auth.RefreshTokenResponse
 import com.example.carware.network.apiResponse.auth.ResetPasswordResponse
-import com.example.carware.network.apiResponse.auth.SignUpResponse
+import com.example.carware.feature.auth.data.remote.SignUpResponse
 import com.example.carware.core.network.ApiResult
 import com.example.carware.core.network.UiResult
 import io.ktor.client.HttpClient
@@ -35,21 +33,21 @@ class AuthRepository(
     private val client: HttpClient
 ) {
 
-    suspend fun signUpRepo(request: SignUpRequest): UiResult<SignUpResponse> {
-        return when (val result = signupUser(request, client)) {
-            is ApiResult.Success -> {
-                UiResult.Success(result.data)
-            }
-
-            is ApiResult.Error -> {
-                UiResult.Error(result.message)
-            }
-
-            is ApiResult.Exception -> {
-                UiResult.Error(result.throwable.message ?: "Unknown error occurred")
-            }
-        }
-    }
+//    suspend fun signUpRepo(request: SignUpRequest): UiResult<SignUpResponse> {
+//        return when (val result = signupUser(request, client)) {
+//            is ApiResult.Success -> {
+//                UiResult.Success(result.data)
+//            }
+//
+//            is ApiResult.Error -> {
+//                UiResult.Error(result.message)
+//            }
+//
+//            is ApiResult.Exception -> {
+//                UiResult.Error(result.throwable.message ?: "Unknown error occurred")
+//            }
+//        }
+//    }
 
     suspend fun logInRepo(request: LoginRequest): UiResult<AuthResponse> {
 
@@ -137,25 +135,25 @@ class AuthRepository(
         }
     }
 
-    suspend fun googleSignInRepo(request: GoogleSignInRequest): UiResult<GoogleSignInResponse> {
-        println("🔑 [GOOGLE] ID Token being sent: ${request.idToken}")
-
-        return when (val result = googleSignIn(request, client)) {
-
-            is ApiResult.Success -> {
-                UiResult.Success(result.data)
-            }
-
-            is ApiResult.Error -> {
-                UiResult.Error(result.message)
-            }
-
-            is ApiResult.Exception -> {
-                UiResult.Error(result.throwable.message ?: "Unknown error occurred")
-            }
-
-        }
-    }
+//    suspend fun googleSignInRepo(request: GoogleSignInRequest): UiResult<GoogleSignInResponse> {
+//        println("🔑 [GOOGLE] ID Token being sent: ${request.idToken}")
+//
+//        return when (val result = googleSignIn(request, client)) {
+//
+//            is ApiResult.Success -> {
+//                UiResult.Success(result.data)
+//            }
+//
+//            is ApiResult.Error -> {
+//                UiResult.Error(result.message)
+//            }
+//
+//            is ApiResult.Exception -> {
+//                UiResult.Error(result.throwable.message ?: "Unknown error occurred")
+//            }
+//
+//        }
+//    }
 
     suspend fun changePassRepo(request: ChangePassRequest) : UiResult<ChangePassResponse>{
         return  when (val result = changePass(request,client)){

@@ -85,7 +85,7 @@ import com.example.carware.viewModel.auth.forgotPassword.ForgotPasswordViewModel
 import com.example.carware.viewModel.auth.logIn.LogInViewModel
 import com.example.carware.viewModel.auth.newPassword.NewPasswordViewModel
 import com.example.carware.viewModel.auth.otpVerification.OTPViewModel
-import com.example.carware.viewModel.auth.signUp.SignUpViewModel
+import com.example.carware.feature.auth.presentation.signup.SignUpViewModel
 import com.example.carware.viewModel.history.HistoryScreenViewModel
 import com.example.carware.viewModel.home.HomeScreenViewModel
 import com.example.carware.viewModel.mycars.MyCarsScreenViewModel

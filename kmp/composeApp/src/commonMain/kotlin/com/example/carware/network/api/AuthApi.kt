@@ -3,21 +3,21 @@ package com.example.carware.network.api
 import com.example.carware.network.apiRequests.auth.ChangePassRequest
 import com.example.carware.network.apiRequests.auth.EmailVerificationRequest
 import com.example.carware.network.apiRequests.auth.ForgotPasswordRequest
-import com.example.carware.network.apiRequests.auth.GoogleSignInRequest
+import com.example.carware.feature.auth.data.remote.GoogleSignInRequest
 import com.example.carware.network.apiRequests.auth.LoginRequest
 import com.example.carware.network.apiRequests.auth.OTPRequest
 import com.example.carware.network.apiRequests.auth.RefreshTokenRequest
 import com.example.carware.network.apiRequests.auth.ResetPasswordRequest
-import com.example.carware.network.apiRequests.auth.SignUpRequest
+import com.example.carware.feature.auth.data.remote.SignUpRequest
 import com.example.carware.network.apiResponse.auth.AuthResponse
 import com.example.carware.network.apiResponse.auth.ChangePassResponse
 import com.example.carware.network.apiResponse.auth.EmailVerificationResponse
 import com.example.carware.network.apiResponse.auth.ForgotPasswordResponse
-import com.example.carware.network.apiResponse.auth.GoogleSignInResponse
+import com.example.carware.feature.auth.data.remote.GoogleSignInResponse
 import com.example.carware.network.apiResponse.auth.OTPResponse
 import com.example.carware.network.apiResponse.auth.RefreshTokenResponse
 import com.example.carware.network.apiResponse.auth.ResetPasswordResponse
-import com.example.carware.network.apiResponse.auth.SignUpResponse
+import com.example.carware.feature.auth.data.remote.SignUpResponse
 import com.example.carware.core.network.ApiResult
 import com.example.carware.core.network.safeApiCall
 import io.ktor.client.HttpClient
@@ -26,19 +26,19 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
-const val baseUrl = "https://articulatorily-unerupted-nikki.ngrok-free.dev" //abdo
+const val baseUrl = "https://tbvzs781-8081.uks1.devtunnels.ms" //abdo
 
 //const val baseUrl = "https://carware.online"
-suspend fun signupUser(
-    request: SignUpRequest,
-    client: HttpClient
-): ApiResult<SignUpResponse> =
-    safeApiCall {
-        client.post("$baseUrl/api/Auth/register") {
-            contentType(ContentType.Application.Json)
-            setBody(request)
-        }
-    }
+//suspend fun signupUser(
+//    request: SignUpRequest,
+//    client: HttpClient
+//): ApiResult<SignUpResponse> =
+//    safeApiCall {
+//        client.post("$baseUrl/api/Auth/register") {
+//            contentType(ContentType.Application.Json)
+//            setBody(request)
+//        }
+//    }
 
 suspend fun loginUser(
     request: LoginRequest,
@@ -99,16 +99,16 @@ suspend fun verifyEmailUser(
         }
     }
 
-suspend fun googleSignIn(
-    request: GoogleSignInRequest,
-    client: HttpClient
-): ApiResult<GoogleSignInResponse> =
-    safeApiCall {
-        client.post("$baseUrl/api/Auth/google-mobile") {
-            contentType(ContentType.Application.Json)
-            setBody(request)
-        }
-    }
+//suspend fun googleSignIn(
+//    request: GoogleSignInRequest,
+//    client: HttpClient
+//): ApiResult<GoogleSignInResponse> =
+//    safeApiCall {
+//        client.post("$baseUrl/api/Auth/google-mobile") {
+//            contentType(ContentType.Application.Json)
+//            setBody(request)
+//        }
+//    }
 
 
 suspend fun refreshTokenCall(

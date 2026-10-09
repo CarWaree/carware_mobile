@@ -2,10 +2,10 @@ package com.example.carware.viewModel.auth.logIn
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.carware.network.apiRequests.auth.GoogleSignInRequest
+import com.example.carware.feature.auth.data.remote.GoogleSignInRequest
 import com.example.carware.network.apiRequests.auth.LoginRequest
 import com.example.carware.network.apiResponse.auth.AuthResponse
-import com.example.carware.network.apiResponse.auth.GoogleSignInResponse
+import com.example.carware.feature.auth.data.remote.GoogleSignInResponse
 import com.example.carware.core.network.UiResult
 import com.example.carware.repository.VehicleRepository
 import com.example.carware.repository.auth.AuthRepository
@@ -124,37 +124,37 @@ class LogInViewModel(
             _state.update { it.copy(isLoading = true, errorMessage = null) }
             val request = GoogleSignInRequest(idToken)
 
-            when (val result: UiResult<GoogleSignInResponse> =
-                repository.googleSignInRepo(request)) {
-                is UiResult.Success -> {
-                    val response = result.data
-                    preferencesManager.performLogin(token = response.data.accessToken)
-                    preferencesManager.saveRefreshToken(response.data.refreshToken) // ← add this
-                    preferencesManager.saveEmailVerified(true)
-
-
-                    val vehicles = vehicleRepository.getVehiclesRepo()
-                    val hasAddedCar = vehicles.isNotEmpty()
-                    preferencesManager.setCarAdded(hasAddedCar)
-
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            isCarAdded = hasAddedCar,
-                            isSuccess = true
-                        )
-                    }
-                }
-
-                is UiResult.Error -> {
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            errorMessage = result.message
-                        )
-                    }
-                }
-            }
+//            when (val result: UiResult<GoogleSignInResponse> =
+//                repository.googleSignInRepo(request)) {
+//                is UiResult.Success -> {
+//                    val response = result.data
+//                    preferencesManager.performLogin(token = response.data.accessToken)
+//                    preferencesManager.saveRefreshToken(response.data.refreshToken) // ← add this
+//                    preferencesManager.saveEmailVerified(true)
+//
+//
+//                    val vehicles = vehicleRepository.getVehiclesRepo()
+//                    val hasAddedCar = vehicles.isNotEmpty()
+//                    preferencesManager.setCarAdded(hasAddedCar)
+//
+//                    _state.update {
+//                        it.copy(
+//                            isLoading = false,
+//                            isCarAdded = hasAddedCar,
+//                            isSuccess = true
+//                        )
+//                    }
+//                }
+//
+//                is UiResult.Error -> {
+//                    _state.update {
+//                        it.copy(
+//                            isLoading = false,
+//                            errorMessage = result.message
+//                        )
+//                    }
+//                }
+//            }
         }
     }
 

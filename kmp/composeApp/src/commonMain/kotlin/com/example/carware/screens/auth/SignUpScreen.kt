@@ -67,7 +67,7 @@ import com.example.carware.core.presentation.components.LoadingOverlay
 import com.example.carware.core.presentation.components.ToastMessage
 import com.example.carware.core.presentation.components.appButtonBack
 import com.example.carware.core.presentation.components.appGradBack
-import com.example.carware.viewModel.auth.signUp.SignUpViewModel
+import com.example.carware.feature.auth.presentation.signup.SignUpViewModel
 import com.mmk.kmpauth.google.GoogleAuthCredentials
 import com.mmk.kmpauth.google.GoogleAuthProvider
 import com.mmk.kmpauth.google.GoogleButtonUiContainer
@@ -136,20 +136,10 @@ fun SignUpScreen(
 
     )
 
-
     LaunchedEffect(state.isSuccess) {
-
-        if (state.isSuccess) {
-            val destination = if (state.isCarAdded) {
-                HomeScreen
-            } else {
-                AddCarScreen
-            }
-
-            if (state.isSuccess && !state.needsEmailVerification) {
-                navController.navigate(destination) {  // or whatever screen
-                    popUpTo(SignUpScreen) { inclusive = true }
-                }
+        if (state.isSuccess && !state.needsEmailVerification) {
+            navController.navigate(AddCarScreen) {
+                popUpTo(SignUpScreen) { inclusive = true }
             }
         }
     }

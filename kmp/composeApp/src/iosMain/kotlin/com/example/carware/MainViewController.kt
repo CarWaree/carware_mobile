@@ -1,6 +1,7 @@
 package com.example.carware
 import androidx.compose.ui.window.ComposeUIViewController
 import com.example.carware.core.di.appModule
+import com.example.carware.core.di.appModules
 import com.example.carware.core.storage.PreferencesManager
 import com.russhwolf.settings.Settings
 import org.koin.core.context.startKoin
@@ -15,8 +16,7 @@ fun setupLottieFactory(factory: () -> UIViewController) {
 fun MainViewController(): UIViewController {
     val preferencesManager = PreferencesManager(Settings())
     startKoin {
-        modules(appModule(preferencesManager))
-    }
+        modules(appModule(preferencesManager) + appModules)    }
     return ComposeUIViewController {
         MainScreen()
     }

@@ -12,6 +12,7 @@ import com.example.carware.repository.VehicleRepository
 import com.example.carware.repository.auth.AuthRepository
 import com.example.carware.util.CalendarLauncher
 import com.example.carware.core.storage.PreferencesManager
+import com.example.carware.feature.auth.di.authModule
 import com.example.carware.viewModel.auth.changePass.ChangePassViewModel
 import com.example.carware.viewModel.vehicle.addcar.AddCarViewModel
 import com.example.carware.viewModel.auth.emailVerification.EmailVerificationViewModel
@@ -19,7 +20,6 @@ import com.example.carware.viewModel.auth.forgotPassword.ForgotPasswordViewModel
 import com.example.carware.viewModel.auth.logIn.LogInViewModel
 import com.example.carware.viewModel.auth.newPassword.NewPasswordViewModel
 import com.example.carware.viewModel.auth.otpVerification.OTPViewModel
-import com.example.carware.viewModel.auth.signUp.SignUpViewModel
 import com.example.carware.viewModel.history.HistoryScreenViewModel
 import com.example.carware.viewModel.home.HomeScreenViewModel
 import com.example.carware.viewModel.mycars.MyCarsScreenViewModel
@@ -54,7 +54,7 @@ fun appModule(preferencesManager: PreferencesManager) = module {
 
     // ViewModels
     factory { HomeScreenViewModel(get(),get()) }
-    factory { SignUpViewModel(get(), get(), get()) }
+//    factory { SignUpViewModel(get(), get(), get()) }
     factory { LogInViewModel(get(), get(), get()) }
     factory { OTPViewModel(get(), get()) }
     factory { NewPasswordViewModel(get(), get()) }
@@ -72,4 +72,6 @@ fun appModule(preferencesManager: PreferencesManager) = module {
     factory { ChangePassViewModel(get(),get()) }
     // AppFonts.kt
 
+
 }
+val appModules = listOf(authModule)

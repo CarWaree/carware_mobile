@@ -1,4 +1,4 @@
-package com.example.carware.viewModel.auth.signUp
+package com.example.carware.feature.auth.presentation.signup
 
 data class SignUpState(
     val firstName: String = "",

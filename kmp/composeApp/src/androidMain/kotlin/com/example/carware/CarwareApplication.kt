@@ -9,6 +9,7 @@ import com.example.carware.core.storage.PreferencesManager
 import com.russhwolf.settings.SharedPreferencesSettings
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import com.example.carware.core.di.appModules
 class CarwareApplication : Application() {
 
     override fun onCreate() {
@@ -31,7 +32,7 @@ class CarwareApplication : Application() {
 
         startKoin {
             androidContext(this@CarwareApplication)
-            modules(appModule(preferencesManager))
+            modules(appModule(preferencesManager) + appModules)
         }
     }
 }

@@ -1,15 +1,10 @@
-package com.example.carware.viewModel.auth.signUp
+package com.example.carware.feature.auth.presentation.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.carware.network.apiRequests.auth.GoogleSignInRequest
-import com.example.carware.network.apiRequests.auth.SignUpRequest
-import com.example.carware.network.apiResponse.auth.GoogleSignInResponse
-import com.example.carware.network.apiResponse.auth.SignUpResponse
-import com.example.carware.core.network.UiResult
-import com.example.carware.repository.VehicleRepository
-import com.example.carware.repository.auth.AuthRepository
+import com.example.carware.core.network.ApiResult
 import com.example.carware.core.storage.PreferencesManager
+import com.example.carware.feature.auth.data.remote.GoogleSignInRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,8 +12,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class SignUpViewModel(
-    private val repository: AuthRepository,
-    private val vehicleRepository: VehicleRepository,
+    private val repository: com.example.carware.feature.auth.domain.repository.AuthRepository,
+//    private val vehicleRepository: VehicleRepository,
     private val preferencesManager: PreferencesManager,
 ) : ViewModel() {
 
@@ -104,45 +99,27 @@ class SignUpViewModel(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, errorMessage = null) }
 
-            val request = SignUpRequest(
+            when (val result = repository.signUp(
                 firstName = _state.value.firstName,
                 lastName = _state.value.lastName,
                 userName = _state.value.userName,
                 email = _state.value.email,
                 password = _state.value.pass,
-                confirmPassword = _state.value.confPass,
-            )
-
-            when (val result: UiResult<SignUpResponse> = repository.signUpRepo(request)) {
-                is UiResult.Success -> {
-                    val response = result.data
-                    val isEmailVerified = response.data?.isEmailVerified ?: false
-                    preferencesManager.saveEmailVerified(isEmailVerified)
-
-                    val vehicles = vehicleRepository.getVehiclesRepo()
-                    val hasAddedCar = vehicles.isNotEmpty()
-                    preferencesManager.setCarAdded(hasAddedCar)
-
+                confirmPassword = _state.value.confPass
+            )) {
+                is ApiResult.Success -> {
+                    preferencesManager.saveEmailVerified(result.data.isEmailVerified)
                     _state.update {
                         it.copy(
                             isLoading = false,
-                            isSuccess = isEmailVerified,
-                            needsEmailVerification = !isEmailVerified,
-                            isCarAdded = hasAddedCar
+                            isSuccess = result.data.isEmailVerified,
+                            needsEmailVerification = !result.data.isEmailVerified
                         )
                     }
                 }
-
-                is UiResult.Error -> {
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            errorMessage = result.message
-                        )
-                    }
-                }
-            }
-        }
+                is ApiResult.Error -> _state.update { it.copy(isLoading = false, errorMessage = result.message) }
+                is ApiResult.Exception -> _state.update { it.copy(isLoading = false, errorMessage = result.throwable.message) }
+            }        }
     }
 
 
@@ -151,34 +128,17 @@ class SignUpViewModel(
             _state.update { it.copy(isLoading = true, errorMessage = null) }
             val request = GoogleSignInRequest(idToken)
 
-            when (val result: UiResult<GoogleSignInResponse> = repository.googleSignInRepo(request)) {
-                is UiResult.Success -> {
-                    val response = result.data
-                    preferencesManager.performLogin(token = response.data.accessToken)
-                    preferencesManager.saveRefreshToken(response.data.refreshToken)
+            when (val result = repository.googleSignIn(idToken)) {
+                is ApiResult.Success -> {
+                    preferencesManager.performLogin(token = result.data.accessToken)
+                    preferencesManager.saveRefreshToken(result.data.refreshToken)
                     preferencesManager.saveEmailVerified(true)
-
-                    val vehicles = vehicleRepository.getVehiclesRepo()
-                    val hasAddedCar = vehicles.isNotEmpty()
-                    preferencesManager.setCarAdded(hasAddedCar)
-
                     _state.update {
-                        it.copy(
-                            isLoading = false,
-                            isCarAdded = hasAddedCar,
-                            isSuccess = true
-                        )
+                        it.copy(isLoading = false, isSuccess = true)
                     }
                 }
-                is UiResult.Error -> {
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            errorMessage = result.message
-                        )
-                    }
-                }
-            }
-        }
+                is ApiResult.Error -> _state.update { it.copy(isLoading = false, errorMessage = result.message) }
+                is ApiResult.Exception -> _state.update { it.copy(isLoading = false, errorMessage = result.throwable.message) }
+            }        }
     }
 }
