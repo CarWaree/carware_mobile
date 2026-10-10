@@ -1,4 +1,4 @@
-package com.example.carware.screens.auth
+package com.example.carware.feature.auth.presentation.login
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -64,7 +64,6 @@ import com.example.carware.core.presentation.components.LoadingOverlay
 import com.example.carware.core.presentation.components.ToastMessage
 import com.example.carware.core.presentation.components.appButtonBack
 import com.example.carware.core.presentation.components.appGradBack
-import com.example.carware.viewModel.auth.logIn.LogInViewModel
 import com.mmk.kmpauth.google.GoogleAuthCredentials
 import com.mmk.kmpauth.google.GoogleAuthProvider
 import com.mmk.kmpauth.google.GoogleButtonUiContainer
@@ -77,7 +76,7 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun LoginScreen(
     navController: NavController,
-    viewModel: LogInViewModel
+    viewModel: LoginViewModel
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -136,13 +135,7 @@ fun LoginScreen(
 
     LaunchedEffect(state.isSuccess) {
         if (state.isSuccess) {
-            val destination = if (state.isCarAdded) {
-                HomeScreen
-            } else {
-                AddCarScreen
-            }
-
-            navController.navigate(destination) {
+            navController.navigate(HomeScreen) {
                 popUpTo(LoginScreen) { inclusive = true }
             }
         }
@@ -268,18 +261,18 @@ fun LoginScreen(
                 OutlinedTextField(
 
                     modifier = m.size(280.dp, 55.dp),
-                    value = state.pass,
+                    value = state.password,
                     onValueChange = {
                         viewModel.onPasswordChange(it)
                     },
                     placeholder = {
                         Text(
-                            text = if (state.passError) strings.get("PASSWORD_REQUIRED") else strings.get(
+                            text = if (state.passwordError) strings.get("PASSWORD_REQUIRED") else strings.get(
                                 "PASSWORD"
                             ),
                             fontFamily = popMid,
                             fontSize = 12.sp,
-                            color = if (state.passError) Color(194, 0, 0, 255) else Color(
+                            color = if (state.passwordError) Color(194, 0, 0, 255) else Color(
                                 30,
                                 30,
                                 30,
@@ -292,7 +285,7 @@ fun LoginScreen(
                         imeAction = ImeAction.Done
 
                     ),
-                    isError = state.passError,
+                    isError = state.passwordError,
                     visualTransformation = if (isPassVisible) VisualTransformation.None
                     else PasswordVisualTransformation(),
                     singleLine = true,

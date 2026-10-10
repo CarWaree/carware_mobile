@@ -1,5 +1,4 @@
-package com.example.carware.network.apiResponse.auth
-
+package com.example.carware.feature.auth.data.remote.otp
 import kotlinx.serialization.Serializable
 
 @Serializable

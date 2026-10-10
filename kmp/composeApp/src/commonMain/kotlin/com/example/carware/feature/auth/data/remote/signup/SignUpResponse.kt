@@ -1,4 +1,4 @@
-package com.example.carware.feature.auth.data.remote
+package com.example.carware.feature.auth.data.remote.signup
 
 import kotlinx.serialization.Serializable
 

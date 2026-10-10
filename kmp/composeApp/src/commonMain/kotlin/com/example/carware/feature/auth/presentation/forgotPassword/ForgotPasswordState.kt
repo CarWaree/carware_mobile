@@ -1,4 +1,4 @@
-package com.example.carware.viewModel.auth.forgotPassword
+package com.example.carware.feature.auth.presentation.forgotPassword
 
 data class ForgotPasswordState (
     val email:String="",

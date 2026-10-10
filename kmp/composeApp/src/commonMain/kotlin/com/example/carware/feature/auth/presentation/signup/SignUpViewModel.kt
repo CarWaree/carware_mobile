@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.carware.core.network.ApiResult
 import com.example.carware.core.storage.PreferencesManager
-import com.example.carware.feature.auth.data.remote.GoogleSignInRequest
+import com.example.carware.feature.auth.data.remote.googleSignIn.GoogleSignInRequest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

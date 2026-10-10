@@ -1,6 +1,6 @@
 package com.example.carware.reposotory
 
-import com.example.carware.network.apiRequests.auth.LoginRequest
+import com.example.carware.feature.auth.data.remote.login.LoginRequest
 import com.example.carware.core.network.UiResult
 import com.example.carware.repository.auth.AuthRepository
 import io.ktor.client.*

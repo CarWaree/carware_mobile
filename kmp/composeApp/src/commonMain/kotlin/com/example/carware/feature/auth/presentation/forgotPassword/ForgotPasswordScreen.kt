@@ -1,4 +1,4 @@
-package com.example.carware.screens.auth
+package com.example.carware.feature.auth.presentation.forgotPassword
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -53,7 +53,6 @@ import com.example.carware.core.presentation.components.LoadingOverlay
 import com.example.carware.core.presentation.components.ToastMessage
 import com.example.carware.core.presentation.components.appButtonBack
 import com.example.carware.core.presentation.components.appGradBack
-import com.example.carware.viewModel.auth.forgotPassword.ForgotPasswordViewModel
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource

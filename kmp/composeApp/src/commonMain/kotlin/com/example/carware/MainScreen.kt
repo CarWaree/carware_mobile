@@ -57,11 +57,11 @@ import com.example.carware.screens.reminder.ReminderScreen
 import com.example.carware.screens.settings.SelectLanguageScreen
 import com.example.carware.screens.SplashScreen
 import com.example.carware.screens.auth.EmailVerificationScreen
-import com.example.carware.screens.auth.LoginScreen
+import com.example.carware.feature.auth.presentation.login.LoginScreen
 import com.example.carware.screens.auth.NewPasswordScreen
-import com.example.carware.screens.auth.ResetPasswordScreen
-import com.example.carware.screens.auth.SignUpScreen
-import com.example.carware.screens.auth.VerificationCodeScreen
+import com.example.carware.feature.auth.presentation.forgotPassword.ResetPasswordScreen
+import com.example.carware.feature.auth.presentation.signup.SignUpScreen
+import com.example.carware.feature.auth.presentation.otpVerification.VerificationCodeScreen
 import com.example.carware.screens.mainScreens.HistoryScreen
 import com.example.carware.screens.mainScreens.HomeScreen
 import com.example.carware.screens.mainScreens.ScheduleScreen
@@ -79,12 +79,12 @@ import com.example.carware.util.lang.AppLanguage
 import com.example.carware.util.lang.LocalizedStrings
 import com.example.carware.util.navBar.bottomTabs
 import com.example.carware.core.storage.PreferencesManager
+import com.example.carware.feature.auth.presentation.login.LoginViewModel
 import com.example.carware.viewModel.auth.changePass.ChangePassViewModel
 import com.example.carware.viewModel.auth.emailVerification.EmailVerificationViewModel
-import com.example.carware.viewModel.auth.forgotPassword.ForgotPasswordViewModel
-import com.example.carware.viewModel.auth.logIn.LogInViewModel
+import com.example.carware.feature.auth.presentation.forgotPassword.ForgotPasswordViewModel
 import com.example.carware.viewModel.auth.newPassword.NewPasswordViewModel
-import com.example.carware.viewModel.auth.otpVerification.OTPViewModel
+import com.example.carware.feature.auth.presentation.otpVerification.OTPViewModel
 import com.example.carware.feature.auth.presentation.signup.SignUpViewModel
 import com.example.carware.viewModel.history.HistoryScreenViewModel
 import com.example.carware.viewModel.home.HomeScreenViewModel
@@ -196,7 +196,7 @@ fun MainScreen() {
             }
 
             composable<LoginScreen> {
-                val loginViewModel: LogInViewModel = koinInject()
+                val loginViewModel: LoginViewModel = koinInject()
 
                 LoginScreen(navController, loginViewModel)
             }

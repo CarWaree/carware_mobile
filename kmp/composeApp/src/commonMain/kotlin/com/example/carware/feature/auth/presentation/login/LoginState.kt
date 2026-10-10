@@ -1,17 +1,11 @@
-package com.example.carware.viewModel.auth.logIn
+package com.example.carware.feature.auth.presentation.login
 
-data class LogInState(
-
-
+data class LoginState(
     val emailOrUsername: String = "",
-    val pass: String = "",
-
+    val password: String = "",
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
-    val isCarAdded: Boolean = false,
     val errorMessage: String? = null,
-
-
     val emailOrUsernameError: Boolean = false,
-    val passError: Boolean = false,
+    val passwordError: Boolean = false
 )

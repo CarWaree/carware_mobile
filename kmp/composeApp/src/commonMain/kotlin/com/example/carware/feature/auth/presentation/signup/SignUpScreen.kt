@@ -1,4 +1,4 @@
-package com.example.carware.screens.auth
+package com.example.carware.feature.auth.presentation.signup
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -60,14 +60,12 @@ import com.example.carware.LocalStrings
 import com.example.carware.m
 import com.example.carware.core.navigation.AddCarScreen
 import com.example.carware.core.navigation.EmailVerificationScreen
-import com.example.carware.core.navigation.HomeScreen
 import com.example.carware.core.navigation.LoginScreen
 import com.example.carware.core.navigation.SignUpScreen
 import com.example.carware.core.presentation.components.LoadingOverlay
 import com.example.carware.core.presentation.components.ToastMessage
 import com.example.carware.core.presentation.components.appButtonBack
 import com.example.carware.core.presentation.components.appGradBack
-import com.example.carware.feature.auth.presentation.signup.SignUpViewModel
 import com.mmk.kmpauth.google.GoogleAuthCredentials
 import com.mmk.kmpauth.google.GoogleAuthProvider
 import com.mmk.kmpauth.google.GoogleButtonUiContainer

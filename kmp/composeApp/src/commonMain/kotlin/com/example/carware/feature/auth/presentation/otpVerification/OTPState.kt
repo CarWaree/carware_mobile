@@ -1,4 +1,4 @@
-package com.example.carware.viewModel.auth.otpVerification
+package com.example.carware.feature.auth.presentation.otpVerification
 
 data class OTPState(
 
