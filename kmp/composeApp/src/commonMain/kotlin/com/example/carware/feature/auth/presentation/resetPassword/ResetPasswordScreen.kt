@@ -1,4 +1,4 @@
-package com.example.carware.screens.auth
+package com.example.carware.feature.auth.presentation.resetPassword
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -62,7 +62,6 @@ import com.example.carware.core.presentation.components.LoadingOverlay
 import com.example.carware.core.presentation.components.ToastMessage
 import com.example.carware.core.presentation.components.appButtonBack
 import com.example.carware.core.presentation.components.appGradBack
-import com.example.carware.viewModel.auth.newPassword.NewPasswordViewModel
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource
@@ -70,7 +69,7 @@ import org.jetbrains.compose.resources.painterResource
 @Composable
 fun NewPasswordScreen(
     navController: NavController,
-    viewModel: NewPasswordViewModel
+    viewModel: ResetPasswordViewModel
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -247,10 +246,10 @@ fun NewPasswordScreen(
                             else Color(30, 30, 30, 168)
                         )
                     },
-//                    keyboardOptions = KeyboardOptions.Default.copy(
-//                        keyboardType = KeyboardType.Password,
-//                        imeAction = ImeAction.Done
-//                    ),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Done
+                    ),
                     isError = state.confPassError,
                     visualTransformation = if (isConfPassVisible) VisualTransformation.None
                     else PasswordVisualTransformation(),

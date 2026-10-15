@@ -1,31 +1,26 @@
-package com.example.carware.viewModel.auth.newPassword
+package com.example.carware.feature.auth.presentation.resetPassword
 
-import androidx.compose.runtime.State
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.carware.network.api.resetPasswordUser
-import com.example.carware.network.apiRequests.auth.ResetPasswordRequest
-import com.example.carware.repository.auth.AuthRepository
+import com.example.carware.core.network.ApiResult
 import com.example.carware.core.storage.PreferencesManager
+import com.example.carware.feature.auth.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.jetbrains.compose.resources.readResourceBytes
 
-class NewPasswordViewModel (
+class ResetPasswordViewModel(
     private val repository: AuthRepository,
     private val preferencesManager: PreferencesManager,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(NewPasswordState())
-
-    val state : StateFlow<NewPasswordState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(ResetPasswordState())
+    val state: StateFlow<ResetPasswordState> = _state.asStateFlow()
 
     fun onPasswordChange(value: String) = _state.update { it.copy(pass = value) }
     fun onConfirmPasswordChange(value: String) = _state.update { it.copy(confPass = value) }
-
     fun clearErrorMessage() = _state.update { it.copy(errorMessage = null) }
 
     private fun validateForm(): String? {
@@ -51,7 +46,8 @@ class NewPasswordViewModel (
         _state.update { it.copy(passError = passError, confPassError = confPassError) }
         return errorMessage
     }
-    fun newPassword(){
+
+    fun newPassword() {
         val validationError = validateForm()
         if (validationError != null) {
             _state.update { it.copy(errorMessage = validationError) }
@@ -59,29 +55,27 @@ class NewPasswordViewModel (
         }
 
         viewModelScope.launch {
-            try {
-                _state.update { it.copy(isLoading = true, errorMessage = null) }
+            _state.update { it.copy(isLoading = true, errorMessage = null) }
 
-                val request = ResetPasswordRequest(
-                    resetPasswordToken = preferencesManager.getResetToken(),
-                    newPassword = _state.value.pass,
-                    confirmPassword =_state.value.confPass
-                )
-
-                val response=repository.resetPasswordRepo(request)
-                _state.update {
-                    it.copy(isLoading = false , isSuccess = true)
+            val token = preferencesManager.getResetToken() ?: run {
+                _state.update { it.copy(isLoading = false, errorMessage = "Session expired, please try again") }
+                return@launch  // exits viewModelScope.launch { }
+            }
+            when (val result = repository.resetPassword(
+                token = token ,
+                newPassword = _state.value.pass,
+                confirmPassword = _state.value.confPass
+            )) {
+                is ApiResult.Success -> _state.update {
+                    it.copy(isLoading = false, isSuccess = true)
                 }
-
-            }catch (e: Exception) {
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        errorMessage = e.message ?: "An error occurred"
-                    )
+                is ApiResult.Error -> _state.update {
+                    it.copy(isLoading = false, errorMessage = result.message)
+                }
+                is ApiResult.Exception -> _state.update {
+                    it.copy(isLoading = false, errorMessage = result.throwable.message ?: "An error occurred")
                 }
             }
         }
     }
-
 }

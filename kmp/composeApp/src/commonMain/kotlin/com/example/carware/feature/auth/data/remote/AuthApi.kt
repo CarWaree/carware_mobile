@@ -10,6 +10,8 @@ import com.example.carware.feature.auth.data.remote.login.AuthResponse
 import com.example.carware.feature.auth.data.remote.login.LoginRequest
 import com.example.carware.feature.auth.data.remote.otp.OTPRequest
 import com.example.carware.feature.auth.data.remote.otp.OTPResponse
+import com.example.carware.feature.auth.data.remote.resetPassword.ResetPasswordRequest
+import com.example.carware.feature.auth.data.remote.resetPassword.ResetPasswordResponse
 import com.example.carware.feature.auth.data.remote.signup.SignUpRequest
 import com.example.carware.feature.auth.data.remote.signup.SignUpResponse
 import io.ktor.client.HttpClient
@@ -44,7 +46,7 @@ class AuthApi(private val client: HttpClient) {
             }
         }
 
-    suspend fun forgotPasswordUser(request: ForgotPasswordRequest):
+    suspend fun forgotPassword(request: ForgotPasswordRequest):
             ApiResult<ForgotPasswordResponse> =
         safeApiCall {
             client.post("$BASE_URL/api/Auth/forgot-password") {
@@ -61,6 +63,14 @@ class AuthApi(private val client: HttpClient) {
             }
         }
 
+
+    suspend fun resetPassword(request: ResetPasswordRequest):
+            ApiResult<ResetPasswordResponse> = safeApiCall {
+        client.post("$BASE_URL/api/Auth/reset-password") {
+            contentType(ContentType.Application.Json)
+            setBody(request)
+        }
+    }
 
     companion object {
         private const val BASE_URL = "https://tbvzs781-8081.uks1.devtunnels.ms"

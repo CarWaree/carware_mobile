@@ -5,6 +5,7 @@ import com.example.carware.feature.auth.domain.model.ForgotPasswordResult
 import com.example.carware.feature.auth.domain.model.GoogleSignInResult
 import com.example.carware.feature.auth.domain.model.LoginResult
 import com.example.carware.feature.auth.domain.model.OTPResult
+import com.example.carware.feature.auth.domain.model.ResetPasswordResult
 import com.example.carware.feature.auth.domain.model.SignUpResult
 
 interface AuthRepository {
@@ -22,4 +23,7 @@ interface AuthRepository {
 
     suspend fun forgotPassword(email: String): ApiResult<ForgotPasswordResult>
 
-    suspend fun otpVerification(email: String, otp: String): ApiResult<OTPResult>}
+    suspend fun otpVerification(email: String, otp: String): ApiResult<OTPResult>
+
+    suspend fun resetPassword(token: String, newPassword: String, confirmPassword: String): ApiResult<ResetPasswordResult>
+}

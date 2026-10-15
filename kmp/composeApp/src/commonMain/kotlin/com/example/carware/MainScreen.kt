@@ -58,7 +58,7 @@ import com.example.carware.screens.settings.SelectLanguageScreen
 import com.example.carware.screens.SplashScreen
 import com.example.carware.screens.auth.EmailVerificationScreen
 import com.example.carware.feature.auth.presentation.login.LoginScreen
-import com.example.carware.screens.auth.NewPasswordScreen
+import com.example.carware.feature.auth.presentation.resetPassword.NewPasswordScreen
 import com.example.carware.feature.auth.presentation.forgotPassword.ResetPasswordScreen
 import com.example.carware.feature.auth.presentation.signup.SignUpScreen
 import com.example.carware.feature.auth.presentation.otpVerification.VerificationCodeScreen
@@ -83,7 +83,7 @@ import com.example.carware.feature.auth.presentation.login.LoginViewModel
 import com.example.carware.viewModel.auth.changePass.ChangePassViewModel
 import com.example.carware.viewModel.auth.emailVerification.EmailVerificationViewModel
 import com.example.carware.feature.auth.presentation.forgotPassword.ForgotPasswordViewModel
-import com.example.carware.viewModel.auth.newPassword.NewPasswordViewModel
+import com.example.carware.feature.auth.presentation.resetPassword.ResetPasswordViewModel
 import com.example.carware.feature.auth.presentation.otpVerification.OTPViewModel
 import com.example.carware.feature.auth.presentation.signup.SignUpViewModel
 import com.example.carware.viewModel.history.HistoryScreenViewModel
@@ -213,7 +213,7 @@ fun MainScreen() {
                 VerificationCodeScreen(navController, otpViewModel, route.email)
             }
             composable<NewPasswordScreen> {
-                val newPasswordViewModel: NewPasswordViewModel = koinInject()
+                val newPasswordViewModel: ResetPasswordViewModel = koinInject()
 
                 NewPasswordScreen(navController, newPasswordViewModel)
             }

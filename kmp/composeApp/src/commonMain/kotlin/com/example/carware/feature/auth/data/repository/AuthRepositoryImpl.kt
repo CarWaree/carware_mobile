@@ -9,11 +9,13 @@ import com.example.carware.feature.auth.data.remote.forgotPassword.ForgotPasswor
 import com.example.carware.feature.auth.data.remote.googleSignIn.GoogleSignInRequest
 import com.example.carware.feature.auth.data.remote.login.LoginRequest
 import com.example.carware.feature.auth.data.remote.otp.OTPRequest
+import com.example.carware.feature.auth.data.remote.resetPassword.ResetPasswordRequest
 import com.example.carware.feature.auth.data.remote.signup.SignUpRequest
 import com.example.carware.feature.auth.domain.model.ForgotPasswordResult
 import com.example.carware.feature.auth.domain.model.GoogleSignInResult
 import com.example.carware.feature.auth.domain.model.LoginResult
 import com.example.carware.feature.auth.domain.model.OTPResult
+import com.example.carware.feature.auth.domain.model.ResetPasswordResult
 import com.example.carware.feature.auth.domain.model.SignUpResult
 import com.example.carware.feature.auth.domain.repository.AuthRepository
 
@@ -67,7 +69,7 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun forgotPassword(email: String): ApiResult<ForgotPasswordResult> {
-        return when (val result = api.forgotPasswordUser(ForgotPasswordRequest(email))) {
+        return when (val result = api.forgotPassword(ForgotPasswordRequest(email))) {
             is Success -> Success(result.data.toDomain())
             is Error -> Error(result.code, result.message, result.body)
             is Exception -> Exception(result.throwable)
@@ -81,5 +83,16 @@ class AuthRepositoryImpl(
             is Exception -> Exception(result.throwable)
         }
     }
- // forgot password unavailable rn need to be tested thoroughly
+    // forgot password unavailable rn need to be tested thoroughly
+
+    override suspend fun resetPassword(token: String, newPassword: String, confirmPassword: String): ApiResult<ResetPasswordResult> {
+        return when (val result = api.resetPassword(ResetPasswordRequest(token, newPassword, confirmPassword = confirmPassword))) {
+            is Success -> Success(result.data.toDomain())
+            is Error -> Error(result.code, result.message, result.body)
+            is Exception -> Exception(result.throwable)
+        }
+    }
+    // not tested yet depends on forgot password
+
+
 }

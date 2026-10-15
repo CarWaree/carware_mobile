@@ -1,6 +1,6 @@
-package com.example.carware.viewModel.auth.newPassword
+package com.example.carware.feature.auth.presentation.resetPassword
 
-data class NewPasswordState(
+data class ResetPasswordState(
 
 
 val pass: String = "",

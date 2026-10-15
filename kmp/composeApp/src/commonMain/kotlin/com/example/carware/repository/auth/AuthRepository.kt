@@ -2,16 +2,13 @@ package com.example.carware.repository.auth
 
 import com.example.carware.network.api.changePass
 import com.example.carware.network.api.refreshTokenCall
-import com.example.carware.network.api.resetPasswordUser
 import com.example.carware.network.api.verifyEmailUser
 import com.example.carware.network.apiRequests.auth.ChangePassRequest
 import com.example.carware.network.apiRequests.auth.EmailVerificationRequest
 import com.example.carware.network.apiRequests.auth.RefreshTokenRequest
-import com.example.carware.network.apiRequests.auth.ResetPasswordRequest
 import com.example.carware.network.apiResponse.auth.ChangePassResponse
 import com.example.carware.network.apiResponse.auth.EmailVerificationResponse
 import com.example.carware.network.apiResponse.auth.RefreshTokenResponse
-import com.example.carware.network.apiResponse.auth.ResetPasswordResponse
 import com.example.carware.core.network.ApiResult
 import com.example.carware.core.network.UiResult
 import io.ktor.client.HttpClient
@@ -88,22 +85,22 @@ class AuthRepository(
 //        }
 //    }
 
-    suspend fun resetPasswordRepo(request: ResetPasswordRequest): UiResult<ResetPasswordResponse> {
-        return when (val result = resetPasswordUser(request, client)) {
-            is ApiResult.Success -> {
-                UiResult.Success(result.data)
-            }
-
-            is ApiResult.Error -> {
-                UiResult.Error(result.message)
-            }
-
-            is ApiResult.Exception -> {
-                UiResult.Error("reset Password error: ${result.throwable.message}")
-            }
-
-        }
-    }
+//    suspend fun resetPasswordRepo(request: ResetPasswordRequest): UiResult<ResetPasswordResponse> {
+//        return when (val result = resetPasswordUser(request, client)) {
+//            is ApiResult.Success -> {
+//                UiResult.Success(result.data)
+//            }
+//
+//            is ApiResult.Error -> {
+//                UiResult.Error(result.message)
+//            }
+//
+//            is ApiResult.Exception -> {
+//                UiResult.Error("reset Password error: ${result.throwable.message}")
+//            }
+//
+//        }
+//    }
 
     suspend fun verifyEmailRepo(request: EmailVerificationRequest): UiResult<EmailVerificationResponse> {
         return when (val result = verifyEmailUser(request, client)) {
