@@ -4,6 +4,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.carware.feature.auth.data.remote.AuthApi
 import com.example.carware.feature.auth.data.repository.AuthRepositoryImpl
 import com.example.carware.feature.auth.domain.repository.AuthRepository
+import com.example.carware.feature.auth.presentation.emailVerification.EmailVerificationViewModel
 import com.example.carware.feature.auth.presentation.forgotPassword.ForgotPasswordViewModel
 import com.example.carware.feature.auth.presentation.login.LoginViewModel
 import com.example.carware.feature.auth.presentation.otpVerification.OTPViewModel
@@ -19,5 +20,6 @@ val authModule = module {
     factory { ForgotPasswordViewModel(get()) }
     factory { OTPViewModel(get(), get()) }
     factory { ResetPasswordViewModel(get(), get()) }
+    factory { EmailVerificationViewModel(get(), get()) }
 
 }

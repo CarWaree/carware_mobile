@@ -15,8 +15,7 @@ import com.example.carware.core.storage.PreferencesManager
 import com.example.carware.feature.auth.di.authModule
 import com.example.carware.viewModel.auth.changePass.ChangePassViewModel
 import com.example.carware.viewModel.vehicle.addcar.AddCarViewModel
-import com.example.carware.viewModel.auth.emailVerification.EmailVerificationViewModel
-import com.example.carware.feature.auth.presentation.resetPassword.ResetPasswordViewModel
+import com.example.carware.feature.auth.presentation.emailVerification.EmailVerificationViewModel
 import com.example.carware.viewModel.history.HistoryScreenViewModel
 import com.example.carware.viewModel.home.HomeScreenViewModel
 import com.example.carware.viewModel.mycars.MyCarsScreenViewModel
@@ -55,7 +54,7 @@ fun appModule(preferencesManager: PreferencesManager) = module {
 //    factory { LogInViewModel(get(), get(), get()) }
 //    factory { OTPViewModel(get(), get()) }
 //    factory { ResetPasswordViewModel(get(), get()) }
-    factory { EmailVerificationViewModel(get(), get()) }
+//    factory { EmailVerificationViewModel(get(), get()) }
     single { HistoryScreenViewModel(get(),get()) }
     factory { ScheduleScreenViewModel(get(), get(),get()) }
     factory { AddCarViewModel(get(), get()) }

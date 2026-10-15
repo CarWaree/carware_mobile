@@ -1,13 +1,11 @@
 package com.example.carware.network.api
 
 import com.example.carware.network.apiRequests.auth.ChangePassRequest
-import com.example.carware.network.apiRequests.auth.EmailVerificationRequest
+import com.example.carware.feature.auth.data.remote.emailVerification.EmailVerificationRequest
 import com.example.carware.network.apiRequests.auth.RefreshTokenRequest
-import com.example.carware.feature.auth.data.remote.resetPassword.ResetPasswordRequest
 import com.example.carware.network.apiResponse.auth.ChangePassResponse
-import com.example.carware.network.apiResponse.auth.EmailVerificationResponse
+import com.example.carware.feature.auth.data.remote.emailVerification.EmailVerificationResponse
 import com.example.carware.network.apiResponse.auth.RefreshTokenResponse
-import com.example.carware.feature.auth.data.remote.resetPassword.ResetPasswordResponse
 import com.example.carware.core.network.ApiResult
 import com.example.carware.core.network.safeApiCall
 import io.ktor.client.HttpClient
@@ -78,16 +76,16 @@ const val baseUrl = "https://tbvzs781-8081.uks1.devtunnels.ms"//abdo
 //        }
 //    }
 
-suspend fun verifyEmailUser(
-    request: EmailVerificationRequest,
-    client: HttpClient
-): ApiResult<EmailVerificationResponse> =
-    safeApiCall {
-        client.post("$baseUrl/api/Auth/verify-email-otp") {
-            contentType(ContentType.Application.Json)
-            setBody(request)
-        }
-    }
+//suspend fun verifyEmailUser(
+//    request: EmailVerificationRequest,
+//    client: HttpClient
+//): ApiResult<EmailVerificationResponse> =
+//    safeApiCall {
+//        client.post("$baseUrl/api/Auth/verify-email-otp") {
+//            contentType(ContentType.Application.Json)
+//            setBody(request)
+//        }
+//    }
 
 //suspend fun googleSignIn(
 //    request: GoogleSignInRequest,

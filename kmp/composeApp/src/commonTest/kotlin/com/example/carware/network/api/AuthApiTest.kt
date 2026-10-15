@@ -1,6 +1,6 @@
 package com.example.carware.network.api
 
-import com.example.carware.network.apiRequests.auth.EmailVerificationRequest
+import com.example.carware.feature.auth.data.remote.emailVerification.EmailVerificationRequest
 import com.example.carware.feature.auth.data.remote.forgotPassword.ForgotPasswordRequest
 import com.example.carware.feature.auth.data.remote.login.LoginRequest
 import com.example.carware.feature.auth.data.remote.otp.OTPRequest

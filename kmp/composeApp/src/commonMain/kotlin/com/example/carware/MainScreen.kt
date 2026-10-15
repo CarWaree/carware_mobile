@@ -56,7 +56,7 @@ import com.example.carware.screens.reminder.ReminderHistoryScreen
 import com.example.carware.screens.reminder.ReminderScreen
 import com.example.carware.screens.settings.SelectLanguageScreen
 import com.example.carware.screens.SplashScreen
-import com.example.carware.screens.auth.EmailVerificationScreen
+import com.example.carware.feature.auth.presentation.emailVerification.EmailVerificationScreen
 import com.example.carware.feature.auth.presentation.login.LoginScreen
 import com.example.carware.feature.auth.presentation.resetPassword.NewPasswordScreen
 import com.example.carware.feature.auth.presentation.forgotPassword.ResetPasswordScreen
@@ -81,7 +81,7 @@ import com.example.carware.util.navBar.bottomTabs
 import com.example.carware.core.storage.PreferencesManager
 import com.example.carware.feature.auth.presentation.login.LoginViewModel
 import com.example.carware.viewModel.auth.changePass.ChangePassViewModel
-import com.example.carware.viewModel.auth.emailVerification.EmailVerificationViewModel
+import com.example.carware.feature.auth.presentation.emailVerification.EmailVerificationViewModel
 import com.example.carware.feature.auth.presentation.forgotPassword.ForgotPasswordViewModel
 import com.example.carware.feature.auth.presentation.resetPassword.ResetPasswordViewModel
 import com.example.carware.feature.auth.presentation.otpVerification.OTPViewModel

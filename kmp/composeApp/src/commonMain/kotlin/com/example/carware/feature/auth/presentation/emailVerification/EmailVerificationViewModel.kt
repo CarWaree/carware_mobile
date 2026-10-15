@@ -1,12 +1,13 @@
-package com.example.carware.viewModel.auth.emailVerification
+package com.example.carware.feature.auth.presentation.emailVerification
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.carware.network.apiRequests.auth.EmailVerificationRequest
-import com.example.carware.network.apiResponse.auth.EmailVerificationResponse
+import com.example.carware.core.network.ApiResult
+import com.example.carware.feature.auth.data.remote.emailVerification.EmailVerificationRequest
+import com.example.carware.feature.auth.data.remote.emailVerification.EmailVerificationResponse
 import com.example.carware.core.network.UiResult
-import com.example.carware.repository.auth.AuthRepository
 import com.example.carware.core.storage.PreferencesManager
+import com.example.carware.feature.auth.domain.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -54,30 +55,15 @@ class EmailVerificationViewModel
 
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, errorMessage = null) }
-            val request = EmailVerificationRequest(
-                email = email,
-                otp = _state.value.otp
-            )
 
-            when (val result: UiResult<EmailVerificationResponse> =
-                repository.verifyEmailRepo(request)) {
-                is UiResult.Success -> {
-                    val response = result.data
-                    val accessToken = response.data?.accessToken
-                    val refreshToken = response.data?.refreshToken
+            // 1. Repository already maps response DTO to EmailVerificationResult domain model
+            when (val result = repository.verifyEmail(email, _state.value.otp)) {
+                is ApiResult.Success -> {
+                    val verificationResult = result.data
 
-                    if (accessToken == null || refreshToken == null) {
-                        _state.update {
-                            it.copy(
-                                isLoading = false,
-                                errorMessage = "Token missing from server response"
-                            )
-                        }
-                        return@launch
-                    }
-
-                    preferencesManager.saveToken(accessToken)
-                    preferencesManager.saveRefreshToken(refreshToken)
+                    // 2. Save non-null properties directly from EmailVerificationResult domain object
+                    preferencesManager.saveToken(verificationResult.accessToken)
+                    preferencesManager.saveRefreshToken(verificationResult.refreshToken)
                     preferencesManager.saveEmailVerified(true)
 
                     _state.update {
@@ -85,7 +71,7 @@ class EmailVerificationViewModel
                     }
                 }
 
-                is UiResult.Error -> {
+                is ApiResult.Error -> {
                     _state.update {
                         it.copy(
                             isLoading = false,
@@ -93,8 +79,9 @@ class EmailVerificationViewModel
                         )
                     }
                 }
+
+                is ApiResult.Exception<*> -> TODO()
             }
         }
     }
-
 }

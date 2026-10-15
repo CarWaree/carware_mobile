@@ -2,12 +2,9 @@ package com.example.carware.repository.auth
 
 import com.example.carware.network.api.changePass
 import com.example.carware.network.api.refreshTokenCall
-import com.example.carware.network.api.verifyEmailUser
 import com.example.carware.network.apiRequests.auth.ChangePassRequest
-import com.example.carware.network.apiRequests.auth.EmailVerificationRequest
 import com.example.carware.network.apiRequests.auth.RefreshTokenRequest
 import com.example.carware.network.apiResponse.auth.ChangePassResponse
-import com.example.carware.network.apiResponse.auth.EmailVerificationResponse
 import com.example.carware.network.apiResponse.auth.RefreshTokenResponse
 import com.example.carware.core.network.ApiResult
 import com.example.carware.core.network.UiResult
@@ -101,23 +98,23 @@ class AuthRepository(
 //
 //        }
 //    }
-
-    suspend fun verifyEmailRepo(request: EmailVerificationRequest): UiResult<EmailVerificationResponse> {
-        return when (val result = verifyEmailUser(request, client)) {
-            is ApiResult.Success -> {
-                UiResult.Success(result.data)
-            }
-
-            is ApiResult.Error -> {
-                UiResult.Error(result.message)
-            }
-
-            is ApiResult.Exception -> {
-                UiResult.Error("verify Email error: ${result.throwable.message}")
-            }
-
-        }
-    }
+//
+//    suspend fun verifyEmailRepo(request: EmailVerificationRequest): UiResult<EmailVerificationResponse> {
+//        return when (val result = verifyEmailUser(request, client)) {
+//            is ApiResult.Success -> {
+//                UiResult.Success(result.data)
+//            }
+//
+//            is ApiResult.Error -> {
+//                UiResult.Error(result.message)
+//            }
+//
+//            is ApiResult.Exception -> {
+//                UiResult.Error("verify Email error: ${result.throwable.message}")
+//            }
+//
+//        }
+//    }
 
 //    suspend fun googleSignInRepo(request: GoogleSignInRequest): UiResult<GoogleSignInResponse> {
 //        println("🔑 [GOOGLE] ID Token being sent: ${request.idToken}")

@@ -1,4 +1,4 @@
-package com.example.carware.viewModel.auth.emailVerification
+package com.example.carware.feature.auth.presentation.emailVerification
 
 data class EmailVerificationState(
 

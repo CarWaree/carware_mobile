@@ -2,6 +2,8 @@ package com.example.carware.feature.auth.data.remote
 
 import com.example.carware.core.network.ApiResult
 import com.example.carware.core.network.safeApiCall
+import com.example.carware.feature.auth.data.remote.emailVerification.EmailVerificationRequest
+import com.example.carware.feature.auth.data.remote.emailVerification.EmailVerificationResponse
 import com.example.carware.feature.auth.data.remote.forgotPassword.ForgotPasswordRequest
 import com.example.carware.feature.auth.data.remote.forgotPassword.ForgotPasswordResponse
 import com.example.carware.feature.auth.data.remote.googleSignIn.GoogleSignInRequest
@@ -71,6 +73,14 @@ class AuthApi(private val client: HttpClient) {
             setBody(request)
         }
     }
+
+    suspend fun verifyEmail(request: EmailVerificationRequest):
+            ApiResult<EmailVerificationResponse> =safeApiCall {
+                client.post ( "$BASE_URL/api/Auth/verify-email-otp" ){
+                    contentType(ContentType.Application.Json)
+                    setBody(request)
+                }
+            }
 
     companion object {
         private const val BASE_URL = "https://tbvzs781-8081.uks1.devtunnels.ms"

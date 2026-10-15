@@ -1,4 +1,4 @@
-package com.example.carware.network.apiRequests.auth
+package com.example.carware.feature.auth.data.remote.emailVerification
 
 import kotlinx.serialization.Serializable
 
