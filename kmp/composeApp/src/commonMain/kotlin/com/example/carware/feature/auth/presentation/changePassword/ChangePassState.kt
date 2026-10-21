@@ -1,4 +1,4 @@
-package com.example.carware.viewModel.auth.changePass
+package com.example.carware.feature.auth.presentation.changePassword
 
 
 data class ChangePassState(

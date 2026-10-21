@@ -1,11 +1,11 @@
-package com.example.carware.viewModel.auth.changePass
+package com.example.carware.feature.auth.presentation.changePassword
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.carware.network.apiRequests.auth.ChangePassRequest
-import com.example.carware.network.apiResponse.auth.ChangePassResponse
-import com.example.carware.core.network.UiResult
-import com.example.carware.repository.auth.AuthRepository
+import com.example.carware.core.network.ApiResult
+
+import com.example.carware.feature.auth.domain.model.ChangePassResult
+import com.example.carware.feature.auth.domain.repository.AuthRepository
 import com.plusmobileapps.konnectivity.Konnectivity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -68,14 +68,14 @@ class ChangePassViewModel(
 
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, errorMessage = null) }
-            val request = ChangePassRequest(
-                oldPassword = _state.value.oldPass,
-                newPassword = _state.value.newPass,
-                confirmPassword = _state.value.confNewPass
-            )
 
-            when (val result: UiResult<ChangePassResponse> = repository.changePassRepo(request)) {
-                is UiResult.Success -> {
+                val oldPassword = _state.value.oldPass
+               val newPassword = _state.value.newPass
+             val    confirmPassword = _state.value.confNewPass
+
+
+            when (val result: ApiResult<ChangePassResult> = repository.changePassword(oldPassword,newPassword,confirmPassword)) {
+                is ApiResult.Success -> {
                     val response = result.data
                     _state.update {
                         it.copy(
@@ -86,7 +86,7 @@ class ChangePassViewModel(
                     }
                 }
 
-                is UiResult.Error -> {
+                is ApiResult.Error -> {
                     _state.update {
                         it.copy(
                             isLoading = false,
@@ -94,6 +94,8 @@ class ChangePassViewModel(
                         )
                     }
                 }
+                is ApiResult.Exception<*> -> TODO()
+
             }
         }
     }

@@ -5,6 +5,7 @@ import com.example.carware.core.network.ApiResult.*
 import com.example.carware.feature.auth.data.mapper.toDomain
 import com.example.carware.feature.auth.data.mapper.toLoginResult
 import com.example.carware.feature.auth.data.remote.AuthApi
+import com.example.carware.feature.auth.data.remote.changePassword.ChangePassRequest
 import com.example.carware.feature.auth.data.remote.emailVerification.EmailVerificationRequest
 import com.example.carware.feature.auth.data.remote.forgotPassword.ForgotPasswordRequest
 import com.example.carware.feature.auth.data.remote.googleSignIn.GoogleSignInRequest
@@ -12,6 +13,7 @@ import com.example.carware.feature.auth.data.remote.login.LoginRequest
 import com.example.carware.feature.auth.data.remote.otp.OTPRequest
 import com.example.carware.feature.auth.data.remote.resetPassword.ResetPasswordRequest
 import com.example.carware.feature.auth.data.remote.signup.SignUpRequest
+import com.example.carware.feature.auth.domain.model.ChangePassResult
 import com.example.carware.feature.auth.domain.model.EmailVerificationResult
 import com.example.carware.feature.auth.domain.model.ForgotPasswordResult
 import com.example.carware.feature.auth.domain.model.GoogleSignInResult
@@ -113,13 +115,24 @@ class AuthRepositoryImpl(
         email: String,
         otp: String
     ): ApiResult<EmailVerificationResult> {
-        return when (val result = api.verifyEmail(EmailVerificationRequest(email,otp))){
+        return when (val result = api.verifyEmail(EmailVerificationRequest(email, otp))) {
             is Success -> Success(result.data.toDomain())
-            is Error -> Error(result.code,result.message,result.body)
+            is Error -> Error(result.code, result.message, result.body)
             is Exception -> Exception(result.throwable)
 
         }
     }
 
-
+    override suspend fun changePassword(
+        oldPassword: String,
+        newPassword: String,
+        confirmPassword: String
+    ): ApiResult<ChangePassResult> {
+        return when (val result =
+            api.changePassword(ChangePassRequest(oldPassword, newPassword, confirmPassword))) {
+            is Success -> Success(result.data.toDomain())
+            is Error -> Error(result.code, result.message, result.body)
+            is Exception -> Exception(result.throwable)
+        }
+    }
 }

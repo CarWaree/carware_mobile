@@ -9,13 +9,11 @@ import com.example.carware.repository.ProfileRepository
 import com.example.carware.repository.ReminderRepository
 import com.example.carware.repository.ServiceRepository
 import com.example.carware.repository.VehicleRepository
-import com.example.carware.repository.auth.AuthRepository
 import com.example.carware.util.CalendarLauncher
 import com.example.carware.core.storage.PreferencesManager
 import com.example.carware.feature.auth.di.authModule
-import com.example.carware.viewModel.auth.changePass.ChangePassViewModel
+import com.example.carware.feature.auth.presentation.changePassword.ChangePassViewModel
 import com.example.carware.viewModel.vehicle.addcar.AddCarViewModel
-import com.example.carware.feature.auth.presentation.emailVerification.EmailVerificationViewModel
 import com.example.carware.viewModel.history.HistoryScreenViewModel
 import com.example.carware.viewModel.home.HomeScreenViewModel
 import com.example.carware.viewModel.mycars.MyCarsScreenViewModel
@@ -39,7 +37,7 @@ fun appModule(preferencesManager: PreferencesManager) = module {
 
     // Repositories
     single { VehicleRepository(get()) }
-    single { AuthRepository(get()) }
+//    single { AuthRepository(get()) }
     single { HistoryRepository(get()) }
     single { ProfileRepository(get()) }
     single { ServiceRepository(get()) }
@@ -65,7 +63,7 @@ fun appModule(preferencesManager: PreferencesManager) = module {
     factory { ReminderScreenViewModel(get(), get(), get(), get()) }
     factory { MyCarsScreenViewModel(get(), get()) }
     factory { ReminderHistoryViewModel(get()) }
-    factory { ChangePassViewModel(get(),get()) }
+//    factory { ChangePassViewModel(get(),get()) }
     // AppFonts.kt
 
 

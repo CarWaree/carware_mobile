@@ -1,6 +1,7 @@
 package com.example.carware.feature.auth.domain.repository
 
 import com.example.carware.core.network.ApiResult
+import com.example.carware.feature.auth.domain.model.ChangePassResult
 import com.example.carware.feature.auth.domain.model.EmailVerificationResult
 import com.example.carware.feature.auth.domain.model.ForgotPasswordResult
 import com.example.carware.feature.auth.domain.model.GoogleSignInResult
@@ -33,4 +34,8 @@ interface AuthRepository {
     ): ApiResult<ResetPasswordResult>
 
     suspend fun verifyEmail(email: String, otp: String): ApiResult<EmailVerificationResult>
+
+    suspend fun changePassword(oldPassword:String,newPassword: String,confirmPassword: String):
+            ApiResult<ChangePassResult>
+
 }

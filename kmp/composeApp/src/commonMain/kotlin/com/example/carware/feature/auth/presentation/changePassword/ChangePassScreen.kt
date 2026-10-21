@@ -1,4 +1,4 @@
-package com.example.carware.screens.settings
+package com.example.carware.feature.auth.presentation.changePassword
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -70,7 +70,6 @@ import com.example.carware.core.presentation.components.NoInternetDialog
 import com.example.carware.core.presentation.components.ToastMessage
 import com.example.carware.core.presentation.components.appButtonBack
 import com.example.carware.screens.settings.profile.iconGradient
-import com.example.carware.viewModel.auth.changePass.ChangePassViewModel
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.Font
 import org.jetbrains.compose.resources.painterResource

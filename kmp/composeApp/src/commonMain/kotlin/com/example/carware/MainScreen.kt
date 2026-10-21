@@ -69,7 +69,7 @@ import com.example.carware.screens.mainScreens.ServiceRecordScreen
 import com.example.carware.screens.mainScreens.SettingsScreen
 import com.example.carware.screens.onBoarding.LanguageSelectionScreen
 import com.example.carware.screens.onBoarding.OnBoardingScreen
-import com.example.carware.screens.settings.ChangePassScreen
+import com.example.carware.feature.auth.presentation.changePassword.ChangePassScreen
 import com.example.carware.screens.settings.profile.EditProfileScreen
 import com.example.carware.screens.settings.profile.MyCarsScreen
 import com.example.carware.screens.settings.profile.ProfileScreen
@@ -80,7 +80,7 @@ import com.example.carware.util.lang.LocalizedStrings
 import com.example.carware.util.navBar.bottomTabs
 import com.example.carware.core.storage.PreferencesManager
 import com.example.carware.feature.auth.presentation.login.LoginViewModel
-import com.example.carware.viewModel.auth.changePass.ChangePassViewModel
+import com.example.carware.feature.auth.presentation.changePassword.ChangePassViewModel
 import com.example.carware.feature.auth.presentation.emailVerification.EmailVerificationViewModel
 import com.example.carware.feature.auth.presentation.forgotPassword.ForgotPasswordViewModel
 import com.example.carware.feature.auth.presentation.resetPassword.ResetPasswordViewModel

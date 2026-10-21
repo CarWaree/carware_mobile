@@ -2,6 +2,8 @@ package com.example.carware.feature.auth.data.remote
 
 import com.example.carware.core.network.ApiResult
 import com.example.carware.core.network.safeApiCall
+import com.example.carware.feature.auth.data.remote.changePassword.ChangePassRequest
+import com.example.carware.feature.auth.data.remote.changePassword.ChangePassResponse
 import com.example.carware.feature.auth.data.remote.emailVerification.EmailVerificationRequest
 import com.example.carware.feature.auth.data.remote.emailVerification.EmailVerificationResponse
 import com.example.carware.feature.auth.data.remote.forgotPassword.ForgotPasswordRequest
@@ -16,6 +18,7 @@ import com.example.carware.feature.auth.data.remote.resetPassword.ResetPasswordR
 import com.example.carware.feature.auth.data.remote.resetPassword.ResetPasswordResponse
 import com.example.carware.feature.auth.data.remote.signup.SignUpRequest
 import com.example.carware.feature.auth.data.remote.signup.SignUpResponse
+import com.example.carware.network.api.baseUrl
 import io.ktor.client.HttpClient
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -75,12 +78,21 @@ class AuthApi(private val client: HttpClient) {
     }
 
     suspend fun verifyEmail(request: EmailVerificationRequest):
-            ApiResult<EmailVerificationResponse> =safeApiCall {
-                client.post ( "$BASE_URL/api/Auth/verify-email-otp" ){
-                    contentType(ContentType.Application.Json)
-                    setBody(request)
-                }
+            ApiResult<EmailVerificationResponse> = safeApiCall {
+        client.post("$BASE_URL/api/Auth/verify-email-otp") {
+            contentType(ContentType.Application.Json)
+            setBody(request)
+        }
+    }
+
+    suspend fun changePassword(request: ChangePassRequest): ApiResult<ChangePassResponse> =
+        safeApiCall {
+            client.post("$BASE_URL/api/Auth/change-password") {
+                contentType(ContentType.Application.Json)
+                setBody(request)
             }
+        }
+
 
     companion object {
         private const val BASE_URL = "https://tbvzs781-8081.uks1.devtunnels.ms"

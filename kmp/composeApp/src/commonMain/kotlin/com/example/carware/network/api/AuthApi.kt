@@ -1,10 +1,8 @@
 package com.example.carware.network.api
 
-import com.example.carware.network.apiRequests.auth.ChangePassRequest
-import com.example.carware.feature.auth.data.remote.emailVerification.EmailVerificationRequest
+import com.example.carware.feature.auth.data.remote.changePassword.ChangePassRequest
 import com.example.carware.network.apiRequests.auth.RefreshTokenRequest
-import com.example.carware.network.apiResponse.auth.ChangePassResponse
-import com.example.carware.feature.auth.data.remote.emailVerification.EmailVerificationResponse
+import com.example.carware.feature.auth.data.remote.changePassword.ChangePassResponse
 import com.example.carware.network.apiResponse.auth.RefreshTokenResponse
 import com.example.carware.core.network.ApiResult
 import com.example.carware.core.network.safeApiCall
@@ -110,11 +108,11 @@ suspend fun refreshTokenCall(
         }
     }
 
-suspend fun changePass(
-    request: ChangePassRequest,
-    client: HttpClient
-): ApiResult<ChangePassResponse> =
-    safeApiCall {client.post ("$baseUrl/api/Auth/change-password"){
-        contentType(ContentType.Application.Json)
-        setBody(request)
-    }  }
+//suspend fun changePass(
+//    request: ChangePassRequest,
+//    client: HttpClient
+//): ApiResult<ChangePassResponse> =
+//    safeApiCall {client.post ("$baseUrl/api/Auth/change-password"){
+//        contentType(ContentType.Application.Json)
+//        setBody(request)
+//    }  }

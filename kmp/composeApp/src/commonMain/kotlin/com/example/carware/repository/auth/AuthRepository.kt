@@ -1,19 +1,17 @@
 package com.example.carware.repository.auth
 
-import com.example.carware.network.api.changePass
 import com.example.carware.network.api.refreshTokenCall
-import com.example.carware.network.apiRequests.auth.ChangePassRequest
+import com.example.carware.feature.auth.data.remote.changePassword.ChangePassRequest
 import com.example.carware.network.apiRequests.auth.RefreshTokenRequest
-import com.example.carware.network.apiResponse.auth.ChangePassResponse
+import com.example.carware.feature.auth.data.remote.changePassword.ChangePassResponse
 import com.example.carware.network.apiResponse.auth.RefreshTokenResponse
 import com.example.carware.core.network.ApiResult
 import com.example.carware.core.network.UiResult
 import io.ktor.client.HttpClient
 
-class AuthRepository(
-    private val client: HttpClient
-) {
-
+//class AuthRepository(
+//    private val client: HttpClient
+//) {
 //    suspend fun signUpRepo(request: SignUpRequest): UiResult<SignUpResponse> {
 //        return when (val result = signupUser(request, client)) {
 //            is ApiResult.Success -> {
@@ -135,30 +133,30 @@ class AuthRepository(
 //
 //        }
 //    }
+//
+//    suspend fun changePassRepo(request: ChangePassRequest) : UiResult<ChangePassResponse>{
+//        return  when (val result = changePass(request,client)){
+//            is ApiResult.Success -> {
+//                UiResult.Success(result.data)
+//            }
+//
+//            is ApiResult.Error -> {
+//                UiResult.Error(result.message)
+//            }
+//
+//            is ApiResult.Exception -> {
+//                UiResult.Error(result.throwable.message ?: "Unknown error occurred")
+//            }
+//        }
+//
+//    }
 
-    suspend fun changePassRepo(request: ChangePassRequest) : UiResult<ChangePassResponse>{
-        return  when (val result = changePass(request,client)){
-            is ApiResult.Success -> {
-                UiResult.Success(result.data)
-            }
-
-            is ApiResult.Error -> {
-                UiResult.Error(result.message)
-            }
-
-            is ApiResult.Exception -> {
-                UiResult.Error(result.throwable.message ?: "Unknown error occurred")
-            }
-        }
-        
-    }
-
-    suspend fun refreshTokenRepo(request: RefreshTokenRequest): RefreshTokenResponse {
-        return when (val result = refreshTokenCall(request, client)) {
-            is ApiResult.Success -> result.data
-            is ApiResult.Error -> throw Exception("Error ${result.code}: ${result.message}")
-            is ApiResult.Exception -> throw result.throwable
-        }
-
-    }
-}
+//    suspend fun refreshTokenRepo(request: RefreshTokenRequest): RefreshTokenResponse {
+//        return when (val result = refreshTokenCall(request, client)) {
+//            is ApiResult.Success -> result.data
+//            is ApiResult.Error -> throw Exception("Error ${result.code}: ${result.message}")
+//            is ApiResult.Exception -> throw result.throwable
+//        }
+//
+//    }
+//}
